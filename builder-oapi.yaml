@@ -1,13 +1,13 @@
 openapi: "3.0.3"
 
 info:
-  title: "Builder API"
+  title: "Eth Beacon Node API"
   description: |
-    API specification for the external block builders, which allows validators to delegate the EL block building process.
+    API specification for the beacon node, which enables users to query and participate in Ethereum 2.0 phase 0 beacon chain.
 
     All requests by default send and receive JSON, and as such should have either or both of the "Content-Type: application/json"
-    and "Accept: application/json" headers. In addition, some requests can return data in the SSZ format. To indicate that SSZ
-    data is required in response to a request the header "Accept: application/octet-stream" should be sent. Note that only a subset
+    and "Accept: application/json" headers.  In addition, some requests can return data in the SSZ format.  To indicate that SSZ
+    data is required in response to a request the header "Accept: application/octet-stream" should be sent.  Note that only a subset
     of requests can respond with data in SSZ format; these are noted in each individual request.
 
     API endpoints are individually versioned.  As such, there is no direct relationship between all v1 endpoints, all v2 endpoints,
@@ -24,7 +24,7 @@ info:
   version: "Dev - Eth2Spec v1.1.0"
   contact:
     name: Ethereum Github
-    url: https://github.com/ethereum/builder-specs/issues
+    url: https://github.com/ethereum/beacon-apis/issues
   license:
     name: "Apache 2.0"
     url: "https://www.apache.org/licenses/LICENSE-2.0.html"
@@ -33,15 +33,21 @@ servers:
   - url: "{server_url}"
     variables:
       server_url:
-        description: "Builder node url"
-        default: "???"
+        description: "Beacon node API url"
+        default: "http://public-mainnet-node.ethereum.org/"
 
 tags:
   - name: Builder
     description: Set of endpoints to interact with an external block builder.
 paths:
-  /eth/v1/beacon/genesis:
-    $ref: "./apis/beacon/genesis.yaml"
+
+  /eth/v1/builder/validators:
+    $ref: "./apis/builder/validators.yaml"
+  /eth/v1/builder/blinded_headers:
+    $ref: "./apis/builder/blinded_headers.yaml"
+  /eth/v1/builder/blinded_blocks:
+    $ref: "./apis/builder/blinded_blocks.yaml"
+
 
 components:
   schemas:
