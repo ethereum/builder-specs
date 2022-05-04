@@ -1,0 +1,173 @@
+openapi: "3.0.3"
+
+info:
+  title: "Builder API"
+  description: |
+    API specification for the external block builders, which allows validators to delegate the EL block building process.
+
+    All requests by default send and receive JSON, and as such should have either or both of the "Content-Type: application/json"
+    and "Accept: application/json" headers. In addition, some requests can return data in the SSZ format. To indicate that SSZ
+    data is required in response to a request the header "Accept: application/octet-stream" should be sent. Note that only a subset
+    of requests can respond with data in SSZ format; these are noted in each individual request.
+
+    API endpoints are individually versioned.  As such, there is no direct relationship between all v1 endpoints, all v2 endpoints,
+    _etc._ and no such relationship should be inferred.  All JSON responses return the requested data under a `data` key in the top
+    level of their response.  Additional metadata may or may not be present in other keys at the top level of the response, dependent
+    on the endpoint.  The rules that require an increase in version number are as follows:
+
+      - no field that is listed in an endpoint shall be removed without an increase in the version number
+      - no field that is listed in an endpoint shall be altered in terms of format (_e.g._ from a string to an array) without an
+        increase in the version number
+
+    Note that it is possible for a field to be added to an endpoint's data or metadata without an increase in the version number.
+
+  version: "Dev - Eth2Spec v1.1.0"
+  contact:
+    name: Ethereum Github
+    url: https://github.com/ethereum/builder-specs/issues
+  license:
+    name: "Apache 2.0"
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
+
+servers:
+  - url: "{server_url}"
+    variables:
+      server_url:
+        description: "Builder node url"
+        default: "???"
+
+tags:
+  - name: Builder
+    description: Set of endpoints to interact with an external block builder.
+paths:
+  /eth/v1/beacon/genesis:
+    $ref: "./apis/beacon/genesis.yaml"
+
+components:
+  schemas:
+    BeaconState:
+      $ref: './types/state.yaml#/BeaconState'
+    BeaconBlock:
+      $ref: './types/block.yaml#/BeaconBlock'
+    SignedBeaconBlock:
+      $ref: './types/block.yaml#/SignedBeaconBlock'
+    SignedBeaconBlockHeader:
+      $ref: './types/block.yaml#/SignedBeaconBlockHeader'
+    ValidatorResponse:
+      $ref: './types/api.yaml#/ValidatorResponse'
+    ValidatorBalanceResponse:
+      $ref: './types/api.yaml#/ValidatorBalanceResponse'
+    ValidatorStatus:
+      $ref: './types/api.yaml#/ValidatorStatus'
+    Committee:
+      $ref: './types/api.yaml#/Committee'
+    AttesterSlashing:
+      $ref: './types/attester_slashing.yaml#/AttesterSlashing'
+    ProposerSlashing:
+      $ref: './types/proposer_slashing.yaml#/ProposerSlashing'
+    SignedVoluntaryExit:
+      $ref: './types/voluntary_exit.yaml#/SignedVoluntaryExit'
+    AttesterDuty:
+      $ref: './types/validator.yaml#/AttesterDuty'
+    ProposerDuty:
+      $ref: './types/validator.yaml#/ProposerDuty'
+    Altair.SyncDuty:
+      $ref: './types/validator.yaml#/Altair/SyncDuty'
+    SignedAggregateAndProof:
+      $ref: './types/validator.yaml#/SignedAggregateAndProof'
+    Attestation:
+      $ref: './types/attestation.yaml#/Attestation'
+    AttestationData:
+      $ref: './types/attestation.yaml#/AttestationData'
+    Fork:
+      $ref: './types/misc.yaml#/Fork'
+    Checkpoint:
+      $ref: './types/misc.yaml#/Checkpoint'
+    Uint64:
+      $ref: './types/primitive.yaml#/Uint64'
+    NetworkIdentity:
+      $ref: './types/p2p.yaml#/NetworkIdentity'
+    Peer:
+      $ref: './types/p2p.yaml#/Peer'
+    PeerId:
+      $ref: './types/p2p.yaml#/PeerId'
+    PeerConnectionState:
+      $ref: './types/p2p.yaml#/PeerConnectionState'
+    PeerConnectionDirection:
+      $ref: './types/p2p.yaml#/PeerConnectionDirection'
+    GenesisTime:
+      $ref: './types/primitive.yaml#/GenesisTime'
+    Version:
+      $ref: './types/primitive.yaml#/Version'
+    ForkVersion:
+      $ref: './types/primitive.yaml#/ForkVersion'
+    DependentRoot:
+      $ref: './types/primitive.yaml#/DependentRoot'
+    ExecutionOptimistic:
+      $ref: './types/primitive.yaml#/ExecutionOptimistic'
+    Root:
+      $ref: './types/primitive.yaml#/Root'
+    Hex:
+      $ref: './types/primitive.yaml#/Hex'
+    Graffiti:
+      $ref: './types/primitive.yaml#/Graffiti'
+    Signature:
+      $ref: './types/primitive.yaml#/Signature'
+    ErrorMessage:
+      $ref: './types/http.yaml#/ErrorMessage'
+    IndexedErrorMessage:
+      $ref: './types/http.yaml#/IndexedErrorMessage'
+    Altair.SignedBeaconBlock:
+      $ref: './types/altair/block.yaml#/Altair/SignedBeaconBlock'
+    Altair.BeaconBlock:
+      $ref: './types/altair/block.yaml#/Altair/BeaconBlock'
+    Altair.BeaconState:
+      $ref: './types/altair/state.yaml#/Altair/BeaconState'
+    Altair.SyncCommitteeSignature:
+      $ref: './types/altair/sync_committee.yaml#/Altair/SyncCommitteeSignature'
+    Altair.SyncCommitteeSubscription:
+      $ref: './types/altair/sync_committee.yaml#/Altair/SyncCommitteeSubscription'
+    Altair.ContributionAndProof:
+      $ref: './types/altair/sync_committee.yaml#/Altair/ContributionAndProof'
+    Altair.SignedContributionAndProof:
+      $ref: './types/altair/sync_committee.yaml#/Altair/SignedContributionAndProof'
+    Altair.SyncCommitteeContribution:
+      $ref: './types/altair/sync_committee.yaml#/Altair/SyncCommitteeContribution'
+    Altair.SyncCommittee:
+      $ref: './types/altair/sync_committee.yaml#/Altair/SyncCommitteeByValidatorIndices'
+    ExecutionAddress:
+      $ref: './types/primitive.yaml#/ExecutionAddress'
+    Bellatrix.BeaconState:
+      $ref: './types/bellatrix/state.yaml#/Bellatrix/BeaconState'
+    Bellatrix.BeaconBlock:
+      $ref: './types/bellatrix/block.yaml#/Bellatrix/BeaconBlock'
+    Bellatrix.SignedBeaconBlock:
+      $ref: './types/bellatrix/block.yaml#/Bellatrix/SignedBeaconBlock'
+    Bellatrix.BlindedBeaconBlock:
+      $ref: './types/bellatrix/block.yaml#/Bellatrix/BlindedBeaconBlock'
+    Bellatrix.SignedBlindedBeaconBlock:
+      $ref: './types/bellatrix/block.yaml#/Bellatrix/SignedBlindedBeaconBlock'
+
+  parameters:
+    StateId:
+      $ref: './params/index.yaml#/StateId'
+    BlockId:
+      $ref: './params/index.yaml#/BlockId'
+
+  responses:
+    InvalidRequest:
+      $ref: './types/http.yaml#/InvalidRequest'
+    NotFound:
+      $ref: './types/http.yaml#/NotFound'
+    InternalError:
+      $ref: './types/http.yaml#/InternalError'
+    CurrentlySyncing:
+      $ref: './types/http.yaml#/CurrentlySyncing'
+
+  headers:
+    Eth-Consensus-Version:
+      description: Required in response so client can deserialize returned json or ssz data more effectively.
+      schema:
+        type: string
+        enum: [phase0, altair, bellatrix]
+        example: "phase0"
