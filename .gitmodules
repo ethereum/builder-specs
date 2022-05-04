@@ -1,0 +1,3 @@
+[submodule "beacon-apis"]
+	path = beacon-apis
+	url = git@github.com:ethereum/beacon-APIs.git
