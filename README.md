@@ -29,7 +29,7 @@ npm install -g @stoplight/spectral-cli@6.2.1
 ```
 and run lint with
 ```
-spectral lint builder-oapi.yaml 
+spectral lint builder-oapi.yaml
 ```
 
 ## Releasing

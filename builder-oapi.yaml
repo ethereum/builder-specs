@@ -1,13 +1,13 @@
 openapi: "3.0.3"
 
 info:
-  title: "Eth Beacon Node API"
+  title: "Builder API"
   description: |
-    API specification for the beacon node, which enables users to query and participate in Ethereum 2.0 phase 0 beacon chain.
+    API specification for external builder clients, which enables validators to delegate block building duties.
 
     All requests by default send and receive JSON, and as such should have either or both of the "Content-Type: application/json"
-    and "Accept: application/json" headers.  In addition, some requests can return data in the SSZ format.  To indicate that SSZ
-    data is required in response to a request the header "Accept: application/octet-stream" should be sent.  Note that only a subset
+    and "Accept: application/json" headers. In addition, some requests can return data in the SSZ format. To indicate that SSZ
+    data is required in response to a request the header "Accept: application/octet-stream" should be sent. Note that only a subset
     of requests can respond with data in SSZ format; these are noted in each individual request.
 
     API endpoints are individually versioned.  As such, there is no direct relationship between all v1 endpoints, all v2 endpoints,
@@ -21,10 +21,10 @@ info:
 
     Note that it is possible for a field to be added to an endpoint's data or metadata without an increase in the version number.
 
-  version: "Dev - Eth2Spec v1.1.0"
+  version: "dev"
   contact:
     name: Ethereum Github
-    url: https://github.com/ethereum/beacon-apis/issues
+    url: https://github.com/ethereum/builder-apis/issues
   license:
     name: "Apache 2.0"
     url: "https://www.apache.org/licenses/LICENSE-2.0.html"
@@ -33,8 +33,8 @@ servers:
   - url: "{server_url}"
     variables:
       server_url:
-        description: "Beacon node API url"
-        default: "http://public-mainnet-node.ethereum.org/"
+        description: "Builder node API url"
+        default: "???"
 
 tags:
   - name: Builder
@@ -43,132 +43,127 @@ paths:
 
   /eth/v1/builder/validators:
     $ref: "./apis/builder/validators.yaml"
-  /eth/v1/builder/blinded_headers:
-    $ref: "./apis/builder/blinded_headers.yaml"
-  /eth/v1/builder/blinded_blocks:
-    $ref: "./apis/builder/blinded_blocks.yaml"
+  # /eth/v1/builder/blinded_headers:
+  #   $ref: "./apis/builder/blinded_headers.yaml"
+  # /eth/v1/builder/blinded_blocks:
+  #   $ref: "./apis/builder/blinded_blocks.yaml"
 
 
 components:
   schemas:
     BeaconState:
-      $ref: './types/state.yaml#/BeaconState'
+      $ref: './beacon-apis/types/state.yaml#/BeaconState'
     BeaconBlock:
-      $ref: './types/block.yaml#/BeaconBlock'
+      $ref: './beacon-apis/types/block.yaml#/BeaconBlock'
     SignedBeaconBlock:
-      $ref: './types/block.yaml#/SignedBeaconBlock'
+      $ref: './beacon-apis/types/block.yaml#/SignedBeaconBlock'
     SignedBeaconBlockHeader:
-      $ref: './types/block.yaml#/SignedBeaconBlockHeader'
+      $ref: './beacon-apis/types/block.yaml#/SignedBeaconBlockHeader'
     ValidatorResponse:
-      $ref: './types/api.yaml#/ValidatorResponse'
+      $ref: './beacon-apis/types/api.yaml#/ValidatorResponse'
     ValidatorBalanceResponse:
-      $ref: './types/api.yaml#/ValidatorBalanceResponse'
+      $ref: './beacon-apis/types/api.yaml#/ValidatorBalanceResponse'
     ValidatorStatus:
-      $ref: './types/api.yaml#/ValidatorStatus'
+      $ref: './beacon-apis/types/api.yaml#/ValidatorStatus'
     Committee:
-      $ref: './types/api.yaml#/Committee'
+      $ref: './beacon-apis/types/api.yaml#/Committee'
     AttesterSlashing:
-      $ref: './types/attester_slashing.yaml#/AttesterSlashing'
+      $ref: './beacon-apis/types/attester_slashing.yaml#/AttesterSlashing'
     ProposerSlashing:
-      $ref: './types/proposer_slashing.yaml#/ProposerSlashing'
+      $ref: './beacon-apis/types/proposer_slashing.yaml#/ProposerSlashing'
     SignedVoluntaryExit:
-      $ref: './types/voluntary_exit.yaml#/SignedVoluntaryExit'
+      $ref: './beacon-apis/types/voluntary_exit.yaml#/SignedVoluntaryExit'
     AttesterDuty:
-      $ref: './types/validator.yaml#/AttesterDuty'
+      $ref: './beacon-apis/types/validator.yaml#/AttesterDuty'
     ProposerDuty:
-      $ref: './types/validator.yaml#/ProposerDuty'
+      $ref: './beacon-apis/types/validator.yaml#/ProposerDuty'
     Altair.SyncDuty:
-      $ref: './types/validator.yaml#/Altair/SyncDuty'
+      $ref: './beacon-apis/types/validator.yaml#/Altair/SyncDuty'
     SignedAggregateAndProof:
-      $ref: './types/validator.yaml#/SignedAggregateAndProof'
+      $ref: './beacon-apis/types/validator.yaml#/SignedAggregateAndProof'
     Attestation:
-      $ref: './types/attestation.yaml#/Attestation'
+      $ref: './beacon-apis/types/attestation.yaml#/Attestation'
     AttestationData:
-      $ref: './types/attestation.yaml#/AttestationData'
+      $ref: './beacon-apis/types/attestation.yaml#/AttestationData'
     Fork:
-      $ref: './types/misc.yaml#/Fork'
+      $ref: './beacon-apis/types/misc.yaml#/Fork'
     Checkpoint:
-      $ref: './types/misc.yaml#/Checkpoint'
+      $ref: './beacon-apis/types/misc.yaml#/Checkpoint'
     Uint64:
-      $ref: './types/primitive.yaml#/Uint64'
-    NetworkIdentity:
-      $ref: './types/p2p.yaml#/NetworkIdentity'
-    Peer:
-      $ref: './types/p2p.yaml#/Peer'
-    PeerId:
-      $ref: './types/p2p.yaml#/PeerId'
-    PeerConnectionState:
-      $ref: './types/p2p.yaml#/PeerConnectionState'
-    PeerConnectionDirection:
-      $ref: './types/p2p.yaml#/PeerConnectionDirection'
+      $ref: './beacon-apis/types/primitive.yaml#/Uint64'
     GenesisTime:
-      $ref: './types/primitive.yaml#/GenesisTime'
+      $ref: './beacon-apis/types/primitive.yaml#/GenesisTime'
     Version:
-      $ref: './types/primitive.yaml#/Version'
+      $ref: './beacon-apis/types/primitive.yaml#/Version'
     ForkVersion:
-      $ref: './types/primitive.yaml#/ForkVersion'
+      $ref: './beacon-apis/types/primitive.yaml#/ForkVersion'
     DependentRoot:
-      $ref: './types/primitive.yaml#/DependentRoot'
+      $ref: './beacon-apis/types/primitive.yaml#/DependentRoot'
     ExecutionOptimistic:
-      $ref: './types/primitive.yaml#/ExecutionOptimistic'
+      $ref: './beacon-apis/types/primitive.yaml#/ExecutionOptimistic'
     Root:
-      $ref: './types/primitive.yaml#/Root'
+      $ref: './beacon-apis/types/primitive.yaml#/Root'
     Hex:
-      $ref: './types/primitive.yaml#/Hex'
+      $ref: './beacon-apis/types/primitive.yaml#/Hex'
     Graffiti:
-      $ref: './types/primitive.yaml#/Graffiti'
+      $ref: './beacon-apis/types/primitive.yaml#/Graffiti'
     Signature:
-      $ref: './types/primitive.yaml#/Signature'
+      $ref: './beacon-apis/types/primitive.yaml#/Signature'
     ErrorMessage:
-      $ref: './types/http.yaml#/ErrorMessage'
+      $ref: './beacon-apis/types/http.yaml#/ErrorMessage'
     IndexedErrorMessage:
-      $ref: './types/http.yaml#/IndexedErrorMessage'
+      $ref: './beacon-apis/types/http.yaml#/IndexedErrorMessage'
     Altair.SignedBeaconBlock:
-      $ref: './types/altair/block.yaml#/Altair/SignedBeaconBlock'
+      $ref: './beacon-apis/types/altair/block.yaml#/Altair/SignedBeaconBlock'
     Altair.BeaconBlock:
-      $ref: './types/altair/block.yaml#/Altair/BeaconBlock'
+      $ref: './beacon-apis/types/altair/block.yaml#/Altair/BeaconBlock'
     Altair.BeaconState:
-      $ref: './types/altair/state.yaml#/Altair/BeaconState'
+      $ref: './beacon-apis/types/altair/state.yaml#/Altair/BeaconState'
     Altair.SyncCommitteeSignature:
-      $ref: './types/altair/sync_committee.yaml#/Altair/SyncCommitteeSignature'
+      $ref: './beacon-apis/types/altair/sync_committee.yaml#/Altair/SyncCommitteeSignature'
     Altair.SyncCommitteeSubscription:
-      $ref: './types/altair/sync_committee.yaml#/Altair/SyncCommitteeSubscription'
+      $ref: './beacon-apis/types/altair/sync_committee.yaml#/Altair/SyncCommitteeSubscription'
     Altair.ContributionAndProof:
-      $ref: './types/altair/sync_committee.yaml#/Altair/ContributionAndProof'
+      $ref: './beacon-apis/types/altair/sync_committee.yaml#/Altair/ContributionAndProof'
     Altair.SignedContributionAndProof:
-      $ref: './types/altair/sync_committee.yaml#/Altair/SignedContributionAndProof'
+      $ref: './beacon-apis/types/altair/sync_committee.yaml#/Altair/SignedContributionAndProof'
     Altair.SyncCommitteeContribution:
-      $ref: './types/altair/sync_committee.yaml#/Altair/SyncCommitteeContribution'
+      $ref: './beacon-apis/types/altair/sync_committee.yaml#/Altair/SyncCommitteeContribution'
     Altair.SyncCommittee:
-      $ref: './types/altair/sync_committee.yaml#/Altair/SyncCommitteeByValidatorIndices'
+      $ref: './beacon-apis/types/altair/sync_committee.yaml#/Altair/SyncCommitteeByValidatorIndices'
     ExecutionAddress:
-      $ref: './types/primitive.yaml#/ExecutionAddress'
+      $ref: './beacon-apis/types/primitive.yaml#/ExecutionAddress'
     Bellatrix.BeaconState:
-      $ref: './types/bellatrix/state.yaml#/Bellatrix/BeaconState'
+      $ref: './beacon-apis/types/bellatrix/state.yaml#/Bellatrix/BeaconState'
     Bellatrix.BeaconBlock:
-      $ref: './types/bellatrix/block.yaml#/Bellatrix/BeaconBlock'
+      $ref: './beacon-apis/types/bellatrix/block.yaml#/Bellatrix/BeaconBlock'
     Bellatrix.SignedBeaconBlock:
-      $ref: './types/bellatrix/block.yaml#/Bellatrix/SignedBeaconBlock'
+      $ref: './beacon-apis/types/bellatrix/block.yaml#/Bellatrix/SignedBeaconBlock'
     Bellatrix.BlindedBeaconBlock:
-      $ref: './types/bellatrix/block.yaml#/Bellatrix/BlindedBeaconBlock'
+      $ref: './beacon-apis/types/bellatrix/block.yaml#/Bellatrix/BlindedBeaconBlock'
     Bellatrix.SignedBlindedBeaconBlock:
-      $ref: './types/bellatrix/block.yaml#/Bellatrix/SignedBlindedBeaconBlock'
+      $ref: './beacon-apis/types/bellatrix/block.yaml#/Bellatrix/SignedBlindedBeaconBlock'
+
+    ValidatorRegistration:
+      $ref: './types/registration.yaml#/ValidatorRegistration'
+    SignedValidatorRegistration:
+      $ref: './types/registration.yaml#/SignedValidatorRegistration'
 
   parameters:
     StateId:
-      $ref: './params/index.yaml#/StateId'
+      $ref: './beacon-apis/params/index.yaml#/StateId'
     BlockId:
-      $ref: './params/index.yaml#/BlockId'
+      $ref: './beacon-apis/params/index.yaml#/BlockId'
 
   responses:
     InvalidRequest:
-      $ref: './types/http.yaml#/InvalidRequest'
+      $ref: './beacon-apis/types/http.yaml#/InvalidRequest'
     NotFound:
-      $ref: './types/http.yaml#/NotFound'
+      $ref: './beacon-apis/types/http.yaml#/NotFound'
     InternalError:
-      $ref: './types/http.yaml#/InternalError'
+      $ref: './beacon-apis/types/http.yaml#/InternalError'
     CurrentlySyncing:
-      $ref: './types/http.yaml#/CurrentlySyncing'
+      $ref: './beacon-apis/types/http.yaml#/CurrentlySyncing'
 
   headers:
     Eth-Consensus-Version:

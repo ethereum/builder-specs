@@ -1,6 +1,5 @@
 post:
   tags:
-    - BuilderRequiredApi
     - Builder
   summary: "Register or update a validator's block building preferences."
   operationId: "registerValidator"
