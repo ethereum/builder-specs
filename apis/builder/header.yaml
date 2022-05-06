@@ -2,7 +2,7 @@ get:
   tags:
     - Builder
   operationId: "getHeader"
-  summary: "Get an ExecutionPayloadHeader."
+  summary: Get an ExecutionPayloadHeader.
   description: |
     Requests a builder node to produce a valid execution payload header, which can integrated into a blinded beacon block and signed.
 

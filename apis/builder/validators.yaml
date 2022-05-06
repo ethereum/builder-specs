@@ -1,11 +1,14 @@
 post:
   tags:
     - Builder
-  summary: "Register or update a validator's block building preferences."
   operationId: "registerValidator"
-  description: "Registers a validator's preferred fee recipient and gas limit target."
+  summary: Register or update a validator's block building preferences.
+  description: |
+    Registers a validator's preferred fee recipient and gas limit target.
   requestBody:
-    description: "The `SignedBeaconBlock` object composed of `BeaconBlock` object (produced by beacon node) and validator signature."
+    description: |
+      The `SignedBeaconBlock` object composed of `BeaconBlock` object (produced
+      by beacon node) and validator signature.
     required: true
     content:
       application/json:
@@ -16,7 +19,7 @@ post:
     "200":
       description: Success response
     "400":
-      description: "The `SignedValidatorRegistration` is invalid."
+      description: The `SignedValidatorRegistration` is invalid.
       content:
         application/json:
           schema:

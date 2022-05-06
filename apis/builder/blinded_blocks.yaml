@@ -1,8 +1,8 @@
 post:
   tags:
     - Builder
-  summary: Submit a signed blinded block.
   operationId: "submitBlindedBlock"
+  summary: Submit a signed blinded block.
   description: |
     Submits a `SignedBlindedBeaconBlock` to the builder, binding them to the
     block. The builder is now able to unblind the transactions in the
