@@ -1,0 +1,32 @@
+post:
+  tags:
+    - Builder
+  operationId: "registerValidator"
+  summary: Register or update a validator's block building preferences.
+  description: |
+    Registers a validator's preferred fee recipient and gas limit target.
+  requestBody:
+    description: |
+      The `SignedBeaconBlock` object composed of `BeaconBlock` object (produced
+      by beacon node) and validator signature.
+    required: true
+    content:
+      application/json:
+        schema:
+          oneOf:
+           - $ref: '../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration'
+  responses:
+    "200":
+      description: Success response
+    "400":
+      description: The `SignedValidatorRegistration` is invalid.
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+              - example:
+                  code: 400
+                  message: "Unknown validator: 0x933ad9491b62059dd065b560d256d8957a8c402cc6e8d8ee7290ae11e8f7329267a8811c397529dac52ae1342ba58c95"
+    "500":
+      $ref: '../../builder-oapi.yaml#/components/responses/InternalError'

@@ -1,0 +1,58 @@
+get:
+  tags:
+    - Builder
+  operationId: "getHeader"
+  summary: Get an ExecutionPayloadHeader.
+  description: |
+    Requests a builder node to produce a valid execution payload header, which can integrated into a blinded beacon block and signed.
+
+    Metadata in the response indicates the type of block produced, and the supported types of block
+    will be added to as forks progress.
+  parameters:
+    - name: slot
+      in: path
+      required: true
+      description: "The slot for which the block should be proposed."
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
+    - name: parent_hash
+      in: path
+      required: true
+      description: "Hash of execution layer block the proposer will use as the proposal's parent."
+      schema:
+        $ref: '../../builder-oapi.yaml#/components/schemas/Root'
+    - name: pubkey
+      in: query
+      required: true
+      description: "The validator's BLS public key."
+      schema:
+        $ref: '../../builder-oapi.yaml#/components/schemas/Pubkey'
+  responses:
+    "200":
+      description: Success response
+      content:
+        application/json:
+          schema:
+            title: ProduceBlockV2Response
+            type: object
+            properties:
+              version:
+                type: string
+                enum: [ phase0, altair, bellatrix ]
+                example: "phase0"
+              data:
+                oneOf:
+                 - $ref: '../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayloadHeader'
+    "400":
+      description: "Invalid block production request"
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            InvalidRequest:
+              value:
+                code: 400
+                message: "Invalid request to produce a block"
+    "500":
+      $ref: '../../builder-oapi.yaml#/components/responses/InternalError'
