@@ -43,8 +43,8 @@ paths:
 
   /eth/v1/builder/validators:
     $ref: "./apis/builder/validators.yaml"
-  # /eth/v1/builder/blinded_headers:
-  #   $ref: "./apis/builder/blinded_headers.yaml"
+  /eth/v1/builder/{slot}/{parent_hash}/header:
+    $ref: "./apis/builder/header.yaml"
   # /eth/v1/builder/blinded_blocks:
   #   $ref: "./apis/builder/blinded_blocks.yaml"
 
@@ -107,6 +107,8 @@ components:
       $ref: './beacon-apis/types/primitive.yaml#/Hex'
     Graffiti:
       $ref: './beacon-apis/types/primitive.yaml#/Graffiti'
+    Pubkey:
+      $ref: './beacon-apis/types/primitive.yaml#/Pubkey'
     Signature:
       $ref: './beacon-apis/types/primitive.yaml#/Signature'
     ErrorMessage:
@@ -135,6 +137,10 @@ components:
       $ref: './beacon-apis/types/primitive.yaml#/ExecutionAddress'
     Bellatrix.BeaconState:
       $ref: './beacon-apis/types/bellatrix/state.yaml#/Bellatrix/BeaconState'
+    Bellatrix.ExecutionPayload:
+      $ref: './beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayload'
+    Bellatrix.ExecutionPayloadHeader:
+      $ref: './beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader'
     Bellatrix.BeaconBlock:
       $ref: './beacon-apis/types/bellatrix/block.yaml#/Bellatrix/BeaconBlock'
     Bellatrix.SignedBeaconBlock:

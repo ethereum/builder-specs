@@ -27,4 +27,3 @@ SignedValidatorRegistration:
       $ref: "#/ValidatorRegistration"
     signature:
       $ref: "../beacon-apis/types/primitive.yaml#/Signature"
-
