@@ -1,0 +1,19 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+    - run: npm i -g @apidevtools/swagger-cli@4 @stoplight/spectral-cli@6.3.0
+    - run: spectral --version
+
+    - name: Lint spec
+      run: spectral lint ./builder-oapi.yaml
+
+    - name: Bundle spec
+      run: "swagger-cli bundle ./builder-oapi.yaml -r -t yaml -o ./deploy/builder-oapi.yaml"
