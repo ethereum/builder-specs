@@ -23,6 +23,11 @@ post:
     "200":
       description: |
         The block was validated successfully and has been sent to the builder.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
     "400":
       description: The `SignedBeaconBlock` object is invalid
       content:
