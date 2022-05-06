@@ -1,6 +1,6 @@
 # Ethereum Builder Specification
 
-![CI](https://github.com/ethereum/builder-spec/workflows/CI/badge.svg)
+![CI](https://github.com/ethereum/builder-specs/workflows/CI/badge.svg)
 
 Collection of RESTful APIs provided by external builder nodes.
 
