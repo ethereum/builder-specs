@@ -6,7 +6,7 @@ The Builder API is an interface for consensus layer clients to source blocks
 built by external entities.
 
 In this repository:
-* [Specification][oas-spec]
+* [API specification][oas-spec]
 * [Additional definitions][spec]
 
 ### Why?
@@ -41,13 +41,26 @@ multiplexers. Please see their respective repositories for more information:
 * [`mev-boost`][mev-boost]
 * [`mev-boost-rs`][mev-boost-rs]
 
-## Render API Schema
+## Contributing
 
-To render spec in browser, you will simply need a HTTP server to load
-the `index.html` file in root of the repo.
+The API specification is checked for lint errors before merge. 
+
+To run the linter locally, install it with:
+```console
+npm install -g @stoplight/spectral-cli@6.2.1
+```
+and then run it:
+```console
+spectral lint builder-oapi.yaml
+```
+
+### Render API Specification
+
+To render spec in browser, you will simply need an HTTP server to load the
+`index.html` file in root of the repo.
 
 For example:
-```
+```console
 python -m http.server 8080
 ```
 
@@ -60,19 +73,6 @@ definition" drop-down in the web UI.
 
 It may be neccessary to tick the "Disable Cache" box in their browser's
 developer tools to see changes after modifying the source. 
-
-## Contributing
-
-API spec is checked for lint errors before merge. 
-
-To run lint locally, install linter with
-```
-npm install -g @stoplight/spectral-cli@6.2.1
-```
-and run lint with
-```
-spectral lint builder-oapi.yaml
-```
 
 ## Releasing
 
