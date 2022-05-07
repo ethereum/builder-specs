@@ -12,8 +12,7 @@ post:
   tags:
     - Builder
   requestBody:
-    description: |
-      A `SignedBlindedBeaconBlock`.
+    description: A `SignedBlindedBeaconBlock`.
     required: true
     content:
       application/json:
@@ -26,8 +25,16 @@ post:
       content:
         application/json:
           schema:
-            oneOf:
-              - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
+            title: SubmitBlindedBlockResponse
+            type: object
+            properties:
+              version:
+                type: string
+                enum: [ bellatrix ]
+                example: "bellatrix"
+              data:
+                oneOf:
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
     "400":
       description: Error response.
       content:
