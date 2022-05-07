@@ -53,7 +53,7 @@ get:
                 example: "bellatrix"
               data:
                 oneOf:
-                 - $ref: '../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayloadHeader'
+                 - $ref: '../../builder-oapi.yaml#/components/schemas/SignedBuilderBid'
     "400":
       description: Error response.
       content:
