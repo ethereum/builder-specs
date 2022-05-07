@@ -1,6 +1,4 @@
 get:
-  tags:
-    - Builder
   operationId: "getHeader"
   summary: Get an `ExecutionPayloadHeader`.
   description: |
@@ -19,6 +17,8 @@ get:
     builder must return a header that moves `gas_limit` the maximum amount
     allowed under the rules of consensus (currently `parent.gas_limit +/-
     parent.gas_limit / 1024`).
+  tags:
+    - Builder
   parameters:
     - name: slot
       in: path
