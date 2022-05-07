@@ -10,7 +10,7 @@ get:
     Builder must immediately return the header that is able to pay
     `feeRecipient` the most. If the builder is unaware of `parent_hash`, it
     must error. If `pubkey` does not match the builder's expected proposer
-    `pubkey` for `slot, it must error. If the builder has not received a
+    `pubkey` for `slot`, it must error. If the builder has not received a
     validator registration associated with `pubkey`, it must error.
 
     When possibe, the builder must return a header with `gas_limit` equal to
@@ -33,7 +33,7 @@ get:
       schema:
         $ref: '../../builder-oapi.yaml#/components/schemas/Root'
     - name: pubkey
-      in: query
+      in: path
       required: true
       description: The validator's BLS public key.
       schema:

@@ -9,8 +9,8 @@ post:
     Builders should verify that `pubkey` corresponds to an active or pending
     validator, and that `signature` is valid under `pubkey`. Otherwise, builder
     must error. Requests with `timestamp` less than or equal to the previous
-    announcement must error. Requests with `timestamp` greater than 10 seconds
-    +/- the builder's local time must error.
+    announcement must error. Requests with `timestamp` more than 10 seconds in
+    the future must error.
   requestBody:
     description: An array of signed validator block building preferences.
     required: true
