@@ -1,6 +1,4 @@
 post:
-  tags:
-    - Builder
   operationId: "submitBlindedBlock"
   summary: Submit a signed blinded block.
   description: |
@@ -11,6 +9,8 @@ post:
 
     If the builder is not able to unblind the corresponding
     `ExecutionPayloadHeader`, it must error.
+  tags:
+    - Builder
   requestBody:
     description: |
       A `SignedBlindedBeaconBlock`.
