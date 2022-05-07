@@ -90,7 +90,7 @@ with real tag name from step 1.):
 {url: "https://github.com/ethereum/builder-apis/releases/download/<tag>/builder-oapi.yaml", name: "<tag>"},
 ```
 
-[ci]: https://ethresear.ch/t/mev-boost-merge-ready-flashbots-architecture/11177
+[ci]: https://github.com/ethereum/builder-specs/workflows/CI/badge.svg
 [oas-spec]: https://ethereum.github.io/builder-specs/
 [spec]: specs/README.md
 [pbs]: https://ethresear.ch/t/proposer-block-builder-separation-friendly-fee-market-designs/9725
