@@ -4,22 +4,27 @@ post:
   operationId: "registerValidator"
   summary: Register or update a validator's block building preferences.
   description: |
-    Registers a validator's preferred fee recipient and gas limit target.
+    Registers a validator's preferred fee recipient and gas limit.
+
+    Builders should verify that `pubkey` corresponds to an active or pending
+    validator, and that `signature` is valid under `pubkey`. Otherwise, builder
+    must error. Requests with `timestamp` less than or equal to the previous
+    announcement must error. Requests with `timestamp` greater than 10 seconds
+    +/- the builder's local time must error.
   requestBody:
-    description: |
-      The `SignedBeaconBlock` object composed of `BeaconBlock` object (produced
-      by beacon node) and validator signature.
+    description: An array of signed validator block building preferences.
     required: true
     content:
       application/json:
         schema:
-          oneOf:
-           - $ref: '../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration'
+          type: array
+          items:
+            $ref: '../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration'
   responses:
     "200":
-      description: Success response
+      description: Success response.
     "400":
-      description: The `SignedValidatorRegistration` is invalid.
+      description: Error response.
       content:
         application/json:
           schema:

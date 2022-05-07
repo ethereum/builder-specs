@@ -4,15 +4,16 @@ post:
   operationId: "submitBlindedBlock"
   summary: Submit a signed blinded block.
   description: |
-    Submits a `SignedBlindedBeaconBlock` to the builder, binding them to the
-    block. The builder is now able to unblind the transactions in the
+    Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
+    to the block. The builder is now able to unblind the transactions in
     `ExecutionPayloadHeader` without the possibility of the validator modifying
     them.
+
+    If the builder is not able to unblind the corresponding
+    `ExecutionPayloadHeader`, it must error.
   requestBody:
     description: |
-      The `SignedBlindedBeaconBlock` object composed of `BlindedBeaconBlock`
-      object (produced by beacon node with `ExecutionPayloadHeader` from
-      external builder) and validator signature.
+      A `SignedBlindedBeaconBlock`.
     required: true
     content:
       application/json:
@@ -21,15 +22,14 @@ post:
            - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
   responses:
     "200":
-      description: |
-        The block was validated successfully and has been sent to the builder.
+      description: Success response.
       content:
         application/json:
           schema:
             oneOf:
               - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
     "400":
-      description: The `SignedBeaconBlock` object is invalid
+      description: Error response.
       content:
         application/json:
           schema:
