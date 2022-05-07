@@ -31,13 +31,13 @@ get:
       required: true
       description: Hash of execution layer block the proposer will build on.
       schema:
-        $ref: '../../builder-oapi.yaml#/components/schemas/Root'
+        $ref: "../../builder-oapi.yaml#/components/schemas/Root"
     - name: pubkey
       in: path
       required: true
       description: The validator's BLS public key.
       schema:
-        $ref: '../../builder-oapi.yaml#/components/schemas/Pubkey'
+        $ref: "../../builder-oapi.yaml#/components/schemas/Pubkey"
   responses:
     "200":
       description: Success response.
@@ -53,7 +53,7 @@ get:
                 example: "bellatrix"
               data:
                 oneOf:
-                 - $ref: '../../builder-oapi.yaml#/components/schemas/SignedBuilderBid'
+                 - $ref: "../../builder-oapi.yaml#/components/schemas/SignedBuilderBid"
     "400":
       description: Error response.
       content:
@@ -66,4 +66,4 @@ get:
                 code: 400
                 message: "Unknown hash: missing parent hash"
     "500":
-      $ref: '../../builder-oapi.yaml#/components/responses/InternalError'
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

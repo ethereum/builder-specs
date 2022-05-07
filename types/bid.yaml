@@ -3,13 +3,13 @@ BuilderBid:
   description: "The `BuilderBid` object from the Builder API spec."
   properties:
     header:
-      $ref: '../beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader'
+      $ref: "../beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader"
       description: "`ExecutionPayloadHeader` for validator to sign."
     value:
       $ref: "../beacon-apis/types/primitive.yaml#/Uint64"
       description: "Payment in wei that will be paid to the feeRecipient account."
     pubkey:
-      $ref: '../beacon-apis/types/primitive.yaml#/Pubkey'
+      $ref: "../beacon-apis/types/primitive.yaml#/Pubkey"
       description: "BLS public key of builder."
 
 SignedBuilderBid:

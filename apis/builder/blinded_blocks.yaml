@@ -39,4 +39,4 @@ post:
                   code: 400
                   message: "Invalid block: missing signature"
     "500":
-      $ref: '../../builder-oapi.yaml#/components/responses/InternalError'
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
