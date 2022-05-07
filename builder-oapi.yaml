@@ -40,14 +40,12 @@ tags:
   - name: Builder
     description: Set of endpoints to interact with an external block builder.
 paths:
-
   /eth/v1/builder/validators:
     $ref: "./apis/builder/validators.yaml"
   /eth/v1/builder/{slot}/{parent_hash}/header:
     $ref: "./apis/builder/header.yaml"
   /eth/v1/builder/blinded_blocks:
     $ref: "./apis/builder/blinded_blocks.yaml"
-
 
 components:
   schemas:
@@ -61,13 +59,13 @@ components:
       $ref: './beacon-apis/types/http.yaml#/ErrorMessage'
     Bellatrix.ExecutionPayload:
       $ref: './beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayload'
-    Bellatrix.ExecutionPayloadHeader:
-      $ref: './beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader'
     Bellatrix.SignedBlindedBeaconBlock:
       $ref: './beacon-apis/types/bellatrix/block.yaml#/Bellatrix/SignedBlindedBeaconBlock'
 
     SignedValidatorRegistration:
       $ref: './types/registration.yaml#/SignedValidatorRegistration'
+    SignedBuilderBid:
+      $ref: './types/bid.yaml#/SignedBuilderBid'
 
   responses:
     InternalError:
