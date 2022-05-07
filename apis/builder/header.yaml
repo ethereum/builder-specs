@@ -2,49 +2,60 @@ get:
   tags:
     - Builder
   operationId: "getHeader"
-  summary: Get an ExecutionPayloadHeader.
+  summary: Get an `ExecutionPayloadHeader`.
   description: |
-    Requests a builder node to produce a valid execution payload header, which can integrated into a blinded beacon block and signed.
+    Requests a builder node to produce a valid execution payload header, which
+    can integrated into a blinded beacon block and signed.
 
-    Metadata in the response indicates the type of block produced, and the supported types of block
-    will be added to as forks progress.
+    Builder must immediately return the header that is able to pay
+    `feeRecipient` the most. If the builder is unaware of `parent_hash`, it
+    must error. If `pubkey` does not match the builder's expected proposer
+    `pubkey` for `slot, it must error. If the builder has not received a
+    validator registration associated with `pubkey`, it must error.
+
+    When possibe, the builder must return a header with `gas_limit` equal to
+    proposer's registered value. If this isn't possible due to the large
+    difference between `parent.gas_limit` and the preferred `gas_limit`, the
+    builder must return a header that moves `gas_limit` the maximum amount
+    allowed under the rules of consensus (currently `parent.gas_limit +/-
+    parent.gas_limit / 1024`).
   parameters:
     - name: slot
       in: path
       required: true
-      description: "The slot for which the block should be proposed."
+      description: The slot for which the block should be proposed.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
     - name: parent_hash
       in: path
       required: true
-      description: "Hash of execution layer block the proposer will use as the proposal's parent."
+      description: Hash of execution layer block the proposer will build on.
       schema:
         $ref: '../../builder-oapi.yaml#/components/schemas/Root'
     - name: pubkey
       in: query
       required: true
-      description: "The validator's BLS public key."
+      description: The validator's BLS public key.
       schema:
         $ref: '../../builder-oapi.yaml#/components/schemas/Pubkey'
   responses:
     "200":
-      description: Success response
+      description: Success response.
       content:
         application/json:
           schema:
-            title: ProduceBlockV2Response
+            title: GetHeaderResponse
             type: object
             properties:
               version:
                 type: string
-                enum: [ phase0, altair, bellatrix ]
-                example: "phase0"
+                enum: [ bellatrix ]
+                example: "bellatrix"
               data:
                 oneOf:
                  - $ref: '../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayloadHeader'
     "400":
-      description: "Invalid block production request"
+      description: Error response.
       content:
         application/json:
           schema:
@@ -53,6 +64,6 @@ get:
             InvalidRequest:
               value:
                 code: 400
-                message: "Invalid request to produce a block"
+                message: "Unknown hash: missing parent hash"
     "500":
       $ref: '../../builder-oapi.yaml#/components/responses/InternalError'
