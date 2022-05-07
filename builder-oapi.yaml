@@ -21,7 +21,7 @@ info:
         format (_e.g._ from a string to an array) without an increase in the
         version number
 
-    Note that it is possible for a field to be added to an endpoint"s data or
+    Note that it is possible for a field to be added to an endpoint's data or
     metadata without an increase in the version number.
   version: "dev"
   contact:

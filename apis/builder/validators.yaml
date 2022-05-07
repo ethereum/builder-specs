@@ -19,7 +19,7 @@ post:
         schema:
           type: array
           items:
-            $ref: '../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration'
+            $ref: "../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration"
   responses:
     "200":
       description: Success response.
@@ -34,4 +34,4 @@ post:
                   code: 400
                   message: "Unknown validator: 0x933ad9491b62059dd065b560d256d8957a8c402cc6e8d8ee7290ae11e8f7329267a8811c397529dac52ae1342ba58c95"
     "500":
-      $ref: '../../builder-oapi.yaml#/components/responses/InternalError'
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
