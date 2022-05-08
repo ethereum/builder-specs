@@ -3,8 +3,17 @@ BuilderBid:
   description: "The `BuilderBid` object from the Builder API spec."
   properties:
     header:
-      $ref: "../beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader"
+      title: VersionedExecutionPayloadHeader
+      type: object
       description: "`ExecutionPayloadHeader` for validator to sign."
+      properties:
+        version:
+          type: string
+          enum: [ bellatrix ]
+          example: "bellatrix"
+        data:
+          oneOf:
+            - $ref: "../beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader"
     value:
       $ref: "../beacon-apis/types/primitive.yaml#/Uint64"
       description: "Payment in wei that will be paid to the feeRecipient account."
