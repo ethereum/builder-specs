@@ -35,8 +35,8 @@ servers:
   - url: "{server_url}"
     variables:
       server_url:
-        description: "Builder node API url"
-        default: "???"
+        description: "Builder node URL"
+        default: "http://localhost:18550"
 
 tags:
   - name: Builder
