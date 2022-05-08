@@ -1,6 +1,6 @@
 post:
   operationId: "submitBlindedBlock"
-  summary: Submit a signed blinded block.
+  summary: Submit a signed blinded block and get execution payload.
   description: |
     Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
     to the block. The builder is now able to unblind the transactions in
