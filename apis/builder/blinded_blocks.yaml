@@ -19,6 +19,10 @@ post:
         schema:
           oneOf:
             - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
+        examples:
+          bellatrix:
+            $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
+
   responses:
     "200":
       description: Success response.
@@ -35,6 +39,9 @@ post:
               data:
                 oneOf:
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
+          examples:
+            bellatrix:
+              $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"
     "400":
       description: Error response.
       content:
