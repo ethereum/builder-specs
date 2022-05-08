@@ -35,7 +35,7 @@ This design is based on the original proposal for trusted external builders:
 
 #### Builder software
 
-Users will typically connect thier CL clients to builders with builder
+Users will typically connect their CL clients to builders with builder
 multiplexers. Please see their respective repositories for more information:
 
 * [`mev-boost`][mev-boost]
