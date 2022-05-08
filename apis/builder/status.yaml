@@ -1,0 +1,10 @@
+get:
+  operationId: "status"
+  summary: Status endpoint to check if mev-boost is alive.
+  description: |
+    Endpoint for checking whether mev-boost is running.
+  tags:
+    - Builder
+  responses:
+    "200":
+      description: Success response.

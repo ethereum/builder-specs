@@ -48,6 +48,8 @@ paths:
     $ref: "./apis/builder/header.yaml"
   /eth/v1/builder/blinded_blocks:
     $ref: "./apis/builder/blinded_blocks.yaml"
+  /eth/v1/builder/status:
+    $ref: "./apis/builder/status.yaml"
 
 components:
   schemas:
