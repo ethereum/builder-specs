@@ -18,7 +18,7 @@ post:
       application/json:
         schema:
           oneOf:
-           - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
   responses:
     "200":
       description: Success response.

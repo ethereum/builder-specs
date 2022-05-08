@@ -44,16 +44,7 @@ get:
       content:
         application/json:
           schema:
-            title: GetHeaderResponse
-            type: object
-            properties:
-              version:
-                type: string
-                enum: [ bellatrix ]
-                example: "bellatrix"
-              data:
-                oneOf:
-                 - $ref: "../../builder-oapi.yaml#/components/schemas/SignedBuilderBid"
+            $ref: "../../builder-oapi.yaml#/components/schemas/SignedBuilderBid"
     "400":
       description: Error response.
       content:
