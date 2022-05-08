@@ -1,10 +1,11 @@
 get:
   operationId: "status"
-  summary: Status endpoint to check if mev-boost is alive.
-  description: |
-    Endpoint for checking whether mev-boost is running.
+  summary: Check if builder is healthy.
+  description: Checks if builder can respond to requests normally.
   tags:
     - Builder
   responses:
     "200":
       description: Success response.
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
