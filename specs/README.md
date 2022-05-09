@@ -1,22 +1,34 @@
-# Builder Specification
+# Builder API
 
-This document specifies the behaviour of external block builders not already
-covered in the corresponding API schema.
+## Table of Contents
 
-## Structures
+* [Containers](#containers)
+    * [Independently Versioned](#independentlyversioned)
+        * [`ValidatorRegistrationV1`](#validatorregistrationv1)
+        * [`SignedValidatorRegistrationV1`](#signedvalidatorregistrationv1)
+    * [Fork Versioned](#forkversioned)
+        * [Bellatrix](#forkversioned)
+            * [`BuilderBid`](#builderbid)
+            * [`SignedBuilderBid`](#signedbuilderbid)
+            * [`BlindedBeaconBlockBody`](#blindedbeaconblockbody)
+            * [`BlindedBeaconBlock`](#blindedbeaconblock)
+            * [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock)
+    * [Signing](#signing)
+* [Endpoints](#endpoints)
 
-### SSZ Objects
+## Containers
 
 Consider the following definitions supplementary to the definitions in
-[`consensus-specs`][consensus-specs].
+[`consensus-specs`][consensus-specs]. For information on how containers are
+signed, see [Signing](#signing).
 
-#### Independently Versioned
+### Independently Versioned
 
 Some objects can be updated independently of the `consensus-specs`, because
 they originate soley from this specification. The objects are postfixed with
 `VX` to denote their revision.
 
-##### `ValidatorRegistrationV1`
+#### `ValidatorRegistrationV1`
 
 ```python
 class ValidatorRegistrationV1(Container):
@@ -26,7 +38,7 @@ class ValidatorRegistrationV1(Container):
     pubkey: BLSPubkey
 ```
 
-###### `SignedValidatorRegistrationV1`
+#### `SignedValidatorRegistrationV1`
 
 ```python
 class SignedValidatorRegistrationV1(Container):
@@ -34,13 +46,13 @@ class SignedValidatorRegistrationV1(Container):
     signature: BLSSignature
 ```
 
-#### Fork Versioned
+### Fork Versioned
 
 Other objects are derivatives of `consensus-specs` types and depend on the
 latest canonical fork. These objects are namespaced by their fork (e.g.
 Bellatrix).
 
-##### Bellatrix
+#### Bellatrix
 
 ##### `BuilderBid`
 
@@ -51,7 +63,7 @@ class BuilderBid(Container):
     pubkey: BLSPubkey
 ```
 
-###### `SignedBuilderBid`
+##### `SignedBuilderBid`
 
 ```python
 class SignedBuilderBid(Container):
@@ -59,26 +71,7 @@ class SignedBuilderBid(Container):
     signature: BLSSignature
 ```
 
-###### `SignedBlindedBeaconBlock`
-
-```python
-class SignedBlindedBeaconBlock(Container):
-    message: BlindedBeaconBlock
-    signature: BLSSignature
-```
-
-###### `BlindedBeaconBlock`
-
-```python
-class BlindedBeaconBlock(Container):
-    slot: Slot
-    proposer_index: ValidatorIndex
-    parent_root: Root
-    state_root: Root
-    body: BlindedBeaconBlockBody
-```
-
-###### `BlindedBeaconBlockBody`
+##### `BlindedBeaconBlockBody`
 
 ```python
 class BlindedBeaconBlockBody(Container):
@@ -94,7 +87,24 @@ class BlindedBeaconBlockBody(Container):
     execution_payload_header: ExecutionPayloadHeader
 ```
 
-## Routines
+##### `BlindedBeaconBlock`
+
+```python
+class BlindedBeaconBlock(Container):
+    slot: Slot
+    proposer_index: ValidatorIndex
+    parent_root: Root
+    state_root: Root
+    body: BlindedBeaconBlockBody
+```
+
+##### `SignedBlindedBeaconBlock`
+
+```python
+class SignedBlindedBeaconBlock(Container):
+    message: BlindedBeaconBlock
+    signature: BLSSignature
+```
 
 ### Signing
 
@@ -108,11 +118,18 @@ There are two types of data to sign over in the Builder API:
 * Builder API messages, e.g. validator registration, which should compute the
   signing root using [`compute_signing_root`][compute-root] and the domain
   `DomainType('0xXXXXXXXX')` (TODO: get a proper domain).
-
 As `compute_signing_root` takes `SSZObject` as input, client software should
 convert in-protocol messages to their SSZ representation to compute the signing
 root and Builder API messages to the SSZ representations defined
-[above](#sszobjects).
+[above](#definitions).
+
+
+## Endpoints
+
+Builder API endpoints are defined in `builder-oapi.yaml` in the root of the
+repository. A rendered version can be viewed at
+https://ethereum.github.io/builder-specs/.
+
 
 [consensus-specs]: https://github.com/ethereum/consensus-specs
 [bls]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#bls-signatures
