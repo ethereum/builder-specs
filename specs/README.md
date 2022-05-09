@@ -47,7 +47,7 @@ class BuilderBidV1(Container):
 
 ```python
 class SignedBuilderBidV1(Container):
-    message: BlindedBeaconBlock
+    message: BuilderBidV1
     signature: BLSSignature
 ```
 
