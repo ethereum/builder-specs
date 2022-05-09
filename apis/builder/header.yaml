@@ -3,7 +3,7 @@ get:
   summary: Get an execution payload header.
   description: |
     Requests a builder node to produce a valid execution payload header, which
-    can integrated into a blinded beacon block and signed.
+    can be integrated into a blinded beacon block and signed.
 
     Builder must immediately return the header that is able to pay
     `feeRecipient` the most. If the builder is unaware of `parent_hash`, it
