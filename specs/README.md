@@ -121,7 +121,7 @@ There are two types of data to sign over in the Builder API:
 As `compute_signing_root` takes `SSZObject` as input, client software should
 convert in-protocol messages to their SSZ representation to compute the signing
 root and Builder API messages to the SSZ representations defined
-[above](#definitions).
+[above](#containers).
 
 
 ## Endpoints
