@@ -20,8 +20,8 @@ they originate soley from this specification. The objects are postfixed with
 
 ```python
 class ValidatorRegistrationV1(Container):
-    feeRecipient: Bytes20
-    gasLimit: uint64
+    fee_recipient: Bytes20
+    gas_limit: uint64
     timestamp: uint64
     pubkey: BLSPubkey
 ```
