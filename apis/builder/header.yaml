@@ -53,7 +53,7 @@ get:
                 example: "bellatrix"
               data:
                 oneOf:
-                 - $ref: "../../builder-oapi.yaml#/components/schemas/SignedBuilderBid"
+                 - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBuilderBid"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBuilderBid"

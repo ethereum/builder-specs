@@ -34,23 +34,6 @@ class SignedValidatorRegistrationV1(Container):
     signature: BLSSignature
 ```
 
-##### `BuilderBidV1`
-
-```python
-class BuilderBidV1(Container):
-    header: ExecutionPayloadHeader
-    value: uint256
-    pubkey: BLSPubkey
-```
-
-###### `SignedBuilderBidV1`
-
-```python
-class SignedBuilderBidV1(Container):
-    message: BuilderBidV1
-    signature: BLSSignature
-```
-
 #### Fork Versioned
 
 Other objects are derivatives of `consensus-specs` types and depend on the
@@ -58,6 +41,23 @@ latest canonical fork. These objects are namespaced by their fork (e.g.
 Bellatrix).
 
 ##### Bellatrix
+
+##### `BuilderBid`
+
+```python
+class BuilderBid(Container):
+    header: ExecutionPayloadHeader
+    value: uint256
+    pubkey: BLSPubkey
+```
+
+###### `SignedBuilderBid`
+
+```python
+class SignedBuilderBid(Container):
+    message: BuilderBid
+    signature: BLSSignature
+```
 
 ###### `SignedBlindedBeaconBlock`
 

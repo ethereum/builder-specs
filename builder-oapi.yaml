@@ -66,10 +66,11 @@ components:
     Bellatrix.SignedBlindedBeaconBlock:
       $ref: "./beacon-apis/types/bellatrix/block.yaml#/Bellatrix/SignedBlindedBeaconBlock"
 
+    Bellatrix.SignedBuilderBid:
+      $ref: "./types/bellatrix/bid.yaml#/Bellatrix/SignedBuilderBid"
     SignedValidatorRegistration:
       $ref: "./types/registration.yaml#/SignedValidatorRegistration"
-    SignedBuilderBid:
-      $ref: "./types/bid.yaml#/SignedBuilderBid"
+
 
   responses:
     InternalError:
