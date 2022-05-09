@@ -10,6 +10,12 @@ covered in the corresponding API schema.
 Consider the following definitions supplementary to the definitions in
 [`consensus-specs`][consensus-specs].
 
+#### Independently Versioned
+
+Some objects can be updated independently of the `consensus-specs`, because
+they originate soley from this specification. The objects are postfixed with
+`VX` to denote their revision.
+
 ##### `ValidatorRegistrationV1`
 
 ```python
@@ -20,6 +26,14 @@ class ValidatorRegistrationV1(Container):
     pubkey: BLSPubkey
 ```
 
+###### `SignedValidatorRegistrationV1`
+
+```python
+class SignedValidatorRegistrationV1(Container):
+    message: ValidatorRegistrationV1
+    signature: BLSSignature
+```
+
 ##### `BuilderBidV1`
 
 ```python
@@ -27,6 +41,30 @@ class BuilderBidV1(Container):
     header: ExecutionPayloadHeader
     value: uint256
     pubkey: BLSPubkey
+```
+
+###### `SignedBuilderBidV1`
+
+```python
+class SignedBuilderBidV1(Container):
+    message: BlindedBeaconBlock
+    signature: BLSSignature
+```
+
+#### Fork Versioned
+
+Other objects are derivatives of `consensus-specs` types and depend on the
+latest canonical fork. These objects are namespaced by their fork (e.g.
+Bellatrix).
+
+##### Bellatrix
+
+###### `SignedBlindedBeaconBlock`
+
+```python
+class SignedBlindedBeaconBlock(Container):
+    message: BlindedBeaconBlock
+    signature: BLSSignature
 ```
 
 ###### `BlindedBeaconBlock`
