@@ -11,7 +11,7 @@ get:
     `pubkey` for `slot`, it must error. If the builder has not received a
     validator registration associated with `pubkey`, it must error.
 
-    When possibe, the builder must return a header with `gas_limit` equal to
+    When possible, the builder must return a header with `gas_limit` equal to
     proposer's registered value. If this isn't possible due to the large
     difference between `parent.gas_limit` and the preferred `gas_limit`, the
     builder must return a header that moves `gas_limit` the maximum amount
