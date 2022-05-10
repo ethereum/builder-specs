@@ -69,7 +69,7 @@ components:
     Bellatrix.SignedBuilderBid:
       $ref: "./types/bellatrix/bid.yaml#/Bellatrix/SignedBuilderBid"
     SignedValidatorRegistration:
-      $ref: "./types/registration.yaml#/SignedValidatorRegistration"
+      $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistration"
 
 
   responses:
