@@ -61,42 +61,30 @@ paths:
           application/json:
             schema:
               type: object
-              description: |
-                The `SignedValidatorRegistration` object from the Builder API spec.
-
-                Note, this type will be removed once it is included in the Beacon API.
+              description: The `SignedValidatorRegistration` object from the Builder API specification.
               properties:
                 message:
                   type: object
-                  description: |
-                    The `ValidatorRegistration` object from the Builder API spec.
-
-                    Note, this type will be removed once it is included in the Beacon API.
+                  description: The `ValidatorRegistration` object from the Builder API specification.
                   properties:
                     fee_recipient:
-                      allOf:
-                        - type: string
-                          description: An address on the execution (Ethereum 1) network.
-                          example: '0xabcf8e0d4e9587369b2301d0790347320302cc09'
-                          pattern: '^0x[a-fA-F0-9]{40}$'
-                        - description: Address to receive fees from the block.
+                      description: Address to receive fees from the block.
+                      type: string
+                      example: '0xabcf8e0d4e9587369b2301d0790347320302cc09'
+                      pattern: '^0x[a-fA-F0-9]{40}$'
                     gas_limit:
-                      allOf:
-                        - type: string
-                          example: '1'
-                        - description: Gas limit the validator desires to target.
+                      description: Preferred gas limit of validator.
+                      type: string
+                      example: '1'
                     timestamp:
-                      allOf:
-                        - type: string
-                          example: '1'
-                        - description: Unix timestamp of registration.
+                      description: Unix timestamp of registration.
+                      type: string
+                      example: '1'
                     pubkey:
-                      allOf:
-                        - type: string
-                          pattern: '^0x[a-fA-F0-9]{96}$'
-                          description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
-                          example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
-                        - description: BLS public key of validator.
+                      description: BLS public key of validator.
+                      type: string
+                      pattern: '^0x[a-fA-F0-9]{96}$'
+                      example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                 signature:
                   type: string
                   pattern: '^0x[a-fA-F0-9]{192}$'
@@ -224,7 +212,7 @@ paths:
                                 description: '`ExecutionPayloadHeader` to use in block proposal.'
                                 allOf:
                                   - type: object
-                                    description: 'The [`ExecutionPayload`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.9/specs/bellatrix) object from the Eth2.0 Bellatrix spec.'
+                                    description: 'The [`ExecutionPayload`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#executionpayload) object from the CL Bellatrix spec.'
                                     properties:
                                       parent_hash:
                                         type: string
@@ -286,9 +274,9 @@ paths:
                                 example: '1'
                                 description: Payment in wei that will be paid to the `fee_recipient` account.
                               pubkey:
+                                description: BLS public key of builder.
                                 type: string
                                 pattern: '^0x[a-fA-F0-9]{96}$'
-                                description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                 example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                           signature:
                             type: string
@@ -386,10 +374,10 @@ paths:
             schema:
               oneOf:
                 - type: object
-                  description: 'A variant of the the the [`SignedBeaconBlock`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#signedbeaconblock) object envelope from the Eth2.0 Bellatrix spec, which contains a `BlindedBeaconBlock` rather than a `BeaconBlock`.'
+                  description: 'A variant of the the the [`SignedBeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#signedbeaconblock) object envelope from the CL Bellatrix spec, which contains a `BlindedBeaconBlock` rather than a `BeaconBlock`.'
                   properties:
                     message:
-                      description: 'A variant of the the [`BeaconBlock`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblock) object from the Eth2.0 Bellatrix spec, which contains a `BlindedBeaconBlockBody` rather than a `BeaconBlockBody`.'
+                      description: 'A variant of the the [`BeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblock) object from the CL Bellatrix spec, which contains a `BlindedBeaconBlockBody` rather than a `BeaconBlockBody`.'
                       allOf:
                         - type: object
                           properties:
@@ -418,10 +406,10 @@ paths:
                         - type: object
                           properties:
                             body:
-                              description: 'A variant of the [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblockbody) object from the Eth2.0 Bellatrix spec, which contains a transactions root rather than a full transactions list.'
+                              description: 'A variant of the [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblockbody) object from the CL Bellatrix spec, which contains a transactions root rather than a full transactions list.'
                               allOf:
                                 - type: object
-                                  description: 'The [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblockbody) object from the Eth2.0 Bellatrix spec.'
+                                  description: 'The [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblockbody) object from the CL Bellatrix spec.'
                                   properties:
                                     randao_reveal:
                                       allOf:
@@ -431,7 +419,7 @@ paths:
                                         - description: The RanDAO reveal value provided by the validator.
                                     eth1_data:
                                       type: object
-                                      description: 'The [`Eth1Data`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#eth1data) object from the Eth2.0 spec.'
+                                      description: 'The [`Eth1Data`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#eth1data) object from the CL spec.'
                                       properties:
                                         deposit_root:
                                           allOf:
@@ -457,14 +445,14 @@ paths:
                                       type: array
                                       items:
                                         type: object
-                                        description: 'The [`ProposerSlashing`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#proposerslashing) object from the Eth2.0 spec.'
+                                        description: 'The [`ProposerSlashing`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#proposerslashing) object from the CL spec.'
                                         properties:
                                           signed_header_1:
                                             type: object
-                                            description: 'The [`SignedBeaconBlockHeader`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblockheader) object envelope from the Eth2.0 spec.'
+                                            description: 'The [`SignedBeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblockheader) object envelope from the CL spec.'
                                             properties:
                                               message:
-                                                description: 'The [`BeaconBlockHeader`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblockheader) object from the Eth2.0 spec.'
+                                                description: 'The [`BeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblockheader) object from the CL spec.'
                                                 allOf:
                                                   - type: object
                                                     properties:
@@ -504,10 +492,10 @@ paths:
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
                                           signed_header_2:
                                             type: object
-                                            description: 'The [`SignedBeaconBlockHeader`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblockheader) object envelope from the Eth2.0 spec.'
+                                            description: 'The [`SignedBeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblockheader) object envelope from the CL spec.'
                                             properties:
                                               message:
-                                                description: 'The [`BeaconBlockHeader`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblockheader) object from the Eth2.0 spec.'
+                                                description: 'The [`BeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblockheader) object from the CL spec.'
                                                 allOf:
                                                   - type: object
                                                     properties:
@@ -549,11 +537,11 @@ paths:
                                       type: array
                                       items:
                                         type: object
-                                        description: 'The [`AttesterSlashing`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/core/0_beacon-chain.md#attesterslashing) object from the Eth2.0 spec.'
+                                        description: 'The [`AttesterSlashing`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/core/0_beacon-chain.md#attesterslashing) object from the CL spec.'
                                         properties:
                                           attestation_1:
                                             type: object
-                                            description: 'The [`IndexedAttestation`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#indexedattestation) object from the Eth2.0 spec.'
+                                            description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#indexedattestation) object from the CL spec.'
                                             properties:
                                               attesting_indices:
                                                 type: array
@@ -570,7 +558,7 @@ paths:
                                                   - description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                               data:
                                                 type: object
-                                                description: 'The [`AttestationData`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the Eth2.0 spec.'
+                                                description: 'The [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the CL spec.'
                                                 properties:
                                                   slot:
                                                     type: string
@@ -586,7 +574,7 @@ paths:
                                                       - description: LMD GHOST vote.
                                                   source:
                                                     type: object
-                                                    description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                                    description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                                     properties:
                                                       epoch:
                                                         type: string
@@ -597,7 +585,7 @@ paths:
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                                   target:
                                                     type: object
-                                                    description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                                    description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                                     properties:
                                                       epoch:
                                                         type: string
@@ -608,7 +596,7 @@ paths:
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                           attestation_2:
                                             type: object
-                                            description: 'The [`IndexedAttestation`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#indexedattestation) object from the Eth2.0 spec.'
+                                            description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#indexedattestation) object from the CL spec.'
                                             properties:
                                               attesting_indices:
                                                 type: array
@@ -625,7 +613,7 @@ paths:
                                                   - description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                               data:
                                                 type: object
-                                                description: 'The [`AttestationData`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the Eth2.0 spec.'
+                                                description: 'The [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the CL spec.'
                                                 properties:
                                                   slot:
                                                     type: string
@@ -641,7 +629,7 @@ paths:
                                                       - description: LMD GHOST vote.
                                                   source:
                                                     type: object
-                                                    description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                                    description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                                     properties:
                                                       epoch:
                                                         type: string
@@ -652,7 +640,7 @@ paths:
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                                   target:
                                                     type: object
-                                                    description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                                    description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                                     properties:
                                                       epoch:
                                                         type: string
@@ -665,7 +653,7 @@ paths:
                                       type: array
                                       items:
                                         type: object
-                                        description: 'The [`Attestation`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestation) object from the Eth2.0 spec.'
+                                        description: 'The [`Attestation`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestation) object from the CL spec.'
                                         properties:
                                           aggregation_bits:
                                             type: string
@@ -680,7 +668,7 @@ paths:
                                               - description: BLS aggregate signature.
                                           data:
                                             type: object
-                                            description: 'The [`AttestationData`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the Eth2.0 spec.'
+                                            description: 'The [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the CL spec.'
                                             properties:
                                               slot:
                                                 type: string
@@ -696,7 +684,7 @@ paths:
                                                   - description: LMD GHOST vote.
                                               source:
                                                 type: object
-                                                description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                                description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                                 properties:
                                                   epoch:
                                                     type: string
@@ -707,7 +695,7 @@ paths:
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
                                               target:
                                                 type: object
-                                                description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                                description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                                 properties:
                                                   epoch:
                                                     type: string
@@ -720,7 +708,7 @@ paths:
                                       type: array
                                       items:
                                         type: object
-                                        description: 'The [`Deposit`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#deposit) object from the Eth2.0 spec.'
+                                        description: 'The [`Deposit`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#deposit) object from the CL spec.'
                                         properties:
                                           proof:
                                             type: array
@@ -734,7 +722,7 @@ paths:
                                             maxItems: 32
                                           data:
                                             type: object
-                                            description: 'The [`DepositData`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#depositdata) object from the Eth2.0 spec.'
+                                            description: 'The [`DepositData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#depositdata) object from the CL spec.'
                                             properties:
                                               pubkey:
                                                 type: string
@@ -762,11 +750,11 @@ paths:
                                       type: array
                                       items:
                                         type: object
-                                        description: 'The [`SignedVoluntaryExit`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedvoluntaryexit) object from the Eth2.0 spec.'
+                                        description: 'The [`SignedVoluntaryExit`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedvoluntaryexit) object from the CL spec.'
                                         properties:
                                           message:
                                             type: object
-                                            description: 'The [`VoluntaryExit`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#voluntaryexit) object from the Eth2.0 spec.'
+                                            description: 'The [`VoluntaryExit`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#voluntaryexit) object from the CL spec.'
                                             properties:
                                               epoch:
                                                 allOf:
@@ -784,7 +772,7 @@ paths:
                                             example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
                                     sync_aggregate:
                                       type: object
-                                      description: 'The [`SyncAggregate`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.0-alpha.1/specs/altair/beacon-chain.md#syncaggregate) object from the Eth2.0 Altair spec.'
+                                      description: 'The [`SyncAggregate`](https://github.com/ethereum/consensus-specs/blob/v1.1.0-alpha.1/specs/altair/beacon-chain.md#syncaggregate) object from the CL Altair spec.'
                                       properties:
                                         sync_committee_bits:
                                           type: string
@@ -798,9 +786,10 @@ paths:
                                 - type: object
                                   properties:
                                     execution_payload_header:
+                                      description: 'The [`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#executionpayloadheader) object from the CL Bellatrix spec.'
                                       allOf:
                                         - type: object
-                                          description: 'The [`ExecutionPayload`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.9/specs/bellatrix) object from the Eth2.0 Bellatrix spec.'
+                                          description: 'The [`ExecutionPayload`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#executionpayload) object from the CL Bellatrix spec.'
                                           properties:
                                             parent_hash:
                                               type: string
@@ -985,7 +974,7 @@ paths:
                     oneOf:
                       - allOf:
                           - type: object
-                            description: 'The [`ExecutionPayload`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.9/specs/bellatrix) object from the Eth2.0 Bellatrix spec.'
+                            description: 'The [`ExecutionPayload`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#executionpayload) object from the CL Bellatrix spec.'
                             properties:
                               parent_hash:
                                 type: string
@@ -1176,7 +1165,7 @@ components:
     Bellatrix.ExecutionPayload:
       allOf:
         - type: object
-          description: 'The [`ExecutionPayload`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.9/specs/bellatrix) object from the Eth2.0 Bellatrix spec.'
+          description: 'The [`ExecutionPayload`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#executionpayload) object from the CL Bellatrix spec.'
           properties:
             parent_hash:
               type: string
@@ -1240,10 +1229,10 @@ components:
               maxItems: 1048576
     Bellatrix.SignedBlindedBeaconBlock:
       type: object
-      description: 'A variant of the the the [`SignedBeaconBlock`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#signedbeaconblock) object envelope from the Eth2.0 Bellatrix spec, which contains a `BlindedBeaconBlock` rather than a `BeaconBlock`.'
+      description: 'A variant of the the the [`SignedBeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#signedbeaconblock) object envelope from the CL Bellatrix spec, which contains a `BlindedBeaconBlock` rather than a `BeaconBlock`.'
       properties:
         message:
-          description: 'A variant of the the [`BeaconBlock`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblock) object from the Eth2.0 Bellatrix spec, which contains a `BlindedBeaconBlockBody` rather than a `BeaconBlockBody`.'
+          description: 'A variant of the the [`BeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblock) object from the CL Bellatrix spec, which contains a `BlindedBeaconBlockBody` rather than a `BeaconBlockBody`.'
           allOf:
             - type: object
               properties:
@@ -1272,10 +1261,10 @@ components:
             - type: object
               properties:
                 body:
-                  description: 'A variant of the [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblockbody) object from the Eth2.0 Bellatrix spec, which contains a transactions root rather than a full transactions list.'
+                  description: 'A variant of the [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblockbody) object from the CL Bellatrix spec, which contains a transactions root rather than a full transactions list.'
                   allOf:
                     - type: object
-                      description: 'The [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblockbody) object from the Eth2.0 Bellatrix spec.'
+                      description: 'The [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#beaconblockbody) object from the CL Bellatrix spec.'
                       properties:
                         randao_reveal:
                           allOf:
@@ -1285,7 +1274,7 @@ components:
                             - description: The RanDAO reveal value provided by the validator.
                         eth1_data:
                           type: object
-                          description: 'The [`Eth1Data`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#eth1data) object from the Eth2.0 spec.'
+                          description: 'The [`Eth1Data`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#eth1data) object from the CL spec.'
                           properties:
                             deposit_root:
                               allOf:
@@ -1311,14 +1300,14 @@ components:
                           type: array
                           items:
                             type: object
-                            description: 'The [`ProposerSlashing`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#proposerslashing) object from the Eth2.0 spec.'
+                            description: 'The [`ProposerSlashing`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#proposerslashing) object from the CL spec.'
                             properties:
                               signed_header_1:
                                 type: object
-                                description: 'The [`SignedBeaconBlockHeader`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblockheader) object envelope from the Eth2.0 spec.'
+                                description: 'The [`SignedBeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblockheader) object envelope from the CL spec.'
                                 properties:
                                   message:
-                                    description: 'The [`BeaconBlockHeader`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblockheader) object from the Eth2.0 spec.'
+                                    description: 'The [`BeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblockheader) object from the CL spec.'
                                     allOf:
                                       - type: object
                                         properties:
@@ -1358,10 +1347,10 @@ components:
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
                               signed_header_2:
                                 type: object
-                                description: 'The [`SignedBeaconBlockHeader`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblockheader) object envelope from the Eth2.0 spec.'
+                                description: 'The [`SignedBeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedbeaconblockheader) object envelope from the CL spec.'
                                 properties:
                                   message:
-                                    description: 'The [`BeaconBlockHeader`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblockheader) object from the Eth2.0 spec.'
+                                    description: 'The [`BeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#beaconblockheader) object from the CL spec.'
                                     allOf:
                                       - type: object
                                         properties:
@@ -1403,11 +1392,11 @@ components:
                           type: array
                           items:
                             type: object
-                            description: 'The [`AttesterSlashing`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/core/0_beacon-chain.md#attesterslashing) object from the Eth2.0 spec.'
+                            description: 'The [`AttesterSlashing`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/core/0_beacon-chain.md#attesterslashing) object from the CL spec.'
                             properties:
                               attestation_1:
                                 type: object
-                                description: 'The [`IndexedAttestation`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#indexedattestation) object from the Eth2.0 spec.'
+                                description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#indexedattestation) object from the CL spec.'
                                 properties:
                                   attesting_indices:
                                     type: array
@@ -1424,7 +1413,7 @@ components:
                                       - description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                   data:
                                     type: object
-                                    description: 'The [`AttestationData`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the Eth2.0 spec.'
+                                    description: 'The [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the CL spec.'
                                     properties:
                                       slot:
                                         type: string
@@ -1440,7 +1429,7 @@ components:
                                           - description: LMD GHOST vote.
                                       source:
                                         type: object
-                                        description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                        description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                         properties:
                                           epoch:
                                             type: string
@@ -1451,7 +1440,7 @@ components:
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                                       target:
                                         type: object
-                                        description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                        description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                         properties:
                                           epoch:
                                             type: string
@@ -1462,7 +1451,7 @@ components:
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                               attestation_2:
                                 type: object
-                                description: 'The [`IndexedAttestation`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#indexedattestation) object from the Eth2.0 spec.'
+                                description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#indexedattestation) object from the CL spec.'
                                 properties:
                                   attesting_indices:
                                     type: array
@@ -1479,7 +1468,7 @@ components:
                                       - description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                   data:
                                     type: object
-                                    description: 'The [`AttestationData`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the Eth2.0 spec.'
+                                    description: 'The [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the CL spec.'
                                     properties:
                                       slot:
                                         type: string
@@ -1495,7 +1484,7 @@ components:
                                           - description: LMD GHOST vote.
                                       source:
                                         type: object
-                                        description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                        description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                         properties:
                                           epoch:
                                             type: string
@@ -1506,7 +1495,7 @@ components:
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                                       target:
                                         type: object
-                                        description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                        description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                         properties:
                                           epoch:
                                             type: string
@@ -1519,7 +1508,7 @@ components:
                           type: array
                           items:
                             type: object
-                            description: 'The [`Attestation`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestation) object from the Eth2.0 spec.'
+                            description: 'The [`Attestation`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestation) object from the CL spec.'
                             properties:
                               aggregation_bits:
                                 type: string
@@ -1534,7 +1523,7 @@ components:
                                   - description: BLS aggregate signature.
                               data:
                                 type: object
-                                description: 'The [`AttestationData`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the Eth2.0 spec.'
+                                description: 'The [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#attestationdata) object from the CL spec.'
                                 properties:
                                   slot:
                                     type: string
@@ -1550,7 +1539,7 @@ components:
                                       - description: LMD GHOST vote.
                                   source:
                                     type: object
-                                    description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                    description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                     properties:
                                       epoch:
                                         type: string
@@ -1561,7 +1550,7 @@ components:
                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                   target:
                                     type: object
-                                    description: 'The [`Checkpoint`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
+                                    description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#checkpoint'
                                     properties:
                                       epoch:
                                         type: string
@@ -1574,7 +1563,7 @@ components:
                           type: array
                           items:
                             type: object
-                            description: 'The [`Deposit`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#deposit) object from the Eth2.0 spec.'
+                            description: 'The [`Deposit`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#deposit) object from the CL spec.'
                             properties:
                               proof:
                                 type: array
@@ -1588,7 +1577,7 @@ components:
                                 maxItems: 32
                               data:
                                 type: object
-                                description: 'The [`DepositData`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#depositdata) object from the Eth2.0 spec.'
+                                description: 'The [`DepositData`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#depositdata) object from the CL spec.'
                                 properties:
                                   pubkey:
                                     type: string
@@ -1616,11 +1605,11 @@ components:
                           type: array
                           items:
                             type: object
-                            description: 'The [`SignedVoluntaryExit`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedvoluntaryexit) object from the Eth2.0 spec.'
+                            description: 'The [`SignedVoluntaryExit`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#signedvoluntaryexit) object from the CL spec.'
                             properties:
                               message:
                                 type: object
-                                description: 'The [`VoluntaryExit`](https://github.com/ethereum/eth2.0-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#voluntaryexit) object from the Eth2.0 spec.'
+                                description: 'The [`VoluntaryExit`](https://github.com/ethereum/consensus-specs/blob/v1.0.1/specs/phase0/beacon-chain.md#voluntaryexit) object from the CL spec.'
                                 properties:
                                   epoch:
                                     allOf:
@@ -1638,7 +1627,7 @@ components:
                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
                         sync_aggregate:
                           type: object
-                          description: 'The [`SyncAggregate`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.0-alpha.1/specs/altair/beacon-chain.md#syncaggregate) object from the Eth2.0 Altair spec.'
+                          description: 'The [`SyncAggregate`](https://github.com/ethereum/consensus-specs/blob/v1.1.0-alpha.1/specs/altair/beacon-chain.md#syncaggregate) object from the CL Altair spec.'
                           properties:
                             sync_committee_bits:
                               type: string
@@ -1652,9 +1641,10 @@ components:
                     - type: object
                       properties:
                         execution_payload_header:
+                          description: 'The [`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#executionpayloadheader) object from the CL Bellatrix spec.'
                           allOf:
                             - type: object
-                              description: 'The [`ExecutionPayload`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.9/specs/bellatrix) object from the Eth2.0 Bellatrix spec.'
+                              description: 'The [`ExecutionPayload`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#executionpayload) object from the CL Bellatrix spec.'
                               properties:
                                 parent_hash:
                                   type: string
@@ -1727,7 +1717,7 @@ components:
               description: '`ExecutionPayloadHeader` to use in block proposal.'
               allOf:
                 - type: object
-                  description: 'The [`ExecutionPayload`](https://github.com/ethereum/eth2.0-specs/blob/v1.1.9/specs/bellatrix) object from the Eth2.0 Bellatrix spec.'
+                  description: 'The [`ExecutionPayload`](https://github.com/ethereum/consensus-specs/blob/v1.1.9/specs/bellatrix/beacon-chain.md#executionpayload) object from the CL Bellatrix spec.'
                   properties:
                     parent_hash:
                       type: string
@@ -1789,9 +1779,9 @@ components:
               example: '1'
               description: Payment in wei that will be paid to the `fee_recipient` account.
             pubkey:
+              description: BLS public key of builder.
               type: string
               pattern: '^0x[a-fA-F0-9]{96}$'
-              description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
               example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
         signature:
           type: string
@@ -1799,42 +1789,30 @@ components:
           example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
     SignedValidatorRegistration:
       type: object
-      description: |
-        The `SignedValidatorRegistration` object from the Builder API spec.
-
-        Note, this type will be removed once it is included in the Beacon API.
+      description: The `SignedValidatorRegistration` object from the Builder API specification.
       properties:
         message:
           type: object
-          description: |
-            The `ValidatorRegistration` object from the Builder API spec.
-
-            Note, this type will be removed once it is included in the Beacon API.
+          description: The `ValidatorRegistration` object from the Builder API specification.
           properties:
             fee_recipient:
-              allOf:
-                - type: string
-                  description: An address on the execution (Ethereum 1) network.
-                  example: '0xabcf8e0d4e9587369b2301d0790347320302cc09'
-                  pattern: '^0x[a-fA-F0-9]{40}$'
-                - description: Address to receive fees from the block.
+              description: Address to receive fees from the block.
+              type: string
+              example: '0xabcf8e0d4e9587369b2301d0790347320302cc09'
+              pattern: '^0x[a-fA-F0-9]{40}$'
             gas_limit:
-              allOf:
-                - type: string
-                  example: '1'
-                - description: Gas limit the validator desires to target.
+              description: Preferred gas limit of validator.
+              type: string
+              example: '1'
             timestamp:
-              allOf:
-                - type: string
-                  example: '1'
-                - description: Unix timestamp of registration.
+              description: Unix timestamp of registration.
+              type: string
+              example: '1'
             pubkey:
-              allOf:
-                - type: string
-                  pattern: '^0x[a-fA-F0-9]{96}$'
-                  description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
-                  example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
-                - description: BLS public key of validator.
+              description: BLS public key of validator.
+              type: string
+              pattern: '^0x[a-fA-F0-9]{96}$'
+              example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
         signature:
           type: string
           pattern: '^0x[a-fA-F0-9]{192}$'
