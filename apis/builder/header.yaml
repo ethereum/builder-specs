@@ -5,11 +5,12 @@ get:
     Requests a builder node to produce a valid execution payload header, which
     can be integrated into a blinded beacon block and signed.
 
-    Builder must immediately return the header that is able to pay
-    `feeRecipient` the most. If the builder is unaware of `parent_hash`, it
-    must error. If `pubkey` does not match the builder's expected proposer
-    `pubkey` for `slot`, it must error. If the builder has not received a
-    validator registration associated with `pubkey`, it must error.
+    Builder must immediately return the header that is able to pay the
+    proposer's registered `fee_recipient` the most. If the builder is unaware
+    of `parent_hash`, it must error. If `pubkey` does not match the builder's
+    expected proposer `pubkey` for `slot`, it must error. If the builder has
+    not received a validator registration associated with `pubkey`, it must
+    error.
 
     When possible, the builder must return a header with `gas_limit` equal to
     proposer's registered value. If this isn't possible due to the large
