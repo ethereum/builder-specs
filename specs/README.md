@@ -25,14 +25,14 @@ signed, see [Signing](#signing).
 ### Independently Versioned
 
 Some objects can be updated independently of the `consensus-specs`, because
-they originate soley from this specification. The objects are postfixed with
+they originate solely from this specification. The objects are postfixed with
 `VX` to denote their revision.
 
 #### `ValidatorRegistrationV1`
 
 ```python
 class ValidatorRegistrationV1(Container):
-    fee_recipient: Bytes20
+    fee_recipient: ExecutionAddress
     gas_limit: uint64
     timestamp: uint64
     pubkey: BLSPubkey

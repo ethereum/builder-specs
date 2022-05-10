@@ -7,7 +7,7 @@ Bellatrix:
         $ref: "../../beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader"
         description: "`ExecutionPayloadHeader` to use in block proposal."
       value:
-        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint256"
         description: "Payment in wei that will be paid to the `fee_recipient` account."
       pubkey:
         $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
