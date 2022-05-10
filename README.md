@@ -43,7 +43,7 @@ multiplexers. Please see their respective repositories for more information:
 
 ## Contributing
 
-The API specification is checked for lint errors before merge. 
+The API specification is checked for lint errors before merging pull requests.
 
 To run the linter locally, install it with:
 ```console
@@ -71,7 +71,7 @@ The spec will render at [http://localhost:8080](http://localhost:8080).
 Local changes will be observable if "dev" is selected in the "Select a
 definition" drop-down in the web UI.
 
-It may be neccessary to tick the "Disable Cache" box in their browser's
+It may be necessary to tick the "Disable Cache" box in their browser's
 developer tools to see changes after modifying the source. 
 
 ## Releasing
