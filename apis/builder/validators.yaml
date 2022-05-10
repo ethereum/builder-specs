@@ -12,13 +12,12 @@ post:
   tags:
     - Builder
   requestBody:
-    description: An array of signed validator block building preferences.
+    description: |
+      A signed declaration of a validator's block building preferences.
     required: true
     content:
       application/json:
         schema:
-          type: array
-          items:
             $ref: "../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration"
   responses:
     "200":
@@ -32,6 +31,6 @@ post:
               - $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
               - example:
                   code: 400
-                  message: "Unknown validator: 0x933ad9491b62059dd065b560d256d8957a8c402cc6e8d8ee7290ae11e8f7329267a8811c397529dac52ae1342ba58c95"
+                  message: "unknown validator"
     "500":
       $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
