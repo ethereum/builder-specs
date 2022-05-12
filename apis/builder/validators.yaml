@@ -18,7 +18,9 @@ post:
     content:
       application/json:
         schema:
-            $ref: "../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration"
+          type: array
+          items:
+              $ref: "../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration"
   responses:
     "200":
       description: Success response.
