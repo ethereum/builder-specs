@@ -9,10 +9,7 @@ info:
 
     API endpoints are individually versioned. As such, there is no direct
     relationship between all v1 endpoints, all v2 endpoints, _etc._ and no such
-    relationship should be inferred. All JSON responses return the requested
-    data under a `data` key in the top level of their response. Additional
-    metadata may or may not be present in other keys at the top level of the
-    response, dependent on the endpoint. The rules that require an increase in
+    relationship should be inferred. The rules that require an increase in
     version number are as follows:
 
       - no field that is listed in an endpoint shall be removed without an
