@@ -3,8 +3,7 @@ info:
   title: Builder API
   description: |
     API specification for external builder nodes. This interface enables
-    validators to delegate block building duties such that attribution can be
-    had in the case of most faults (e.g. producing an invalid block).
+    validators to delegate block building duties.
 
     API endpoints are individually versioned. As such, there is no direct
     relationship between all v1 endpoints, all v2 endpoints, _etc._ and no such
