@@ -8,10 +8,7 @@ info:
 
     API endpoints are individually versioned. As such, there is no direct
     relationship between all v1 endpoints, all v2 endpoints, _etc._ and no such
-    relationship should be inferred. All JSON responses return the requested
-    data under a `data` key in the top level of their response. Additional
-    metadata may or may not be present in other keys at the top level of the
-    response, dependent on the endpoint. The rules that require an increase in
+    relationship should be inferred. The rules that require an increase in
     version number are as follows:
 
       - no field that is listed in an endpoint shall be removed without an
@@ -270,9 +267,9 @@ paths:
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
                               value:
+                                description: Payment in wei that will be paid to the `fee_recipient` account.
                                 type: string
                                 example: '1'
-                                description: Payment in wei that will be paid to the `fee_recipient` account.
                               pubkey:
                                 description: BLS public key of builder.
                                 type: string
@@ -1775,9 +1772,9 @@ components:
                       example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                       pattern: '^0x[a-fA-F0-9]{64}$'
             value:
+              description: Payment in wei that will be paid to the `fee_recipient` account.
               type: string
               example: '1'
-              description: Payment in wei that will be paid to the `fee_recipient` account.
             pubkey:
               description: BLS public key of builder.
               type: string
