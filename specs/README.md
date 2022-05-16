@@ -2,6 +2,8 @@
 
 ## Table of Contents
 
+* [Constants](#constants)
+    * [Domain types](#domain-types)
 * [Containers](#containers)
     * [Independently Versioned](#independentlyversioned)
         * [`ValidatorRegistrationV1`](#validatorregistrationv1)
@@ -15,6 +17,14 @@
             * [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock)
     * [Signing](#signing)
 * [Endpoints](#endpoints)
+
+## Constants
+
+### Domain types
+
+| Name | Value |
+| - | - |
+| `DOMAIN_APPLICATION_BUILDER` | `DomainType('0x00000001')` |
 
 ## Containers
 
@@ -111,18 +121,20 @@ class SignedBlindedBeaconBlock(Container):
 All signature operations should follow the [standard BLS operations][bls]
 interface defined in `consensus-specs`.
 
+To assist in signing, we use a function from the [consensus specs][consensus-specs]: 
+[`compute_domain`][compute-domain]
+
 There are two types of data to sign over in the Builder API:
 * In-protocol messages, e.g. [`BlindedBeaconBlock`](#blindedbeaconblock), which
   should compute the signing root using [`compute_signing_root`][compute-root]
   and use the domain specified for beacon block proposals.
 * Builder API messages, e.g. validator registration, which should compute the
-  signing root using [`compute_signing_root`][compute-root] and the domain
-  `DomainType('0x00000001')`.
+  signing root using [`compute_signing_root`][compute-root] with domain given by
+  `compute_domain(DOMAIN_APPLICATION_BUILDER)`.
 As `compute_signing_root` takes `SSZObject` as input, client software should
 convert in-protocol messages to their SSZ representation to compute the signing
 root and Builder API messages to the SSZ representations defined
 [above](#containers).
-
 
 ## Endpoints
 
@@ -134,3 +146,4 @@ https://ethereum.github.io/builder-specs/.
 [consensus-specs]: https://github.com/ethereum/consensus-specs
 [bls]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#bls-signatures
 [compute-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_signing_root
+[compute-domain]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_domain
