@@ -1,4 +1,4 @@
-# Builder spec
+# Builder Specification
 
 ## Table of Contents
 
