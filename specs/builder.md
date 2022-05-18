@@ -1,22 +1,27 @@
-# Builder API
+# Builder spec
 
 ## Table of Contents
 
-* [Constants](#constants)
-    * [Domain types](#domain-types)
-* [Containers](#containers)
-    * [Independently Versioned](#independentlyversioned)
-        * [`ValidatorRegistrationV1`](#validatorregistrationv1)
-        * [`SignedValidatorRegistrationV1`](#signedvalidatorregistrationv1)
-    * [Fork Versioned](#forkversioned)
-        * [Bellatrix](#forkversioned)
-            * [`BuilderBid`](#builderbid)
-            * [`SignedBuilderBid`](#signedbuilderbid)
-            * [`BlindedBeaconBlockBody`](#blindedbeaconblockbody)
-            * [`BlindedBeaconBlock`](#blindedbeaconblock)
-            * [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock)
-    * [Signing](#signing)
-* [Endpoints](#endpoints)
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Constants](#constants)
+  - [Domain types](#domain-types)
+- [Containers](#containers)
+  - [Independently Versioned](#independently-versioned)
+    - [`ValidatorRegistrationV1`](#validatorregistrationv1)
+    - [`SignedValidatorRegistrationV1`](#signedvalidatorregistrationv1)
+  - [Fork Versioned](#fork-versioned)
+    - [Bellatrix](#bellatrix)
+      - [`BuilderBid`](#builderbid)
+      - [`SignedBuilderBid`](#signedbuilderbid)
+      - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody)
+      - [`BlindedBeaconBlock`](#blindedbeaconblock)
+      - [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock)
+  - [Signing](#signing)
+- [Endpoints](#endpoints)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Constants
 
