@@ -39,7 +39,7 @@ Users will typically connect their CL clients to builders with builder
 multiplexers. Please see their respective repositories for more information:
 
 * [`mev-boost`][mev-boost]
-* [`mev-boost-rs`][mev-boost-rs]
+* [`mev-rs`][mev-rs]
 
 ## Contributing
 
@@ -96,4 +96,4 @@ with real tag name from step 1.):
 [pbs]: https://ethresear.ch/t/proposer-block-builder-separation-friendly-fee-market-designs/9725
 [mev-boost-ethr]: https://ethresear.ch/t/mev-boost-merge-ready-flashbots-architecture/11177
 [mev-boost]: https://github.com/flashbots/mev-boost
-[mev-boost-rs]: https://github.com/ralexstokes/mev-boost-rs
+[mev-rs]: https://github.com/ralexstokes/mev-rs
