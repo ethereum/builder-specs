@@ -31,7 +31,7 @@ reveal the blinded transactions without the possibility of the proposer
 tampering with them.
 
 This design is based on the original proposal for trusted external builders:
-["MEV-Boost: Merge ready Flashbots Architecture"](mev-boost-ethr).
+["MEV-Boost: Merge ready Flashbots Architecture"][mev-boost-ethr].
 
 #### Builder software
 
