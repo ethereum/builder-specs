@@ -126,7 +126,7 @@ Honest proposers using the external builder network will give the builders a dur
 builder flow must be aborted in favor of a local build process.
 
 **WARNING**: Validators must be careful to not get slashed when orchestrating the duplicate building pathways.
-  See the [section on slashing][#proposer-slashing] for more information.
+  See the [section on slashing](#proposer-slashing) for more information.
 
 ## How to avoid slashing
 
