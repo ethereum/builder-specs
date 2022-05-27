@@ -80,8 +80,8 @@ Validators are expected to periodically send their own `SignedValidatorRegistrat
 builder network using the [`registerValidator`][register-validator-with-builder] endpoint of the standard
 [APIs defined in the builder spec][builder-spec-apis].
 
-Registrations should be re-submitted frequently enough that any upstream builder software that comes online is aware of
-each validator's latest registration in a timely manner.
+Registrations should be re-submitted frequently enough that any changes to their building preferences can be widely
+spread across the builder network in a timely manner.
 
 This specification suggests validators re-submit to builder software every
 `EPOCHS_PER_VALIDATOR_REGISTRATION_SUBMISSION` epochs.
