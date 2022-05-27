@@ -146,6 +146,13 @@ a signature for a `BlindedBeaconBlock` (via a dissemination of a `SignedBlindedB
 **MUST** not use the local build process as a fallback, even in the event of some failure with the external builder
 network.
 
+## Responsibilites during the Merge transition
+
+Honest validators will not utilize the external builder network until after the transition from the proof-of-work chain
+to the proof-of-stake beacon chain has been finalized by the proof-of-stake validators. This requirement is in place
+to reduce the overall technical complexity of the Merge. Concretely this means a honest validator client will not use
+any of the builder APIs or run any builder software until the Merge has finalized.
+
 [builder-spec]: ./builder.md
 [builder-spec-apis]: ./builder.md#endpoints
 [register-validator-with-builder]: https://ethereum.github.io/builder-specs/#/Builder/registerValidator
