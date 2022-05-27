@@ -31,7 +31,7 @@ participate in an external builder network.
 
 At a high-level, there is a registration step validators must perform ahead of any proposal duties so builders know how
 to craft blocks for their specific proposal. Having performed the registration, a validator waits until it is their turn
-to propose the next block in the chain. The validator then requests an `ExecutionPayload` from the external builder 
+to propose the next block in the chain. The validator then requests an `ExecutionPayload` from the external builder
 network to put into their `SignedBeaconBlock` in lieu of one they could build locally.
 
 ## Prerequisites
@@ -53,7 +53,7 @@ builders it wants to utilize during block production.
 
 ### Preparing a registration
 
-To do this, the validator client assembles a [`ValidatorRegistrationV1`][validator-registration-v1] with the following 
+To do this, the validator client assembles a [`ValidatorRegistrationV1`][validator-registration-v1] with the following
 information:
 
 * `fee_recipient`: an execution layer address where fees for the validator should go.
@@ -68,7 +68,7 @@ The validator takes the constructed `ValidatorRegistrationV1` `message` and sign
 the [Builder spec][builder-spec] to make a `signature`.
 
 This `signature` is placed along with the `message` into a `SignedValidatorRegistrationV1` and submitted to a connected
-beacon node using the [`registerValidator`][register-validator-api] endpoint of the standard validator 
+beacon node using the [`registerValidator`][register-validator-api] endpoint of the standard validator
 [beacon node APIs][beacon-node-apis].
 
 Validators **should** submit valid registrations well ahead of any potential beacon chain proposal duties to ensure
@@ -77,13 +77,13 @@ their building preferences are widely available in the external builder network.
 ### Registration dissemination
 
 Validators are expected to periodically send their own `SignedValidatorRegistrationV1` messages upstream to the external
-builder network using the [`registerValidator`][register-validator-with-builder] endpoint of the standard 
+builder network using the [`registerValidator`][register-validator-with-builder] endpoint of the standard
 [APIs defined in the builder spec][builder-spec-apis].
 
 Registrations should be re-submitted frequently enough that any upstream builder software that comes online is aware of
 each validator's latest registration in a timely manner.
 
-This specification suggests validators re-submit to builder software every 
+This specification suggests validators re-submit to builder software every
 `EPOCHS_PER_VALIDATOR_REGISTRATION_SUBMISSION` epochs.
 
 ## Beacon chain responsibilities
