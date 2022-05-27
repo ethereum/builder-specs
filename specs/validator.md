@@ -122,8 +122,8 @@ external builder network fails to provide a `SignedBuilderBid` in time in order 
 `SignedBeaconBlock` during the proposer's slot.
 
 Honest proposers using the external builder network will give the builders a duration of
-`BUILDER_PROPOSAL_DELAY_TOLERANCE` before the external builder is considered to have hit the deadline and the external
-builder flow must be aborted in favor of a local build process.
+`BUILDER_PROPOSAL_DELAY_TOLERANCE` to provide a `SignedBuilderBid` before the external builder is considered to have hit
+the deadline and the external builder flow must be aborted in favor of a local build process.
 
 **WARNING**: Validators must be careful to not get slashed when orchestrating the duplicate building pathways.
   See the [section on slashing](#proposer-slashing) for more information.
@@ -141,7 +141,10 @@ To avoid slashing when using the external builder network, a validator should be
 parameters to do so. Regardless of which process completes in time, the validator should cancel the other
 process as soon as they have produced a signature for a beacon block, either a `BeaconBlock` **or** a
 `BlindedBeaconBlock`. Producing distinct signatures for the validator's proposal slot, for example because the
- transactions list of the `BeaconBlockBody` are different, is the slashable offense.
+transactions list of the `BeaconBlockBody` are different, is the slashable offense. This means if a validator publishes
+a signature for a `BlindedBeaconBlock` (via a dissemination of a `SignedBlindedBeaconBlock`) then the validator
+**MUST** not use the local build process as a fallback, even in the event of some failure with the external builder
+network.
 
 [builder-spec]: ./builder.md
 [builder-spec-apis]: ./builder.md#endpoints
