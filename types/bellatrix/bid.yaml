@@ -9,9 +9,12 @@ Bellatrix:
       value:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint256"
         description: "Payment in wei that will be paid to the `fee_recipient` account."
-      pubkey:
+      builder_pubkey:
         $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
         description: "BLS public key of builder."
+      relay_pubkey:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
+        description: "BLS public key of relay."
 
   SignedBuilderBid:
     type: object
@@ -21,3 +24,4 @@ Bellatrix:
         $ref: "#/Bellatrix/BuilderBid"
       signature:
         $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
+        description: "BLS signature of relay over `message`"
