@@ -58,6 +58,8 @@ get:
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBuilderBid"
+    "204":
+      description: No header is available.
     "400":
       description: Error response.
       content:
