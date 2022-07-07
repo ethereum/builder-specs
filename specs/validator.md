@@ -21,6 +21,7 @@
     - [Relation to local block building](#relation-to-local-block-building)
 - [How to avoid slashing](#how-to-avoid-slashing)
   - [Proposer slashing](#proposer-slashing)
+- [Responsibilites during the Merge transition](#responsibilites-during-the-merge-transition)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
