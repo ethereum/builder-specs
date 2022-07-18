@@ -46,7 +46,6 @@ and by extension the [Bellatrix consensus specs][bellatrix-specs].
 | - | - | - |
 | `EPOCHS_PER_VALIDATOR_REGISTRATION_SUBMISSION` | 1 | epoch(s)|
 | `BUILDER_PROPOSAL_DELAY_TOLERANCE` | 1 | second(s) |
-| `MERGE_DELAY` | 16 | epoch(s) |
 
 ## Validator registration
 
@@ -153,11 +152,9 @@ network.
 Honest validators will not utilize the external builder network during the transition from proof-of-work to
 proof-of-stake. This requirement is in place to reduce the overall technical complexity of the Merge.
 
-Concretely, honest validators **MUST** wait until `MERGE_DELAY` epochs after the transition has been finalized before
+Concretely, honest validators **MUST** wait until the transition has been finalized before
 they can start querying the external builder network. See [EIP-3675](eip-3675) for further details about the transition
 process itself.
-
-* NOTE: if the merge transition happens in epoch N and is finalized in epoch N+2, then proposers **MUST** not use the external builder network until epoch N + 2 + `MERGE_DELAY`.
 
 [builder-spec]: ./builder.md
 [builder-spec-apis]: ./builder.md#endpoints
