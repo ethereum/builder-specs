@@ -135,7 +135,8 @@ There are two types of data to sign over in the Builder API:
   and use the domain specified for beacon block proposals.
 * Builder API messages, e.g. validator registration, which should compute the
   signing root using [`compute_signing_root`][compute-root] with domain given by
-  `compute_domain(DOMAIN_APPLICATION_BUILDER)`.
+  `compute_domain(DOMAIN_APPLICATION_BUILDER)` relative to the genesis fork and
+  with a zero genesis validators root.
 As `compute_signing_root` takes `SSZObject` as input, client software should
 convert in-protocol messages to their SSZ representation to compute the signing
 root and Builder API messages to the SSZ representations defined
