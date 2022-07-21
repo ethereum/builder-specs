@@ -224,8 +224,8 @@ Below is a list of the fields which could be part of the proposer config. The fi
 
 #### JSON schemas
 
-The following JSON schemas for `validator clients` and `mev-boost` could be used to validate a proposer config JSON file. They adhere to the [file format specification](##Specification) described above.
+The following JSON schemas for `validator clients` and `mev-boost` could be used to validate a proposer config JSON file. They adhere to the [file format specification](#specification) described above.
 
-[Validator Client proposer config JSON schema](../schemas/validator_client_proposer_config.json)
-[MEV-Boost proposer config JSON schema](../schemas/mev_boost_proposer_config.json)
+* [Validator Client proposer config schema](../schemas/validator_client_proposer_config.json)
+* [MEV-Boost proposer config schema](../schemas/mev_boost_proposer_config.json)
 
