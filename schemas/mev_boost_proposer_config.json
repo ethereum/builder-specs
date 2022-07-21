@@ -1,0 +1,66 @@
+{
+    "title": "MevBoostProposerConfig",
+    "type": "object",
+    "properties": {
+        "builder_relays_groups": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "proposer_config": {
+            "type": "object",
+            "patternProperties": {
+                "^0x[a-fA-F0-9]{96}$": {
+                    "type": "object",
+                    "properties": {
+                        "fee_recipient": {
+                            "$ref": "#/$defs/fee_recipient"
+                        },
+                        "builder": {
+                            "$ref": "#/$defs/builder"
+                        }
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "default_config": {
+            "type": "object",
+            "properties": {
+                "fee_recipient": {
+                    "$ref": "#/$defs/fee_recipient"
+                },
+                "builder": {
+                    "$ref": "#/$defs/builder"
+                }
+            }
+        }
+    },
+    "required": [
+        "default_config"
+    ],
+    "$defs": {
+        "fee_recipient": {
+            "type": "string",
+            "pattern": "^0x[a-fA-F0-9]{40}$"
+        },
+        "builder": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "gas_limit": {
+                    "type": "string"
+                },
+                "relays": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

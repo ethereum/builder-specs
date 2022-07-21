@@ -21,6 +21,13 @@
     - [Relation to local block building](#relation-to-local-block-building)
 - [How to avoid slashing](#how-to-avoid-slashing)
   - [Proposer slashing](#proposer-slashing)
+- [Responsibilites during the Merge transition](#responsibilites-during-the-merge-transition)
+- [Proposer config file](#proposer-config-file)
+  - [File format](#file-format)
+    - [Specification](#specification)
+    - [JSON example](#json-example)
+    - [JSON schemas](#json-schemas)
+
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -161,3 +168,64 @@ any of the builder APIs or run any builder software until the Merge has finalize
 [beacon-node-apis]: https://ethereum.github.io/beacon-APIs
 [bellatrix-specs]: https://github.com/ethereum/consensus-specs/blob/dev/specs/bellatrix
 [bellatrix-validator-specs]: https://github.com/ethereum/consensus-specs/blob/dev/specs/bellatrix/validator.md
+
+## Proposer config file
+
+Proposer config file could be used by `validator client` implementations when more fine-grained proposer configuration is required. The same config file could also be used by [`mev-boost`](https://github.com/flashbots/mev-boost/wiki) implementations.
+
+### File format
+
+A consistent proposer config file format across `validator clients` and `mev-boost` will allow for easier setup and maintenance when participating in a `builder` network. JSON is the recommended data format.
+
+#### Specification
+
+Below is a list of the fields which could be part of the proposer config. The fields which are not specifed as required are optional.
+
+* `builder_relays_groups` : A map of relay endpoints by id, which could later be used to reference a group of relays. It helps with repetition when multiple validators need to be configured with the same set of relays.
+* `proposer_config` : A map where the key is the public key of the validator and the value is the proposer configuration for the specific validator.
+    * `fee_recipient` : `string` an execution layer address where fees for the specific validator should go.
+    * `builder` : builder configuration for the specific validator
+        * `enabled` : `boolean [required for validator clients]` Enable or disable the builder network. For `validator clients`, this will mean, no validator registrations will be sent to the external builder. For `mev-boost`, this field does not have any effect.
+        * `gas_limit` : `string` an uint64 as a string in decimal number format. If no gas_limit is defined, the gas_limit from the `default_config` would be used.
+        * `relays` : `array` specific relays to use for the specific validator. It can also reference the group ids from `builder_relays_groups`. This field will be used by `mev-boost` implementations to direct validators to certain relays.
+* `default_config` : `required` In case no specific configuration is setup for a validator in the `proposer_config`, this default configuration will be used.
+    * `fee_recipient` : `string [required for validator clients]` an execution layer address where fees for the validators should go.
+    * `builder` : Default builder configuration. It follows the same structure as the `proposer_config`
+
+#### JSON example
+
+```json
+{
+    "builder_relays_groups": {
+        "groupB": [
+            "https://0xb124d80a00...@builder2-relay-kiln.flashbots.net",
+            "https://0x845bd072b7...@builder2-relay-kiln.flashbots.net"
+        ]
+    },
+    "proposer_config": {
+        "0xa057816155ad77931185101128655c0191bd0214c201ca48ed887f6c4c6adf334070efcd75140eada5ac83a92506dd7a": {
+            "fee_recipient": "0x50155530FCE8a85ec7055A5F8b2bE214B3DaeFd3",
+            "builder": {
+                "enabled": true,
+                "relays": ["https://0x...@builder-relay-kiln.flashbots.net"],
+                "gas_limit": "12345654321"
+            }
+        }
+    },
+    "default_config": {
+        "fee_recipient": "0x6e35733c5af9B61374A128e6F85f553aF09ff89A",
+        "builder": {
+            "enabled": false,
+            "relays": ["groupB"]
+        }
+    }
+}
+```
+
+#### JSON schemas
+
+The following JSON schemas for `validator clients` and `mev-boost` could be used to validate a proposer config JSON file. They adhere to the [file format specification](##Specification) described above.
+
+[Validator Client proposer config JSON schema](../schemas/validator_client_proposer_config.json)
+[MEV-Boost proposer config JSON schema](../schemas/mev_boost_proposer_config.json)
+
