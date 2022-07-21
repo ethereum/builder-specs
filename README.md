@@ -1,6 +1,7 @@
 # Ethereum Builder API Specification
 
 ![CI][ci]
+[![GitPOAP Badge](https://public-api.gitpoap.io/v1/repo/ethereum/builder-specs/badge)](https://www.gitpoap.io/gh/ethereum/builder-specs)
 
 The Builder API is an interface for consensus layer clients to source blocks
 built by external entities.
