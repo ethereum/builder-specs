@@ -21,6 +21,7 @@
     - [Relation to local block building](#relation-to-local-block-building)
 - [How to avoid slashing](#how-to-avoid-slashing)
   - [Proposer slashing](#proposer-slashing)
+- [Responsibilites during the Merge transition](#responsibilites-during-the-merge-transition)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -148,10 +149,12 @@ network.
 
 ## Responsibilites during the Merge transition
 
-Honest validators will not utilize the external builder network until after the transition from the proof-of-work chain
-to the proof-of-stake beacon chain has been finalized by the proof-of-stake validators. This requirement is in place
-to reduce the overall technical complexity of the Merge. Concretely this means a honest validator client will not use
-any of the builder APIs or run any builder software until the Merge has finalized.
+Honest validators will not utilize the external builder network during the transition from proof-of-work to
+proof-of-stake. This requirement is in place to reduce the overall technical complexity of the Merge.
+
+Concretely, honest validators **MUST** wait until the transition has been finalized before
+they can start querying the external builder network. See [EIP-3675](eip-3675) for further details about the transition
+process itself.
 
 [builder-spec]: ./builder.md
 [builder-spec-apis]: ./builder.md#endpoints
@@ -161,3 +164,4 @@ any of the builder APIs or run any builder software until the Merge has finalize
 [beacon-node-apis]: https://ethereum.github.io/beacon-APIs
 [bellatrix-specs]: https://github.com/ethereum/consensus-specs/blob/dev/specs/bellatrix
 [bellatrix-validator-specs]: https://github.com/ethereum/consensus-specs/blob/dev/specs/bellatrix/validator.md
+[eip-3675]: https://eips.ethereum.org/EIPS/eip-3675
