@@ -133,7 +133,7 @@ There are two types of data to sign over in the Builder API:
 * In-protocol messages, e.g. [`BlindedBeaconBlock`](#blindedbeaconblock), which
   should compute the signing root using [`compute_signing_root`][compute-root]
   and use the domain specified for beacon block proposals.
-* Builder API messages, e.g. validator registration, which should compute the
+* Builder API messages, e.g. validator registration and signed builder bid, which should compute the
   signing root using [`compute_signing_root`][compute-root] with domain given by
   `compute_domain(DOMAIN_APPLICATION_BUILDER, fork_version=None, genesis_validators_root=None)`.
 As `compute_signing_root` takes `SSZObject` as input, client software should
