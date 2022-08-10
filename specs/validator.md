@@ -19,6 +19,11 @@
     - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
       - [ExecutionPayload](#executionpayload)
     - [Relation to local block building](#relation-to-local-block-building)
+  - [Liveness failsafe](#liveness-failsafe)
+    - [Failsafe initialization](#failsafe-initialization)
+    - [Failsafe activation](#failsafe-activation)
+    - [Failsafe recovery](#failsafe-recovery)
+    - [Selecting liveness parameters](#selecting-liveness-parameters)
 - [How to avoid slashing](#how-to-avoid-slashing)
   - [Proposer slashing](#proposer-slashing)
 - [Responsibilites during the Merge transition](#responsibilites-during-the-merge-transition)
@@ -128,6 +133,46 @@ the deadline and the external builder flow must be aborted in favor of a local b
 
 **WARNING**: Validators must be careful to not get slashed when orchestrating the duplicate building pathways.
   See the [section on slashing](#proposer-slashing) for more information.
+
+### Liveness failsafe
+
+Honest proposers implement a "circuit breaker" condition operationalized by the beacon node that is triggered by some
+number of missing slots over a given period of time. This condition reduces the scope of the failure domain in the event
+there is some failure with the external builder network (malicious or otherwise).
+
+When the circuit breaker is active, the honest proposer **MUST** not make any use of the external builder network (so
+any building happens locally).
+
+The specifics of instantiating, activating and deactivating the circuit breaker are given below. There are references
+to two parameters `ALLOWED_FAULTS` and `FAULT_INSPECTION_WINDOW` and the selection of concrete values for these
+constants is discussed after specifying the mechanics.
+
+#### Failsafe initialization
+
+When a beacon client first boots, the circuit breaker is instantiated with the liveness parameters and is **not**
+active.
+
+#### Failsafe activation
+
+The circuit breaker becomes active if a liveness fault is observed locally which is determined by considering the beacon
+chain over a rolling window of `FAULT_INSPECTION_WINDOW` slots.
+
+If the total number of missing slots during any window is *more than* `ALLOWED_FAULTS`, the circuit breaker becomes
+active.
+
+#### Failsafe recovery
+
+If the circuit breaker is active and the total number of missing slots during the inspection window becomes less than
+or equal to `ALLOWED_FAULTS`, the circuit breaker deactivates. The beacon client continues to monitor the chain on a
+rolling basis to consider re-activation.
+
+#### Selecting liveness parameters
+
+Beacon clients select randomized values from the following ranges when initializing the circuit breaker (so at boot time
+and once for each unique boot).
+
+* `ALLOWED_FAULTS`: between `1` and `SLOTS_PER_EPOCH // 2`
+* `FAULT_INSPECTION_WINDOW`: between `SLOTS_PER_EPOCH` and `2 * SLOTS_PER_EPOCH`
 
 ## How to avoid slashing
 
