@@ -120,7 +120,8 @@ the following actions:
 The external builder network offers a service for proposers that may from time to time fail to produce a timely block.
 Honest proposers who elect to use the external builder network **MUST** also build a block locally in the event that the
 external builder network fails to provide a `SignedBuilderBid` in time in order to propagate the full
-`SignedBeaconBlock` during the proposer's slot.
+`SignedBeaconBlock` during the proposer's slot. The local build task should begin in parallel to any use of the external
+builder network.
 
 Honest proposers using the external builder network will give the builders a duration of
 `BUILDER_PROPOSAL_DELAY_TOLERANCE` to provide a `SignedBuilderBid` before the external builder is considered to have hit
