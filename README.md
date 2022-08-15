@@ -10,6 +10,12 @@ In this repository:
 * [Builder specification][builder-spec]
 * [Honest validator specification][validator-spec]
 
+
+### Builder API is currently deprecated
+
+In lights of current events, and in particular in lights of MEV-Boost adopting OFAC sanctions, the Builder API is momentairly deprecated.
+Client Teams **MUST** not implement and expose the Builder API until the situation stabilises. **NOTE: Builder API is only momentairly deprecated, and could eventually be re-considered if the situation changes.**
+
 ### Why?
 
 Block building is a specialized activity that requires high fixed costs to be
