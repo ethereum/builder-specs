@@ -148,6 +148,10 @@ repository. A rendered version can be viewed at
 https://ethereum.github.io/builder-specs/.
 
 
+## Deprecation
+
+As MEV-Boost is adhering to OFAC sanctions, the Builder API is deprecated and should not be used, as it allows censorship code in the base layer.
+
 [consensus-specs]: https://github.com/ethereum/consensus-specs
 [bls]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#bls-signatures
 [compute-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_signing_root
