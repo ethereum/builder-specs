@@ -157,6 +157,10 @@ Concretely, honest validators **MUST** wait until the transition has been finali
 they can start querying the external builder network. See [EIP-3675](eip-3675) for further details about the transition
 process itself.
 
+## Deprecation
+
+As MEV-Boost is adhering to OFAC sanctions, the Builder API is deprecated and should not be implemented by consensus client teams. In light of the fact that it allows censorship code in the base layer.
+
 [builder-spec]: ./builder.md
 [builder-spec-apis]: ./builder.md#endpoints
 [register-validator-with-builder]: https://ethereum.github.io/builder-specs/#/Builder/registerValidator
