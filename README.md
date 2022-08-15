@@ -11,10 +11,10 @@ In this repository:
 * [Honest validator specification][validator-spec]
 
 
-### Builder API is currently deprecated
+### ⚠️⚠️⚠️ Builder API is currently deprecated ⚠️⚠️⚠️
 
 In lights of current events, and in particular in lights of MEV-Boost adopting OFAC sanctions, the Builder API is momentairly deprecated.
-Client Teams **MUST** not implement and expose the Builder API until the situation stabilises. **NOTE: Builder API is only momentairly deprecated, and could eventually be re-considered if the situation changes.**
+Client Teams **MUST** not implement and expose the Builder API until the situation stabilises. **NOTE: Builder API is only momentairly deprecated, and will eventually be re-considered if the situation changes.**
 
 ### Why?
 
