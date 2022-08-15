@@ -150,7 +150,7 @@ https://ethereum.github.io/builder-specs/.
 
 ## Deprecation
 
-As MEV-Boost is adhering to OFAC sanctions, the Builder API is deprecated and should not be used, as it allows censorship code in the base layer.
+As MEV-Boost is adhering to OFAC sanctions, the Builder API is deprecated and should not be implemented by consensus client teams. In light of the fact that it allows censorship code in the base layer.
 
 [consensus-specs]: https://github.com/ethereum/consensus-specs
 [bls]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#bls-signatures
