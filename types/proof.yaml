@@ -1,0 +1,13 @@
+Proofs:
+  type: array
+  items:
+    allOf:
+      - $ref: '#/Proof'
+  maxItems: 2
+
+Proof:
+  type: array
+  items:
+    allOf:
+      - $ref: "../beacon-apis/types/primitive.yaml#/Bytes32"
+  maxItems: 32

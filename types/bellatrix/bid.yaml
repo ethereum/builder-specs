@@ -12,6 +12,12 @@ Bellatrix:
       pubkey:
         $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
         description: "BLS public key of builder."
+      fee_recipient:
+        $ref: '../../beacon-apis/types/primitive.yaml#/ExecutionAddress'
+        description: "The address the bid is paid to"
+      proofs:
+        $ref: "../proof.yaml#/Proofs"
+        description: "Proofs of pre and post balances of the `fee_recipient` account"
 
   SignedBuilderBid:
     type: object
