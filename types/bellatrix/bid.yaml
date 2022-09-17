@@ -15,9 +15,9 @@ Bellatrix:
       fee_recipient:
         $ref: '../../beacon-apis/types/primitive.yaml#/ExecutionAddress'
         description: "The address the bid is paid to"
-      proofs:
-        $ref: "../proof.yaml#/Proofs"
-        description: "Proofs of pre and post balances of the `fee_recipient` account"
+      proof:
+        $ref: "../proof.yaml#/Proof"
+        description: "Merkle proof of post balance of the `fee_recipient` account"
 
   SignedBuilderBid:
     type: object

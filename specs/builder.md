@@ -31,6 +31,12 @@
 | - | - |
 | `DOMAIN_APPLICATION_BUILDER` | `DomainType('0x00000001')` |
 
+### Execution proof
+
+| Name | Value |
+| - | - |
+| `MAX_EXECUTION_PROOF_DEPTH` | `256/4` (= 64) |
+
 ## Containers
 
 Consider the following definitions supplementary to the definitions in
@@ -76,6 +82,8 @@ class BuilderBid(Container):
     header: ExecutionPayloadHeader
     value: uint256
     pubkey: BLSPubkey
+    fee_recipient: ExecutionAddress
+    proof: List[Bytes32, MAX_EXECUTION_PROOF_DEPTH]
 ```
 
 ##### `SignedBuilderBid`
