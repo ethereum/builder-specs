@@ -14,7 +14,7 @@ Bellatrix:
         description: "BLS public key of builder."
       fee_recipient:
         $ref: '../../beacon-apis/types/primitive.yaml#/ExecutionAddress'
-        description: "The address the bid is paid to"
+        description: "The address the bid will be paid to, as registered previously with builder"
       proof:
         $ref: "../proof.yaml#/Proof"
         description: "Merkle proof of post balance of the `fee_recipient` account"
