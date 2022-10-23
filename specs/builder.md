@@ -79,12 +79,13 @@ Bellatrix).
 ##### `BuilderBid`
 
 ```python
-class BuilderBid(Container):
+class BuilderBidV2(Container):
     header: ExecutionPayloadHeader
     value: uint256
     pubkey: BLSPubkey
     fee_recipient: ExecutionAddress
-    proof: List[ByteList[544], MAX_EXECUTION_PROOF_DEPTH]
+    # RLP encoded size of list of max 17 32bytes branches is 564 bytes
+    proof: List[ByteList[564], MAX_EXECUTION_PROOF_DEPTH] 
 ```
 
 ##### `SignedBuilderBid`

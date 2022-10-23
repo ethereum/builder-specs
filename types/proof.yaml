@@ -1,6 +1,26 @@
-Proof:
+ProofNode:
+  type: string
+  description: "An rlp encoded hex string representing a node in merkle proof branch"
+  example: "0xdf820023db808080c620841920682380c4208219208080808080808080808080"
+  # RLP encoded size of list of max 17 32bytes branches is 564 bytes
+  pattern: "^0x[a-fA-F0-9]{0,1128}$"
+
+ProofNodes:
   type: array
   items:
     allOf:
-      - $ref: "../beacon-apis/types/primitive.yaml#/Bytes32"
+      - $ref: "#/ProofNode"
   maxItems: 64
+
+BidProof:
+  type: object
+  description: "The merkle proof of the `fee_recipient` account post the corresponding `BuilderBidV2` promised payout"
+  properties:
+    address:
+      $ref: '../../beacon-apis/types/primitive.yaml#/ExecutionAddress'
+      description: "The account address for which proof has been generated, should match `fee_recipient` of `BuilderBidV2`"
+    balance:
+      $ref: "../../beacon-apis/types/primitive.yaml#/Uint256"
+      description: "Post balance in gwei of the account (corresponding to the `stateRoot` of the `header` returned by `BuilderBidV2`)"
+    nodes:
+      $ref: "#/ProofNodes"
