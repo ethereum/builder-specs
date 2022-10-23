@@ -84,7 +84,7 @@ class BuilderBid(Container):
     value: uint256
     pubkey: BLSPubkey
     fee_recipient: ExecutionAddress
-    proof: List[Bytes32, MAX_EXECUTION_PROOF_DEPTH]
+    proof: List[ByteList[544], MAX_EXECUTION_PROOF_DEPTH]
 ```
 
 ##### `SignedBuilderBid`
