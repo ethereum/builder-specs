@@ -35,7 +35,8 @@
 
 | Name | Value |
 | - | - |
-| `MAX_EXECUTION_PROOF_DEPTH` | `256/4` (= 64) |
+| `MAX_EXECUTION_PROOF_DEPTH` | 64 |
+| `MAX_BRANCH_SIZE` | `17` |
 
 ## Containers
 
