@@ -106,7 +106,7 @@ the following actions:
    required data `slot`, `parent_hash` and `pubkey`, where:
    * `slot` is the proposal's slot
    * `parent_hash` is the value `state.latest_execution_payload_header.block_hash`
-   * `pubkey` is the propser's public key
+   * `pubkey` is the proposer's public key
 2. Assemble a `BlindedBeaconBlock` according to the process outlined in the [Bellatrix specs][bellatrix-specs] but with
    the `ExecutionPayloadHeader` from the prior step in lieu of the full `ExecutionPayload`.
 3. The proposer signs the `BlindedBeaconBlock` and assembles a `SignedBlindedBeaconBlock` which is returned to the
@@ -154,7 +154,7 @@ Honest validators will not utilize the external builder network during the trans
 proof-of-stake. This requirement is in place to reduce the overall technical complexity of the Merge.
 
 Concretely, honest validators **MUST** wait until the transition has been finalized before
-they can start querying the external builder network. See [EIP-3675](eip-3675) for further details about the transition
+they can start querying the external builder network. See [EIP-3675][eip-3675] for further details about the transition
 process itself.
 
 [builder-spec]: ./builder.md
