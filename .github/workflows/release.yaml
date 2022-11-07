@@ -54,7 +54,7 @@ jobs:
           id: ${{ steps.create_release.id }}
           # Using a tag name
           tag: ${{ github.ref }}
-          # Always delete} the tag, even if a release is not associated with it.
+          # Always delete the tag, even if a release is not associated with it.
           always_delete_tag: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
