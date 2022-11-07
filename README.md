@@ -16,7 +16,7 @@ Block building is a specialized activity that requires high fixed costs to be
 an efficient validator. This creates an advantage for staking pools as they can
 effectively distribute the cost across many validators.
 
-[Proposer-builder separation][pbs] (PBS) fixes this by spliting the roles of a
+[Proposer-builder separation][pbs] (PBS) fixes this by splitting the roles of a
 validator into block proposing and block building. However, PBS requires
 modifications to the Beacon chain and will therefore not be possible at the
 time of the merge.

@@ -21,7 +21,7 @@
     - [Relation to local block building](#relation-to-local-block-building)
 - [How to avoid slashing](#how-to-avoid-slashing)
   - [Proposer slashing](#proposer-slashing)
-- [Responsibilites during the Merge transition](#responsibilites-during-the-merge-transition)
+- [Responsibilities during the Merge transition](#responsibilities-during-the-merge-transition)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -148,7 +148,7 @@ a signature for a `BlindedBeaconBlock` (via a dissemination of a `SignedBlindedB
 **MUST** not use the local build process as a fallback, even in the event of some failure with the external builder
 network.
 
-## Responsibilites during the Merge transition
+## Responsibilities during the Merge transition
 
 Honest validators will not utilize the external builder network during the transition from proof-of-work to
 proof-of-stake. This requirement is in place to reduce the overall technical complexity of the Merge.
