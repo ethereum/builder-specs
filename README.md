@@ -88,7 +88,7 @@ entry in `urls` field. Entry should be in following format (replace `<tag>`
 with real tag name from step 1.):
 
 ```javascript
-{url: "https://github.com/ethereum/builder-apis/releases/download/<tag>/builder-oapi.yaml", name: "<tag>"},
+{url: "https://github.com/ethereum/builder-specs/releases/download/<tag>/builder-oapi.yaml", name: "<tag>"},
 ```
 
 [ci]: https://github.com/ethereum/builder-specs/workflows/CI/badge.svg
