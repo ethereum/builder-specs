@@ -1,6 +1,6 @@
 get:
-  operationId: "getHeader"
-  summary: Get an execution payload header.
+  operationId: "getHeaderV2"
+  summary: Get an execution payload header along with the payout proof to the bid
   description: |
     Requests a builder node to produce a valid execution payload header, which
     can be integrated into a blinded beacon block and signed.
@@ -18,7 +18,6 @@ get:
     builder must return a header that moves `gas_limit` the maximum amount
     allowed under the rules of consensus (currently `parent.gas_limit +/-
     parent.gas_limit / 1024`).
-  deprecated: true
   tags:
     - Builder
   parameters:
@@ -55,10 +54,13 @@ get:
                 example: "bellatrix"
               data:
                 oneOf:
-                 - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBuilderBid"
+                 - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBuilderBidV2"
+              proof:
+                oneOf:
+                - $ref: "../../builder-oapi.yaml#/components/schemas/BidProof"
           examples:
             bellatrix:
-              $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBuilderBid"
+              $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBuilderBidV2"
     "204":
       description: No header is available.
     "400":

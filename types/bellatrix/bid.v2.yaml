@@ -1,0 +1,27 @@
+Bellatrix:
+  BuilderBidV2:
+    type: object
+    description: "The `BuilderBidV2` object from the Builder API spec."
+    properties:
+      header:
+        $ref: "../../beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader"
+        description: "`ExecutionPayloadHeader` to use in block proposal."
+      value:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint256"
+        description: "Payment in wei that will be paid to the `fee_recipient` account."
+      pubkey:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
+        description: "BLS public key of builder."
+      # Builder should return where its paying out the bid to
+      fee_recipient:
+        $ref: '../../beacon-apis/types/primitive.yaml#/ExecutionAddress'
+        description: "The address the bid will be paid to, as registered previously with builder"
+
+  SignedBuilderBidV2:
+    type: object
+    description: "The `SignedBuilderBidV2` object from the Builder API spec."
+    properties:
+      message:
+        $ref: "#/Bellatrix/BuilderBidV2"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"

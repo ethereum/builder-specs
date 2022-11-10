@@ -31,6 +31,13 @@
 | - | - |
 | `DOMAIN_APPLICATION_BUILDER` | `DomainType('0x00000001')` |
 
+### Execution proof
+
+| Name | Value |
+| - | - |
+| `MAX_EXECUTION_PROOF_DEPTH` | 64 |
+| `MAX_BRANCH_SIZE` | `17` |
+
 ## Containers
 
 Consider the following definitions supplementary to the definitions in
@@ -72,10 +79,13 @@ Bellatrix).
 ##### `BuilderBid`
 
 ```python
-class BuilderBid(Container):
+class BuilderBidV2(Container):
     header: ExecutionPayloadHeader
     value: uint256
     pubkey: BLSPubkey
+    fee_recipient: ExecutionAddress
+    # RLP encoded size of list of max 17 32bytes branches is 564 bytes
+    proof: List[ByteList[564], MAX_EXECUTION_PROOF_DEPTH] 
 ```
 
 ##### `SignedBuilderBid`
