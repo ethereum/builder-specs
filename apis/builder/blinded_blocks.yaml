@@ -9,6 +9,10 @@ post:
 
     If the builder is not able to unblind the corresponding
     `ExecutionPayloadHeader`, it must error.
+
+    The request body can be encoded as JSON (application/json) or SSZ (application/octet-stream).
+    Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
+    request.
   tags:
     - Builder
   requestBody:
@@ -22,6 +26,9 @@ post:
         examples:
           bellatrix:
             $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
+      application/octet-stream:
+        schema:
+          title: SignedBlindedBeaconBlock
 
   responses:
     "200":
@@ -42,6 +49,12 @@ post:
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"
+        application/octet-stream:
+          schema:
+            title: SubmitBlindedBlockResponse
+            type: string
+            format: binary
+            description: SSZ encoded SubmitBlindedBlockResponse
     "400":
       description: Error response.
       content:

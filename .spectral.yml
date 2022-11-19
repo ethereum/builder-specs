@@ -35,7 +35,7 @@ rules:
     recommended: true
     severity: error
     message: "{{description}}: {{error}}"
-    given: $.paths.[*].requestBody.content[?(@property.indexOf('json') === -1)]^
+    given: $.paths.[*].requestBody.content[0(@property.indexOf('json') === -1)]^
     then:
       function: falsy
 

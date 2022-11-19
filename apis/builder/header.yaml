@@ -18,6 +18,9 @@ get:
     builder must return a header that moves `gas_limit` the maximum amount
     allowed under the rules of consensus (currently `parent.gas_limit +/-
     parent.gas_limit / 1024`).
+
+    A SSZ encoded response can be requested using the `Accept` request header:
+    `Accept: application/octet-stream`.
   tags:
     - Builder
   parameters:
@@ -39,6 +42,13 @@ get:
       description: The validator's BLS public key.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/Pubkey"
+    - name: accept
+      in: header
+      description: "requested encoding: `application/octet-stream` (SSZ), `application/json`, or a combination."
+      example: "application/octet-stream;q=1,application/json;q=0.9"
+      required: false
+      schema:
+        type: string
   responses:
     "200":
       description: Success response.
@@ -58,6 +68,13 @@ get:
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBuilderBid"
+        application/octet-stream:
+          schema:
+            title: GetHeaderResponse
+            type: string
+            format: binary
+            description: SSZ encoded GetHeaderResponse
+
     "204":
       description: No header is available.
     "400":
