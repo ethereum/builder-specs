@@ -19,9 +19,12 @@ post:
         schema:
           oneOf:
             - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.SignedBlindedBeaconBlock"
         examples:
           bellatrix:
             $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
+          eip4844:
+            $ref: "../../builder-oapi.yaml#/components/examples/Eip4844.SignedBlindedBeaconBlock"
 
   responses:
     "200":
@@ -34,14 +37,17 @@ post:
             properties:
               version:
                 type: string
-                enum: [ bellatrix ]
+                enum: [ bellatrix, eip4844 ]
                 example: "bellatrix"
               data:
                 oneOf:
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.ExecutionPayload"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"
+            eip4844:
+              $ref: "../../builder-oapi.yaml#/components/examples/Eip4844.ExecutionPayload"
     "400":
       description: Error response.
       content:

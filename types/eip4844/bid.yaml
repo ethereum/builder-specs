@@ -1,0 +1,23 @@
+Eip4844:
+  BuilderBid:
+    type: object
+    description: "The `BuilderBid` object from the Builder API spec."
+    properties:
+      header:
+        $ref: "../../beacon-apis/types/eip4844/execution_payload.yaml#/Eip4844/ExecutionPayloadHeader"
+        description: "`ExecutionPayloadHeader` to use in block proposal."
+      value:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint256"
+        description: "Payment in wei that will be paid to the `fee_recipient` account."
+      pubkey:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
+        description: "BLS public key of builder."
+
+  SignedBuilderBid:
+    type: object
+    description: "The `SignedBuilderBid` object from the Builder API spec."
+    properties:
+      message:
+        $ref: "#/Eip4844/BuilderBid"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"

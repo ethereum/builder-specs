@@ -61,9 +61,14 @@ components:
       $ref: "./beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayload"
     Bellatrix.SignedBlindedBeaconBlock:
       $ref: "./beacon-apis/types/bellatrix/block.yaml#/Bellatrix/SignedBlindedBeaconBlock"
-
     Bellatrix.SignedBuilderBid:
       $ref: "./types/bellatrix/bid.yaml#/Bellatrix/SignedBuilderBid"
+    Eip4844.ExecutionPayload:
+      $ref: "./beacon-apis/types/eip4844/execution_payload.yaml#/Eip4844/ExecutionPayload"
+    Eip4844.SignedBlindedBeaconBlock:
+      $ref: "./beacon-apis/types/eip4844/block.yaml#/Eip4844/SignedBlindedBeaconBlock"
+    Eip4844.SignedBuilderBid:
+      $ref: "./types/eip4844/bid.yaml#/Eip4844/SignedBuilderBid"
     SignedValidatorRegistration:
       $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistration"
 
@@ -79,3 +84,9 @@ components:
       $ref: "./examples/bellatrix/execution_payload.json"
     Bellatrix.SignedBuilderBid:
       $ref: "./examples/bellatrix/signed_builder_bid.json"
+    Eip4844.SignedBlindedBeaconBlock:
+      $ref: "./examples/eip4844/signed_blinded_beacon_block.json"
+    Eip4844.ExecutionPayload:
+      $ref: "./examples/eip4844/execution_payload.json"
+    Eip4844.SignedBuilderBid:
+      $ref: "./examples/eip4844/signed_builder_bid.json"
