@@ -50,15 +50,18 @@ get:
             properties:
               version:
                 type: string
-                enum: [ bellatrix, eip4844 ]
+                enum: [ bellatrix, capella, eip4844 ]
                 example: "bellatrix"
               data:
                 oneOf:
                  - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBuilderBid"
+                 - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBuilderBid"
                  - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.SignedBuilderBid"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBuilderBid"
+            capella:
+              $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBuilderBid"
             eip4844:
               $ref: "../../builder-oapi.yaml#/components/examples/Eip4844.SignedBuilderBid"
     "204":
