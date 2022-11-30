@@ -18,6 +18,10 @@
       - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody)
       - [`BlindedBeaconBlock`](#blindedbeaconblock)
       - [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock)
+    - [Capella](#capella)
+      - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody-1)
+    - [EIP-4844](#eip-4844)
+      - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody-2)
   - [Signing](#signing)
 - [Endpoints](#endpoints)
 
