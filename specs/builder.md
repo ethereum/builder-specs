@@ -145,6 +145,23 @@ class BlindedBeaconBlockBody(Container):
 ```
 
 #### EIP-4844
+##### `BuilderBid`
+
+```python
+class BuilderBid(Container):
+    header: ExecutionPayloadHeader # [Modified in EIP-4844]
+    value: uint256
+    pubkey: BLSPubkey
+    blob_kzg_commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]  # [New in EIP-4844]
+```
+
+##### `SignedBuilderBid`
+
+```python
+class SignedBuilderBid(Container):
+    message: BuilderBid # [Modified in EIP-4844]
+    signature: BLSSignature
+```
 
 ##### `BlindedBeaconBlockBody`
 
