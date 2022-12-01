@@ -19,10 +19,13 @@ post:
         schema:
           oneOf:
             - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBlindedBeaconBlock"
             - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.SignedBlindedBeaconBlock"
         examples:
           bellatrix:
             $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
+          capella:
+            $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBlindedBeaconBlock"
           eip4844:
             $ref: "../../builder-oapi.yaml#/components/examples/Eip4844.SignedBlindedBeaconBlock"
 
@@ -37,15 +40,18 @@ post:
             properties:
               version:
                 type: string
-                enum: [ bellatrix, eip4844 ]
+                enum: [ bellatrix, capella, eip4844 ]
                 example: "bellatrix"
               data:
                 oneOf:
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.ExecutionPayload"
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.ExecutionPayload"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"
+            capella:
+              $ref: "../../builder-oapi.yaml#/components/examples/Capella.ExecutionPayload"
             eip4844:
               $ref: "../../builder-oapi.yaml#/components/examples/Eip4844.ExecutionPayload"
     "400":
