@@ -1,6 +1,6 @@
 post:
-  operationId: "submitBlindedBlock"
-  summary: Submit a signed blinded block and get unblinded execution payload.
+  operationId: "submitBlindedBlockV2"
+  summary: Submit a signed blinded block and get signed beacon block with unblinded execution payload and blobs sidecar.
   description: |
     Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
     to the block. The builder is now able to unblind the transactions in
@@ -9,6 +9,8 @@ post:
 
     If the builder is not able to unblind the corresponding
     `ExecutionPayloadHeader`, it must error.
+
+    Returns the `SignedBeaconBlockAndBlobsSidecar`.
   tags:
     - Builder
   requestBody:
@@ -18,14 +20,8 @@ post:
       application/json:
         schema:
           oneOf:
-            - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
-            - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBlindedBeaconBlock"
             - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.SignedBlindedBeaconBlock"
         examples:
-          bellatrix:
-            $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
-          capella:
-            $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBlindedBeaconBlock"
           eip4844:
             $ref: "../../builder-oapi.yaml#/components/examples/Eip4844.SignedBlindedBeaconBlock"
 
@@ -40,20 +36,14 @@ post:
             properties:
               version:
                 type: string
-                enum: [ bellatrix, capella, eip4844 ]
-                example: "bellatrix"
+                enum: [ eip4844 ]
+                example: "eip4844"
               data:
                 oneOf:
-                  - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
-                  - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.ExecutionPayload"
-                  - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.ExecutionPayload"
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.SignedBeaconBlockAndBlobsSidecar"
           examples:
-            bellatrix:
-              $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"
-            capella:
-              $ref: "../../builder-oapi.yaml#/components/examples/Capella.ExecutionPayload"
             eip4844:
-              $ref: "../../builder-oapi.yaml#/components/examples/Eip4844.ExecutionPayload"
+              $ref: "../../builder-oapi.yaml#/components/examples/Eip4844.SignedBeaconBlockAndBlobsSidecar"
     "400":
       description: Error response.
       content:

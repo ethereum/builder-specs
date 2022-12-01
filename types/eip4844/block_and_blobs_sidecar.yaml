@@ -1,0 +1,39 @@
+Eip4844:
+  SignedBeaconBlockAndBlobsSidecar:
+    type: object
+    description: "The [`SignedBeaconBlockAndBlobsSidecar`](https://github.com/ethereum/consensus-specs/blob/30e975806f7b5d43e35378ccc3dc428ba09dddd5/specs/eip4844/p2p-interface.md#signedbeaconblockandblobssidecar) object from the EIP-4844 CL spec."
+    properties:
+      beacon_block:
+        $ref: "../../beacon-apis/types/eip4844/block.yaml#/Eip4844/SignedBeaconBlock"
+      blobs_sidecar:
+        $ref: "#/Eip4844/BlobsSidecar"
+      
+  BlobsSidecar:
+    type: object
+    description: "The [BlobsSidecar](https://github.com/ethereum/consensus-specs/blob/30e975806f7b5d43e35378ccc3dc428ba09dddd5/specs/eip4844/p2p-interface.md#blobssidecar) object from the EIP-4844 CL spec."
+    properties:
+      beacon_block_root:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Root"
+      beacon_block_slot:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
+      blobs:
+        type: array
+        maxItems: 16
+        minItems: 0
+        items:
+          $ref: "#/Eip4844/Blob"
+      kzg_aggregated_proof: 
+        $ref: "#/Eip4844/KZGProof"
+
+  KZGProof:
+    type: string
+    format: hex
+    pattern: "^0x[a-fA-F0-9]{96}$"
+    description: "An aggregated KZG proof. Same check as `KZGCommitmentA`"
+    example: "0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a"
+
+  Blob:
+    type: string
+    format: hex
+    pattern: "^0x[a-fA-F0-9]{262144}$"
+    description: "A blob is `FIELD_ELEMENTS_PER_BLOB * size_of(BLSFieldElement) = 4096 * 32 = 131072` bytes (`DATA`) representing a SSZ-encoded Blob as defined in EIP-4844"
