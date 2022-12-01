@@ -47,6 +47,14 @@ post:
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.ExecutionPayload"
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.ExecutionPayload"
+              kzg_aggregated_proof:
+                $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.KZGProof"
+              blobs:
+                type: array
+                maxItems: 16
+                minItems: 0
+                items:
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.Blob"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"

@@ -75,6 +75,10 @@ components:
       $ref: "./beacon-apis/types/eip4844/block.yaml#/Eip4844/SignedBlindedBeaconBlock"
     Eip4844.SignedBuilderBid:
       $ref: "./types/eip4844/bid.yaml#/Eip4844/SignedBuilderBid"
+    Eip4844.Blob:
+      $ref: "./types/eip4844/blob.yaml#/Eip4844/Blob"
+    Eip4844.KZGProof:
+      $ref: "./types/eip4844/kzg_proof.yaml#/Eip4844/KZGProof"
     SignedValidatorRegistration:
       $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistration"
 
