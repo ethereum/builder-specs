@@ -54,7 +54,7 @@ post:
                 maxItems: 16
                 minItems: 0
                 items:
-                  - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.Blob"
+                  $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.Blob"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"

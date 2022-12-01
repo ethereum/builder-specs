@@ -21,6 +21,7 @@
     - [Capella](#capella)
       - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody-1)
     - [EIP-4844](#eip-4844)
+      - [`BuilderBid`](#builderbid-2)
       - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody-2)
   - [Signing](#signing)
 - [Endpoints](#endpoints)
@@ -145,6 +146,7 @@ class BlindedBeaconBlockBody(Container):
 ```
 
 #### EIP-4844
+
 ##### `BuilderBid`
 
 ```python
@@ -153,14 +155,6 @@ class BuilderBid(Container):
     value: uint256
     pubkey: BLSPubkey
     blob_kzg_commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]  # [New in EIP-4844]
-```
-
-##### `SignedBuilderBid`
-
-```python
-class SignedBuilderBid(Container):
-    message: BuilderBid # [Modified in EIP-4844]
-    signature: BLSSignature
 ```
 
 ##### `BlindedBeaconBlockBody`
