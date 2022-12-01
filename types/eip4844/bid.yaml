@@ -12,6 +12,10 @@ Eip4844:
       pubkey:
         $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
         description: "BLS public key of builder."
+      blob_kzg_commitments:
+        type: array
+        items:
+          $ref: "../../beacon-apis/types/primitive.yaml#/KZGCommitment"
 
   SignedBuilderBid:
     type: object

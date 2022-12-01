@@ -94,11 +94,11 @@ components:
     Bellatrix.SignedBuilderBid:
       $ref: "./examples/bellatrix/signed_builder_bid.json"
     Capella.SignedBlindedBeaconBlock:
-      $ref: "./examples/Capella/signed_blinded_beacon_block.json"
+      $ref: "./examples/capella/signed_blinded_beacon_block.json"
     Capella.ExecutionPayload:
-      $ref: "./examples/Capella/execution_payload.json"
+      $ref: "./examples/capella/execution_payload.json"
     Capella.SignedBuilderBid:
-      $ref: "./examples/Capella/signed_builder_bid.json"
+      $ref: "./examples/capella/signed_builder_bid.json"
     Eip4844.SignedBlindedBeaconBlock:
       $ref: "./examples/eip4844/signed_blinded_beacon_block.json"
     Eip4844.ExecutionPayload:
