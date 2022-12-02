@@ -53,7 +53,7 @@ get:
                 enum: [ bellatrix, capella, eip4844 ]
                 example: "bellatrix"
               data:
-                oneOf:
+                anyOf:
                  - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBuilderBid"
                  - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBuilderBid"
                  - $ref: "../../builder-oapi.yaml#/components/schemas/EIP4844.SignedBuilderBid"
