@@ -1,10 +1,10 @@
-Eip4844:
+EIP4844:
   BuilderBid:
     type: object
     description: "The `BuilderBid` object from the Builder API spec."
     properties:
       header:
-        $ref: "../../beacon-apis/types/eip4844/execution_payload.yaml#/Eip4844/ExecutionPayloadHeader"
+        $ref: "../../beacon-apis/types/eip4844/execution_payload.yaml#/EIP4844/ExecutionPayloadHeader"
         description: "`ExecutionPayloadHeader` to use in block proposal."
       value:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint256"
@@ -22,6 +22,6 @@ Eip4844:
     description: "The `SignedBuilderBid` object from the Builder API spec."
     properties:
       message:
-        $ref: "#/Eip4844/BuilderBid"
+        $ref: "#/EIP4844/BuilderBid"
       signature:
         $ref: "../../beacon-apis/types/primitive.yaml#/Signature"

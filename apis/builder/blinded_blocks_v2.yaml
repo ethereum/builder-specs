@@ -20,10 +20,10 @@ post:
       application/json:
         schema:
           oneOf:
-            - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/EIP4844.SignedBlindedBeaconBlock"
         examples:
           eip4844:
-            $ref: "../../builder-oapi.yaml#/components/examples/Eip4844.SignedBlindedBeaconBlock"
+            $ref: "../../builder-oapi.yaml#/components/examples/EIP4844.SignedBlindedBeaconBlock"
 
   responses:
     "200":
@@ -40,10 +40,10 @@ post:
                 example: "eip4844"
               data:
                 oneOf:
-                  - $ref: "../../builder-oapi.yaml#/components/schemas/Eip4844.SignedBeaconBlockAndBlobsSidecar"
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/EIP4844.SignedBeaconBlockAndBlobsSidecar"
           examples:
             eip4844:
-              $ref: "../../builder-oapi.yaml#/components/examples/Eip4844.SignedBeaconBlockAndBlobsSidecar"
+              $ref: "../../builder-oapi.yaml#/components/examples/EIP4844.SignedBeaconBlockAndBlobsSidecar"
     "400":
       description: Error response.
       content:

@@ -1,12 +1,12 @@
-Eip4844:
+EIP4844:
   SignedBeaconBlockAndBlobsSidecar:
     type: object
     description: "The [`SignedBeaconBlockAndBlobsSidecar`](https://github.com/ethereum/consensus-specs/blob/30e975806f7b5d43e35378ccc3dc428ba09dddd5/specs/eip4844/p2p-interface.md#signedbeaconblockandblobssidecar) object from the EIP-4844 CL spec."
     properties:
       beacon_block:
-        $ref: "../../beacon-apis/types/eip4844/block.yaml#/Eip4844/SignedBeaconBlock"
+        $ref: "../../beacon-apis/types/eip4844/block.yaml#/EIP4844/SignedBeaconBlock"
       blobs_sidecar:
-        $ref: "#/Eip4844/BlobsSidecar"
+        $ref: "#/EIP4844/BlobsSidecar"
       
   BlobsSidecar:
     type: object
@@ -21,9 +21,9 @@ Eip4844:
         maxItems: 16
         minItems: 0
         items:
-          $ref: "#/Eip4844/Blob"
+          $ref: "#/EIP4844/Blob"
       kzg_aggregated_proof: 
-        $ref: "#/Eip4844/KZGProof"
+        $ref: "#/EIP4844/KZGProof"
 
   KZGProof:
     type: string

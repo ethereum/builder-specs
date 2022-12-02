@@ -2,8 +2,10 @@ apis
 bellatrix
 bls
 bn
+capella
 cli
 dev
+eip4844
 eth
 http
 https
