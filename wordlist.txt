@@ -25,6 +25,6 @@ url
 validators
 validator's
 vc
-submitBlindedBlockV 
+submitBlindedBlockV
 wei
 EIP
