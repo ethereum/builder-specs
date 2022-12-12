@@ -5,7 +5,6 @@ bn
 capella
 cli
 dev
-eip
 eth
 http
 https
@@ -23,9 +22,9 @@ uint
 unblind
 unblinded
 url
-v
 validators
 validator's
 vc
+submitBlindedBlockV 
 wei
 EIP
