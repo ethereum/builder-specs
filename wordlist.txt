@@ -5,11 +5,12 @@ bn
 capella
 cli
 dev
-eip4844
+eip
 eth
 http
 https
 json
+kzg
 mev
 nodejs
 npm
