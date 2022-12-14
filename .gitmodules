@@ -1,4 +1,4 @@
 [submodule "beacon-apis"]
 	path = beacon-apis
 	# update to ethereum repo once PR is merged: https://github.com/ethereum/beacon-APIs/pull/271
-	url = git@github.com:jimmygchen/beacon-APIs.git
+	url = git@github.com:ethereum/beacon-APIs.git
