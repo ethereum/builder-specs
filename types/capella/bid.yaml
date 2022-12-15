@@ -2,6 +2,7 @@ Capella:
   BuilderBid:
     type: object
     description: "The `BuilderBid` object from the Builder API spec."
+    additionalProperties: false
     properties:
       header:
         $ref: "../../beacon-apis/types/capella/execution_payload.yaml#/Capella/ExecutionPayloadHeader"

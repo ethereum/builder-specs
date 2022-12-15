@@ -2,6 +2,7 @@ EIP4844:
   BuilderBid:
     type: object
     description: "The `BuilderBid` object from the Builder API spec."
+    additionalProperties: false
     properties:
       header:
         $ref: "../../beacon-apis/types/eip4844/execution_payload.yaml#/EIP4844/ExecutionPayloadHeader"

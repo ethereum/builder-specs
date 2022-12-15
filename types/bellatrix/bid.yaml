@@ -2,6 +2,7 @@ Bellatrix:
   BuilderBid:
     type: object
     description: "The `BuilderBid` object from the Builder API spec."
+    additionalProperties: false
     properties:
       header:
         $ref: "../../beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader"
