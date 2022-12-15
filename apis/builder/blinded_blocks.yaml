@@ -1,6 +1,6 @@
 post:
   operationId: "submitBlindedBlock"
-  summary: Submit a signed blinded block and get unblinded execution payload.
+  summary: Submit a signed blinded block and get unblinded execution payload and blobs sidecar.
   description: |
     Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
     to the block. The builder is now able to unblind the transactions in
@@ -46,14 +46,14 @@ post:
                 oneOf:
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.ExecutionPayload"
-                  - $ref: "../../builder-oapi.yaml#/components/schemas/EIP4844.ExecutionPayload"
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/EIP4844.ExecutionPayloadAndBlobsSidecar"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"
             capella:
               $ref: "../../builder-oapi.yaml#/components/examples/Capella.ExecutionPayload"
             eip4844:
-              $ref: "../../builder-oapi.yaml#/components/examples/EIP4844.ExecutionPayload"
+              $ref: "../../builder-oapi.yaml#/components/examples/EIP4844.ExecutionPayloadAndBlobsSidecar"
     "400":
       description: Error response.
       content:

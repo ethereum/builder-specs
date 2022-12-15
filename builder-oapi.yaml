@@ -44,8 +44,6 @@ paths:
     $ref: "./apis/builder/header.yaml"
   /eth/v1/builder/blinded_blocks:
     $ref: "./apis/builder/blinded_blocks.yaml"
-  /eth/v2/builder/blinded_blocks:
-    $ref: "./apis/builder/blinded_blocks_v2.yaml"
   /eth/v1/builder/status:
     $ref: "./apis/builder/status.yaml"
 
@@ -71,14 +69,12 @@ components:
       $ref: "./beacon-apis/types/capella/block.yaml#/Capella/SignedBlindedBeaconBlock"
     Capella.SignedBuilderBid:
       $ref: "./types/capella/bid.yaml#/Capella/SignedBuilderBid"
-    EIP4844.ExecutionPayload:
-      $ref: "./beacon-apis/types/eip4844/execution_payload.yaml#/EIP4844/ExecutionPayload"
     EIP4844.SignedBlindedBeaconBlock:
       $ref: "./beacon-apis/types/eip4844/block.yaml#/EIP4844/SignedBlindedBeaconBlock"
     EIP4844.SignedBuilderBid:
       $ref: "./types/eip4844/bid.yaml#/EIP4844/SignedBuilderBid"
-    EIP4844.SignedBeaconBlockAndBlobsSidecar:
-      $ref: "./types/eip4844/block_and_blobs_sidecar.yaml#/EIP4844/SignedBeaconBlockAndBlobsSidecar"
+    EIP4844.ExecutionPayloadAndBlobsSidecar:
+      $ref: "./types/eip4844/execution_payload_and_blobs_sidecar.yaml#/EIP4844/ExecutionPayloadAndBlobsSidecar"
     SignedValidatorRegistration:
       $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistration"
 
@@ -101,9 +97,7 @@ components:
       $ref: "./examples/capella/signed_builder_bid.json"
     EIP4844.SignedBlindedBeaconBlock:
       $ref: "./examples/eip4844/signed_blinded_beacon_block.json"
-    EIP4844.ExecutionPayload:
-      $ref: "./examples/eip4844/execution_payload.json"
+    EIP4844.ExecutionPayloadAndBlobsSidecar:
+      $ref: "./examples/eip4844/execution_payload_and_blobs_sidecar.json"
     EIP4844.SignedBuilderBid:
       $ref: "./examples/eip4844/signed_builder_bid.json"
-    EIP4844.SignedBeaconBlockAndBlobsSidecar:
-      $ref: "./examples/eip4844/signed_beacon_block_and_blobs_sidecar.json"
