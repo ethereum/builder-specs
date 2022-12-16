@@ -1,18 +1,13 @@
 Capella:
   BuilderBid:
-    type: object
-    description: "The `BuilderBid` object from the Builder API spec."
-    additionalProperties: false
-    properties:
-      header:
-        $ref: "../../beacon-apis/types/capella/execution_payload.yaml#/Capella/ExecutionPayloadHeader"
-        description: "`ExecutionPayloadHeader` to use in block proposal."
-      value:
-        $ref: "../../beacon-apis/types/primitive.yaml#/Uint256"
-        description: "Payment in wei that will be paid to the `fee_recipient` account."
-      pubkey:
-        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
-        description: "BLS public key of builder."
+    description: "The `BuilderBid` object from the Builder API Capella spec."
+    allOf:
+      - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
+      - type: object
+        properties:
+          header:
+            $ref: "../../beacon-apis/types/capella/execution_payload.yaml#/Capella/ExecutionPayloadHeader"
+            description: "`ExecutionPayloadHeader` to use in block proposal."
 
   SignedBuilderBid:
     type: object

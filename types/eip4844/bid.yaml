@@ -1,22 +1,17 @@
 EIP4844:
   BuilderBid:
-    type: object
-    description: "The `BuilderBid` object from the Builder API spec."
-    additionalProperties: false
-    properties:
-      header:
-        $ref: "../../beacon-apis/types/eip4844/execution_payload.yaml#/EIP4844/ExecutionPayloadHeader"
-        description: "`ExecutionPayloadHeader` to use in block proposal."
-      value:
-        $ref: "../../beacon-apis/types/primitive.yaml#/Uint256"
-        description: "Payment in wei that will be paid to the `fee_recipient` account."
-      pubkey:
-        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
-        description: "BLS public key of builder."
-      blob_kzg_commitments:
-        type: array
-        items:
-          $ref: "../../beacon-apis/types/primitive.yaml#/KZGCommitment"
+    description: "The `BuilderBid` object from the Builder API EIP-4844 spec."
+    allOf:
+      - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
+      - type: object
+        properties:
+          header:
+            $ref: "../../beacon-apis/types/eip4844/execution_payload.yaml#/EIP4844/ExecutionPayloadHeader"
+            description: "`ExecutionPayloadHeader` to use in block proposal."
+          blob_kzg_commitments:
+            type: array
+            items:
+              $ref: "../../beacon-apis/types/primitive.yaml#/KZGCommitment"
 
   SignedBuilderBid:
     type: object
