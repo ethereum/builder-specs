@@ -20,6 +20,9 @@
       - [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock)
     - [Capella](#capella)
       - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody-1)
+    - [EIP-4844](#eip-4844)
+      - [`BuilderBid`](#builderbid-2)
+      - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody-2)
   - [Signing](#signing)
 - [Endpoints](#endpoints)
 
@@ -140,6 +143,36 @@ class BlindedBeaconBlockBody(Container):
     sync_aggregate: SyncAggregate
     execution_payload_header: ExecutionPayloadHeader
     bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]  # [New in Capella]
+```
+
+#### EIP-4844
+
+##### `BuilderBid`
+
+```python
+class BuilderBid(Container):
+    header: ExecutionPayloadHeader # [Modified in EIP-4844]
+    value: uint256
+    pubkey: BLSPubkey
+    blob_kzg_commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]  # [New in EIP-4844]
+```
+
+##### `BlindedBeaconBlockBody`
+
+```python
+class BlindedBeaconBlockBody(Container):
+    randao_reveal: BLSSignature
+    eth1_data: Eth1Data
+    graffiti: Bytes32
+    proposer_slashings: List[ProposerSlashing, MAX_PROPOSER_SLASHINGS]
+    attester_slashings: List[AttesterSlashing, MAX_ATTESTER_SLASHINGS]
+    attestations: List[Attestation, MAX_ATTESTATIONS]
+    deposits: List[Deposit, MAX_DEPOSITS]
+    voluntary_exits: List[SignedVoluntaryExit, MAX_VOLUNTARY_EXITS]
+    sync_aggregate: SyncAggregate
+    execution_payload_header: ExecutionPayloadHeader  # [Modified in EIP-4844]
+    bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]
+    blob_kzg_commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]  # [New in EIP-4844]
 ```
 
 ### Signing

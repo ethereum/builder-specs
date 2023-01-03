@@ -1,0 +1,9 @@
+EIP4844:
+  ExecutionPayloadAndBlobsSidecar:
+    type: object
+    description: "A wrapper object containing the ExecutionPayload and the BlobsSidecar"
+    properties:
+      execution_payload:
+        $ref: '../../beacon-apis/types/eip4844/execution_payload.yaml#/EIP4844/ExecutionPayload'
+      blobs_sidecar:
+        $ref: "../../beacon-apis/types/eip4844/block_and_blobs_sidecar.yaml#/EIP4844/BlobsSidecar"

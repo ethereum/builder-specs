@@ -1,0 +1,23 @@
+EIP4844:
+  BuilderBid:
+    description: "The `BuilderBid` object from the Builder API EIP-4844 spec."
+    allOf:
+      - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
+      - type: object
+        properties:
+          header:
+            $ref: "../../beacon-apis/types/eip4844/execution_payload.yaml#/EIP4844/ExecutionPayloadHeader"
+            description: "`ExecutionPayloadHeader` to use in block proposal."
+          blob_kzg_commitments:
+            type: array
+            items:
+              $ref: "../../beacon-apis/types/primitive.yaml#/KZGCommitment"
+
+  SignedBuilderBid:
+    type: object
+    description: "The `SignedBuilderBid` object from the Builder API spec."
+    properties:
+      message:
+        $ref: "#/EIP4844/BuilderBid"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"

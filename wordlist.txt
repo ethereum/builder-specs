@@ -9,6 +9,7 @@ eth
 http
 https
 json
+kzg
 mev
 nodejs
 npm
