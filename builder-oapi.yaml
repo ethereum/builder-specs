@@ -61,12 +61,16 @@ components:
       $ref: "./beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayload"
     Bellatrix.SignedBlindedBeaconBlock:
       $ref: "./beacon-apis/types/bellatrix/block.yaml#/Bellatrix/SignedBlindedBeaconBlock"
-
     Bellatrix.SignedBuilderBid:
       $ref: "./types/bellatrix/bid.yaml#/Bellatrix/SignedBuilderBid"
+    Capella.ExecutionPayload:
+      $ref: "./beacon-apis/types/capella/execution_payload.yaml#/Capella/ExecutionPayload"
+    Capella.SignedBlindedBeaconBlock:
+      $ref: "./beacon-apis/types/capella/block.yaml#/Capella/SignedBlindedBeaconBlock"
+    Capella.SignedBuilderBid:
+      $ref: "./types/capella/bid.yaml#/Capella/SignedBuilderBid"
     SignedValidatorRegistration:
       $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistration"
-
 
   responses:
     InternalError:
@@ -79,3 +83,9 @@ components:
       $ref: "./examples/bellatrix/execution_payload.json"
     Bellatrix.SignedBuilderBid:
       $ref: "./examples/bellatrix/signed_builder_bid.json"
+    Capella.SignedBlindedBeaconBlock:
+      $ref: "./examples/capella/signed_blinded_beacon_block.json"
+    Capella.ExecutionPayload:
+      $ref: "./examples/capella/execution_payload.json"
+    Capella.SignedBuilderBid:
+      $ref: "./examples/capella/signed_builder_bid.json"
