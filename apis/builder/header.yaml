@@ -45,17 +45,16 @@ get:
       content:
         application/json:
           schema:
-            title: GetHeaderResponse
-            type: object
-            properties:
-              version:
-                type: string
-                enum: [ bellatrix, capella ]
-                example: "bellatrix"
-              data:
-                oneOf:
-                 - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBuilderBid"
-                 - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBuilderBid"
+            # discrimantor is required for schema validation to pass, as the examples could match more than one schema.
+            discriminator:
+              propertyName: version
+              mapping:
+                bellatrix: "../../builder-oapi.yaml#/components/schemas/Bellatrix.GetHeaderResponse"
+                capella: "../../builder-oapi.yaml#/components/schemas/Capella.GetHeaderResponse"
+            # GetHeaderResponse wrapper is required as `discriminator` can only be used at the same level as `oneOf`
+            oneOf:
+              - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.GetHeaderResponse"
+              - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.GetHeaderResponse"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBuilderBid"

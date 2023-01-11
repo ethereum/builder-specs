@@ -63,12 +63,16 @@ components:
       $ref: "./beacon-apis/types/bellatrix/block.yaml#/Bellatrix/SignedBlindedBeaconBlock"
     Bellatrix.SignedBuilderBid:
       $ref: "./types/bellatrix/bid.yaml#/Bellatrix/SignedBuilderBid"
+    Bellatrix.GetHeaderResponse:
+      $ref: "./types/bellatrix/bid.yaml#/Bellatrix/GetHeaderResponse"
     Capella.ExecutionPayload:
       $ref: "./beacon-apis/types/capella/execution_payload.yaml#/Capella/ExecutionPayload"
     Capella.SignedBlindedBeaconBlock:
       $ref: "./beacon-apis/types/capella/block.yaml#/Capella/SignedBlindedBeaconBlock"
     Capella.SignedBuilderBid:
       $ref: "./types/capella/bid.yaml#/Capella/SignedBuilderBid"
+    Capella.GetHeaderResponse:
+      $ref: "./types/capella/bid.yaml#/Capella/GetHeaderResponse"
     SignedValidatorRegistration:
       $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistration"
 
