@@ -50,20 +50,20 @@ get:
             properties:
               version:
                 type: string
-                enum: [ bellatrix, capella, eip4844 ]
+                enum: [ bellatrix, capella, deneb ]
                 example: "bellatrix"
               data:
                 oneOf:
                  - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBuilderBid"
                  - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBuilderBid"
-                 - $ref: "../../builder-oapi.yaml#/components/schemas/EIP4844.SignedBuilderBid"
+                 - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBuilderBid"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBuilderBid"
             capella:
               $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBuilderBid"
-            eip4844:
-              $ref: "../../builder-oapi.yaml#/components/examples/EIP4844.SignedBuilderBid"
+            deneb:
+              $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBuilderBid"
     "204":
       description: No header is available.
     "400":

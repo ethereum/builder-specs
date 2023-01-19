@@ -20,14 +20,14 @@ post:
           oneOf:
             - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
             - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBlindedBeaconBlock"
-            - $ref: "../../builder-oapi.yaml#/components/schemas/EIP4844.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBlindedBeaconBlock"
         examples:
           bellatrix:
             $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
           capella:
             $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBlindedBeaconBlock"
-          eip4844:
-            $ref: "../../builder-oapi.yaml#/components/examples/EIP4844.SignedBlindedBeaconBlock"
+          deneb:
+            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBlindedBeaconBlock"
 
   responses:
     "200":
@@ -40,20 +40,20 @@ post:
             properties:
               version:
                 type: string
-                enum: [ bellatrix, capella, eip4844 ]
+                enum: [ bellatrix, capella, deneb ]
                 example: "bellatrix"
               data:
                 oneOf:
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.ExecutionPayload"
-                  - $ref: "../../builder-oapi.yaml#/components/schemas/EIP4844.ExecutionPayloadAndBlobsSidecar"
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.ExecutionPayloadAndBlobsSidecar"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"
             capella:
               $ref: "../../builder-oapi.yaml#/components/examples/Capella.ExecutionPayload"
-            eip4844:
-              $ref: "../../builder-oapi.yaml#/components/examples/EIP4844.ExecutionPayloadAndBlobsSidecar"
+            deneb:
+              $ref: "../../builder-oapi.yaml#/components/examples/Deneb.ExecutionPayloadAndBlobsSidecar"
     "400":
       description: Error response.
       content:

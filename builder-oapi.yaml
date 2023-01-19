@@ -69,12 +69,12 @@ components:
       $ref: "./beacon-apis/types/capella/block.yaml#/Capella/SignedBlindedBeaconBlock"
     Capella.SignedBuilderBid:
       $ref: "./types/capella/bid.yaml#/Capella/SignedBuilderBid"
-    EIP4844.SignedBlindedBeaconBlock:
-      $ref: "./beacon-apis/types/eip4844/block.yaml#/EIP4844/SignedBlindedBeaconBlock"
-    EIP4844.SignedBuilderBid:
-      $ref: "./types/eip4844/bid.yaml#/EIP4844/SignedBuilderBid"
-    EIP4844.ExecutionPayloadAndBlobsSidecar:
-      $ref: "./types/eip4844/execution_payload_and_blobs_sidecar.yaml#/EIP4844/ExecutionPayloadAndBlobsSidecar"
+    Deneb.SignedBlindedBeaconBlock:
+      $ref: "./beacon-apis/types/deneb/block.yaml#/Deneb/SignedBlindedBeaconBlock"
+    Deneb.SignedBuilderBid:
+      $ref: "./types/deneb/bid.yaml#/Deneb/SignedBuilderBid"
+    Deneb.ExecutionPayloadAndBlobsSidecar:
+      $ref: "./types/deneb/execution_payload_and_blobs_sidecar.yaml#/Deneb/ExecutionPayloadAndBlobsSidecar"
     SignedValidatorRegistration:
       $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistration"
 
@@ -95,9 +95,9 @@ components:
       $ref: "./examples/capella/execution_payload.json"
     Capella.SignedBuilderBid:
       $ref: "./examples/capella/signed_builder_bid.json"
-    EIP4844.SignedBlindedBeaconBlock:
-      $ref: "./examples/eip4844/signed_blinded_beacon_block.json"
-    EIP4844.ExecutionPayloadAndBlobsSidecar:
-      $ref: "./examples/eip4844/execution_payload_and_blobs_sidecar.json"
-    EIP4844.SignedBuilderBid:
-      $ref: "./examples/eip4844/signed_builder_bid.json"
+    Deneb.SignedBlindedBeaconBlock:
+      $ref: "./examples/deneb/signed_blinded_beacon_block.json"
+    Deneb.ExecutionPayloadAndBlobsSidecar:
+      $ref: "./examples/deneb/execution_payload_and_blobs_sidecar.json"
+    Deneb.SignedBuilderBid:
+      $ref: "./examples/deneb/signed_builder_bid.json"

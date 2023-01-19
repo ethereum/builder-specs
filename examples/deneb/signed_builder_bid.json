@@ -1,6 +1,6 @@
 {
   "value": {
-    "version": "eip4844",
+    "version": "deneb",
     "data": {
       "message": {
         "header": {

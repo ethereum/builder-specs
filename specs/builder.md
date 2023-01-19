@@ -20,7 +20,7 @@
       - [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock)
     - [Capella](#capella)
       - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody-1)
-    - [EIP-4844](#eip-4844)
+    - [Deneb](#deneb)
       - [`BuilderBid`](#builderbid-2)
       - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody-2)
   - [Signing](#signing)
@@ -145,16 +145,16 @@ class BlindedBeaconBlockBody(Container):
     bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]  # [New in Capella]
 ```
 
-#### EIP-4844
+#### Deneb
 
 ##### `BuilderBid`
 
 ```python
 class BuilderBid(Container):
-    header: ExecutionPayloadHeader # [Modified in EIP-4844]
+    header: ExecutionPayloadHeader # [Modified in Deneb]
     value: uint256
     pubkey: BLSPubkey
-    blob_kzg_commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]  # [New in EIP-4844]
+    blob_kzg_commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]  # [New in Deneb]
 ```
 
 ##### `BlindedBeaconBlockBody`
@@ -170,9 +170,9 @@ class BlindedBeaconBlockBody(Container):
     deposits: List[Deposit, MAX_DEPOSITS]
     voluntary_exits: List[SignedVoluntaryExit, MAX_VOLUNTARY_EXITS]
     sync_aggregate: SyncAggregate
-    execution_payload_header: ExecutionPayloadHeader  # [Modified in EIP-4844]
+    execution_payload_header: ExecutionPayloadHeader  # [Modified in Deneb]
     bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]
-    blob_kzg_commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]  # [New in EIP-4844]
+    blob_kzg_commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]  # [New in Deneb]
 ```
 
 ### Signing
