@@ -125,6 +125,23 @@ class SignedBlindedBeaconBlock(Container):
 
 #### Capella
 
+##### `BuilderBid`
+
+```python
+class BuilderBid(Container):
+    header: ExecutionPayloadHeader # [Modified in EIP-4844]
+    value: uint256
+    pubkey: BLSPubkey
+```
+
+##### `SignedBuilderBid`
+
+```python
+class SignedBuilderBid(Container):
+    message: BuilderBid # [Modified in EIP-4844]
+    signature: BLSSignature
+```
+
 ##### `BlindedBeaconBlockBody`
 
 ```python
@@ -138,8 +155,27 @@ class BlindedBeaconBlockBody(Container):
     deposits: List[Deposit, MAX_DEPOSITS]
     voluntary_exits: List[SignedVoluntaryExit, MAX_VOLUNTARY_EXITS]
     sync_aggregate: SyncAggregate
-    execution_payload_header: ExecutionPayloadHeader
+    execution_payload_header: ExecutionPayloadHeader # [Modified in EIP-4844]
     bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]  # [New in Capella]
+```
+
+##### `BlindedBeaconBlock`
+
+```python
+class BlindedBeaconBlock(Container):
+    slot: Slot
+    proposer_index: ValidatorIndex
+    parent_root: Root
+    state_root: Root
+    body: BlindedBeaconBlockBody # [Modified in EIP-4844]
+```
+
+##### `SignedBlindedBeaconBlock`
+
+```python
+class SignedBlindedBeaconBlock(Container):
+    message: BlindedBeaconBlock # [Modified in EIP-4844]
+    signature: BLSSignature
 ```
 
 ### Signing
