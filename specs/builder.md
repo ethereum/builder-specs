@@ -19,7 +19,11 @@
       - [`BlindedBeaconBlock`](#blindedbeaconblock)
       - [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock)
     - [Capella](#capella)
+      - [`BuilderBid`](#builderbid-1)
+      - [`SignedBuilderBid`](#signedbuilderbid-1)
       - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody-1)
+      - [`BlindedBeaconBlock`](#blindedbeaconblock-1)
+      - [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock-1)
   - [Signing](#signing)
 - [Endpoints](#endpoints)
 
