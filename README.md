@@ -48,11 +48,11 @@ The API specification is checked for lint errors before merging pull requests.
 
 To run the linter locally, install it with:
 ```console
-npm install -g @stoplight/spectral-cli@6.2.1
+npm install -g @redocly/cli
 ```
 and then run it:
 ```console
-spectral lint builder-oapi.yaml
+redocly lint builder-oapi.yaml
 ```
 
 ### Render API Specification
