@@ -11,6 +11,13 @@ post:
     `ExecutionPayloadHeader`, it must error.
   tags:
     - Builder
+  parameters:
+    - in: header
+      schema:
+        $ref: '../../beacon-apis/beacon-node-oapi.yaml#/components/schemas/ConsensusVersion'
+      required: false
+      name: Eth-Consensus-Version
+      description: "Version of the block being submitted"
   requestBody:
     description: A `SignedBlindedBeaconBlock`.
     required: true
