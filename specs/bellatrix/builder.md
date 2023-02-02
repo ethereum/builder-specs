@@ -1,4 +1,4 @@
-# Builder Specification
+# Bellatrix -- Builder Specification
 
 ## Table of Contents
 
@@ -18,12 +18,6 @@
       - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody)
       - [`BlindedBeaconBlock`](#blindedbeaconblock)
       - [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock)
-    - [Capella](#capella)
-      - [`BuilderBid`](#builderbid-1)
-      - [`SignedBuilderBid`](#signedbuilderbid-1)
-      - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody-1)
-      - [`BlindedBeaconBlock`](#blindedbeaconblock-1)
-      - [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock-1)
   - [Signing](#signing)
 - [Endpoints](#endpoints)
 
@@ -124,61 +118,6 @@ class BlindedBeaconBlock(Container):
 ```python
 class SignedBlindedBeaconBlock(Container):
     message: BlindedBeaconBlock
-    signature: BLSSignature
-```
-
-#### Capella
-
-##### `BuilderBid`
-
-```python
-class BuilderBid(Container):
-    header: ExecutionPayloadHeader # [Modified in Capella]
-    value: uint256
-    pubkey: BLSPubkey
-```
-
-##### `SignedBuilderBid`
-
-```python
-class SignedBuilderBid(Container):
-    message: BuilderBid # [Modified in Capella]
-    signature: BLSSignature
-```
-
-##### `BlindedBeaconBlockBody`
-
-```python
-class BlindedBeaconBlockBody(Container):
-    randao_reveal: BLSSignature
-    eth1_data: Eth1Data
-    graffiti: Bytes32
-    proposer_slashings: List[ProposerSlashing, MAX_PROPOSER_SLASHINGS]
-    attester_slashings: List[AttesterSlashing, MAX_ATTESTER_SLASHINGS]
-    attestations: List[Attestation, MAX_ATTESTATIONS]
-    deposits: List[Deposit, MAX_DEPOSITS]
-    voluntary_exits: List[SignedVoluntaryExit, MAX_VOLUNTARY_EXITS]
-    sync_aggregate: SyncAggregate
-    execution_payload_header: ExecutionPayloadHeader # [Modified in Capella]
-    bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]  # [New in Capella]
-```
-
-##### `BlindedBeaconBlock`
-
-```python
-class BlindedBeaconBlock(Container):
-    slot: Slot
-    proposer_index: ValidatorIndex
-    parent_root: Root
-    state_root: Root
-    body: BlindedBeaconBlockBody # [Modified in Capella]
-```
-
-##### `SignedBlindedBeaconBlock`
-
-```python
-class SignedBlindedBeaconBlock(Container):
-    message: BlindedBeaconBlock # [Modified in Capella]
     signature: BLSSignature
 ```
 
