@@ -17,14 +17,3 @@ Capella:
         $ref: "#/Capella/BuilderBid"
       signature:
         $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
-
-  # Wrapper object in order to use `discriminator` with `oneOf`
-  GetHeaderResponse:
-    type: object
-    required:
-      - version
-    properties:
-      version:
-        type: string
-      data:
-        $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBuilderBid"

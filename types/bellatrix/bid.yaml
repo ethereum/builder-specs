@@ -27,13 +27,3 @@ Bellatrix:
         $ref: "#/Bellatrix/BuilderBid"
       signature:
         $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
-
-  GetHeaderResponse:
-    type: object
-    required:
-      - version
-    properties:
-      version:
-        type: string
-      data:
-        $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBuilderBid"
