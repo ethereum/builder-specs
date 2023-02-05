@@ -1,4 +1,4 @@
-# Bellatrix -- Builder -- Honest Validator
+# Bellatrix -- Honest Validator
 
 **Notice**: This document is a work-in-progress for researchers and implementers.
 
