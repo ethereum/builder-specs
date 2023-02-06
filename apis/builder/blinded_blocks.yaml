@@ -11,6 +11,13 @@ post:
     `ExecutionPayloadHeader`, it must error.
   tags:
     - Builder
+  parameters:
+    - in: header
+      schema:
+        $ref: '../../beacon-apis/beacon-node-oapi.yaml#/components/schemas/ConsensusVersion'
+      required: false
+      name: Eth-Consensus-Version
+      description: "Version of the block being submitted"
   requestBody:
     description: A `SignedBlindedBeaconBlock`.
     required: true
@@ -19,9 +26,12 @@ post:
         schema:
           oneOf:
             - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBlindedBeaconBlock"
         examples:
           bellatrix:
             $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
+          capella:
+            $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBlindedBeaconBlock"
 
   responses:
     "200":
@@ -34,14 +44,17 @@ post:
             properties:
               version:
                 type: string
-                enum: [ bellatrix ]
+                enum: [ bellatrix, capella ]
                 example: "bellatrix"
               data:
                 oneOf:
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.ExecutionPayload"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"
+            capella:
+              $ref: "../../builder-oapi.yaml#/components/examples/Capella.ExecutionPayload"
     "400":
       description: Error response.
       content:

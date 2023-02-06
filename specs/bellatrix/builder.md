@@ -1,4 +1,4 @@
-# Builder Specification
+# Bellatrix -- Builder Specification
 
 ## Table of Contents
 

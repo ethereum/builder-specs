@@ -1,17 +1,23 @@
 Bellatrix:
-  BuilderBid:
+  BuilderBidCommon:
     type: object
-    description: "The `BuilderBid` object from the Builder API spec."
     properties:
-      header:
-        $ref: "../../beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader"
-        description: "`ExecutionPayloadHeader` to use in block proposal."
       value:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint256"
         description: "Payment in wei that will be paid to the `fee_recipient` account."
       pubkey:
         $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
         description: "BLS public key of builder."
+
+  BuilderBid:
+    description: "The `BuilderBid` object from the Builder API Bellatrix spec."
+    allOf:
+      - type: object
+        properties:
+          header:
+            $ref: "../../beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader"
+            description: "`ExecutionPayloadHeader` to use in block proposal."
+      - $ref: '#/Bellatrix/BuilderBidCommon'
 
   SignedBuilderBid:
     type: object
