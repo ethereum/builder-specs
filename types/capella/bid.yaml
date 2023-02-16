@@ -2,12 +2,12 @@ Capella:
   BuilderBid:
     description: "The `BuilderBid` object from the Builder API Capella spec."
     allOf:
-      - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
       - type: object
         properties:
           header:
             $ref: "../../beacon-apis/types/capella/execution_payload.yaml#/Capella/ExecutionPayloadHeader"
             description: "`ExecutionPayloadHeader` to use in block proposal."
+      - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
 
   SignedBuilderBid:
     type: object

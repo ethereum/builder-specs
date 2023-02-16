@@ -12,12 +12,12 @@ Bellatrix:
   BuilderBid:
     description: "The `BuilderBid` object from the Builder API Bellatrix spec."
     allOf:
-      - $ref: '#/Bellatrix/BuilderBidCommon'
       - type: object
         properties:
           header:
             $ref: "../../beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayloadHeader"
             description: "`ExecutionPayloadHeader` to use in block proposal."
+      - $ref: '#/Bellatrix/BuilderBidCommon'
 
   SignedBuilderBid:
     type: object

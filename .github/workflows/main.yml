@@ -11,11 +11,10 @@ jobs:
       with:
         submodules: true
     - uses: actions/setup-node@v2
-    - run: npm i -g @apidevtools/swagger-cli@4 @stoplight/spectral-cli@6.3.0
-    - run: spectral --version
+    - run: npm i -g @apidevtools/swagger-cli@4 @redocly/cli@1.0.0-beta.111
 
     - name: Lint spec
-      run: spectral lint ./builder-oapi.yaml
+      run: redocly lint ./builder-oapi.yaml
 
     - name: Bundle spec
       run: "swagger-cli bundle ./builder-oapi.yaml -r -t yaml -o ./deploy/builder-oapi.yaml"
