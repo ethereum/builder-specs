@@ -93,8 +93,8 @@ with real tag name from step 1.):
 
 [ci]: https://github.com/ethereum/builder-specs/workflows/CI/badge.svg
 [oas-spec]: https://ethereum.github.io/builder-specs/
-[builder-spec]: specs/builder.md
-[validator-spec]: specs/validator.md
+[builder-spec]: specs/
+[validator-spec]: specs/
 [pbs]: https://ethresear.ch/t/proposer-block-builder-separation-friendly-fee-market-designs/9725
 [mev-boost-ethr]: https://ethresear.ch/t/mev-boost-merge-ready-flashbots-architecture/11177
 [mev-boost]: https://github.com/flashbots/mev-boost
