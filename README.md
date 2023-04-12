@@ -5,8 +5,7 @@
 The Builder API is an interface for consensus layer clients to source blocks
 built by external entities.
 
-In this repository:
-* [API specification][oas-spec]
+In this repository is the [API specification][oas-spec] along with specifications for actors in this ecosystem broken out by fork.
 
 ### Why?
 
