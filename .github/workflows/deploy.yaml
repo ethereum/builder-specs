@@ -6,12 +6,14 @@ on:
       - "main"
 
 jobs:
-  outputs:
-    releases: ${{ steps.releases.outputs.releases }}
-  steps:
-    - id: releases
-      run: |
-        echo "releases=$(curl -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/${{github.repository}}/releases?per_page=100" | jq -c '[.[].tag_name]')" >> $GITHUB_OUTPUT
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      releases: ${{ steps.releases.outputs.releases }}
+    steps:
+      - id: releases
+        run: |
+          echo "releases=$(curl -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" "https://api.github.com/repos/${{github.repository}}/releases?per_page=100" | jq -c '[.[].tag_name]')" >> $GITHUB_OUTPUT
   releases:
     needs: setup
     runs-on: ubuntu-latest
@@ -32,6 +34,7 @@ jobs:
           path: |
             deploy/releases
   deploy:
+    needs: releases
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -44,7 +47,7 @@ jobs:
           mkdir ./deploy
           cp -r dist ./deploy
           cp -r assets ./deploy
-          cp -r index.html ./deploy
+          cp index.html ./deploy
       - name: Restore releases
         uses: actions/download-artifact@v3
         with:
