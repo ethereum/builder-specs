@@ -70,7 +70,7 @@ Local changes will be observable if "dev" is selected in the "Select a
 definition" drop-down in the web UI.
 
 It may be necessary to tick the "Disable Cache" box in their browser's
-developer tools to see changes after modifying the source. 
+developer tools to see changes after modifying the source.
 
 ## Releasing
 
