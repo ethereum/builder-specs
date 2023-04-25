@@ -115,6 +115,23 @@ the following actions:
    to assemble a `SignedBeaconBlock` following the rest of the proposal process outlined in the
    [Bellatrix specs][bellatrix-specs].
 
+##### `process_builder_bid`
+
+```python
+def process_builder_bid(state: BeaconState, bid: SignedBuilderBid):
+    # TODO: Verify bid signature
+    # TODO: Verify BLS public key corresponds to a registered validator (?)
+    # TODO: Verify bid value (?)
+    # TODO: Verify execution payload header (?)
+```
+
+##### `prepare_blinded_beacon_block`
+
+```python
+def prepare_blinded_beacon_block(state: BeaconState, accepted_bid: BuilderBid) -> SignedBlindedBeaconBlock:
+    # TODO
+```
+
 #### Relation to local block building
 
 The external builder network offers a service for proposers that may from time to time fail to produce a timely block.

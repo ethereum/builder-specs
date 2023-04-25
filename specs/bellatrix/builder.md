@@ -141,6 +141,132 @@ convert in-protocol messages to their SSZ representation to compute the signing
 root and Builder API messages to the SSZ representations defined
 [above](#containers).
 
+## Registration processing
+
+### `process_registration`
+
+```python
+def process_registration(state: BeaconState,
+                         registration: SignedValidatorRegistrationV1,
+                         latest_registrations: Dict[ValidatorIndex, ValidatorRegistrationV1]):
+    signature = registration.signature
+    registration = registration.message
+
+    # Verify BLS public key corresponds to a registered validator
+    validator = get_validator_with_pubkey(state, registration.pubkey)
+    assert validator is not None
+
+    # Verify validator registration elibility
+    index, validator = validator
+    assert is_eligible_for_registration(state, validator)
+
+    # Verify registration signature
+    assert verify_registration_signature(state, registration)
+
+    # If there exists a previous registration, then verify timestamp
+    # TODO: define `MAX_REGISTRATION_LOOKAHEAD`
+    prev_registration = latest_registrations[index]
+    if prev_registration is not None:
+        assert registration.timestamp > prev_registration.timestamp
+        assert registration.timestamp < (compute_timestamp_at_slot(state, state.slot) + MAX_REGISTRATION_LOOKAHEAD)
+
+    # Verify gas limit
+    # TODO: define `MAX_GAS_LIMIT` (?)
+    assert registration.gas_limit > 0 and registration.gas_limit < MAX_GAS_LIMIT
+
+    # Cache registration
+    latest_registrations[index] = registration
+```
+
+### `get_validator_with_pubkey`
+
+```python
+def get_validator_with_pubkey(state: BeaconState, pubkey: BLSPubkey) -> Optional[Tuple[ValidatorIndex, Validator]]:
+    """
+    Look up validator for ``pubkey``
+    """
+
+    validator_pubkeys = [v.pubkey for v in state.validators]
+    if pubkey not in validator_pubkeys:
+        return None
+
+    index = ValidatorIndex(validator_pubkeys.index(pubkey))
+    validator = state.validators[index]
+    return index, validator
+
+```
+
+### `is_eligible_for_registration`
+
+```python
+def is_eligible_for_registration(state: BeaconState, validator: Validator) -> bool:
+    """
+    Check if ``validator`` is not slashed and is either active or pending
+    """
+
+    if validator.slashed:
+        return False
+
+    epoch = get_current_epoch(state)
+    return is_active_validator(validator, epoch) or is_eligible_for_activation(state, validator) or is_eligible_for_activation_queue(validator)
+```
+
+### `verify_registration_signature`
+
+```python
+def verify_registration_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV1):
+    pubkey = signed_registration.message.pubkey
+    signing_root = compute_signing_root(signed_registration.message, get_domain(state, DOMAIN_APPLICATION_BUILDER))
+    return bls.Verify(pubkey, signing_root, signed_registration.signature)
+```
+
+## Constructing the `ExecutionPayloadHeader`
+
+Given the `slot`, `parent_hash`, and `pubkey`, the builder MUST return the header of the valid execution payload that is able to pay the `fee_recipient` for the registered `pubkey` the most.
+If the builder has not processed a previous validator registration for `pubkey`, then the builder MUST return (the appropriate error code).
+If the validator registered for `pubkey` is not the proposer for `slot`, then the builder MUST return (the appropriate error code).
+If `parent_hash` does not correspond to the head block hash according to the fork choice of the builder, then the builder MUST return (the appropriate error code).
+If possible under the rules of consensus, the builder MUST return an execution payload header whose `gas_limit` is equal to the `gas_limit` of the latest registration for `pubkey`.
+Otherwise, the builder MUST return an execution payload header with `gas_limit` as close as possible to the desired value under the rules of consensus.
+
+## Blinded block processing
+
+### `process_blinded_beacon_block`
+
+```python
+def process_blinded_beacon_block(state: BeaconState,
+                                 block: SignedBlindedBeaconBlock,
+                                 bids: Dict[Slot, Set[BuilderBid],
+                                 blocks: Dict[Slot, SignedBlindedBeaconBlock]):
+    # Verify block signature
+    assert verify_blinded_block_signature(state, block)
+
+    # TODO: Verify slot
+
+    block = block.message
+
+    # Verify a previous block has not been submitted for the same slot
+    assert blocks[block.slot] is None
+
+    # Verify the execution payload header corresponds to a previous bid
+    bid_headers = [b.header for b in bids]
+    assert block.body.execution_payload_header in bid_headers
+
+    # TODO: Verify the remainder of the block
+
+    # Cache the block
+    blocks[block.slot] = block
+```
+
+### `verify_blinded_block_signature`
+
+```python
+def verify_blinded_block_signature(state: BeaconState, signed_block: SignedBlindedBeaconBlock):
+    proposer = state.validators[signed_block.message.proposer_index]
+    signing_root = compute_signing_root(signed_block.message, get_domain(state, DOMAIN_BEACON_PROPOSER))
+    return bls.Verify(proposer.pubkey, signing_root, signed_registration.signature)
+```
+
 ## Endpoints
 
 Builder API endpoints are defined in `builder-oapi.yaml` in the root of the
