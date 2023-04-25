@@ -264,7 +264,7 @@ def process_blinded_beacon_block(state: BeaconState,
 def verify_blinded_block_signature(state: BeaconState, signed_block: SignedBlindedBeaconBlock):
     proposer = state.validators[signed_block.message.proposer_index]
     signing_root = compute_signing_root(signed_block.message, get_domain(state, DOMAIN_BEACON_PROPOSER))
-    return bls.Verify(proposer.pubkey, signing_root, signed_registration.signature)
+    return bls.Verify(proposer.pubkey, signing_root, signed_block.signature)
 ```
 
 ## Endpoints
