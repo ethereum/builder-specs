@@ -249,7 +249,7 @@ def process_blinded_beacon_block(state: BeaconState,
     assert blocks[block.slot] is None
 
     # Verify the execution payload header corresponds to a previous bid
-    bid_headers = [b.header for b in bids]
+    bid_headers = [b.header for b in bids[block.slot]]
     assert block.body.execution_payload_header in bid_headers
 
     # TODO: Verify the remainder of the block
