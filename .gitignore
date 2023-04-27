@@ -1,0 +1,5 @@
+**/__pycache__/
+venv
+
+tests/core/pyspec/builderspec/bellatrix.py
+tests/core/pyspec/builderspec/capella.py

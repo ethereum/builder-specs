@@ -1,3 +1,6 @@
 [submodule "beacon-apis"]
 	path = beacon-apis
 	url = git@github.com:ethereum/beacon-APIs.git
+[submodule "consensus-specs"]
+	path = consensus-specs
+	url = https://github.com/ethereum/consensus-specs
