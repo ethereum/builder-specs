@@ -3,12 +3,12 @@ post:
   summary: Submit a signed blinded block and get unblinded execution payload.
   description: |
     Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
-    to the block. The builder is now able to unblind the transactions in
-    `ExecutionPayloadHeader` without the possibility of the validator modifying
-    them.
+    to the block.
 
-    If the builder is not able to unblind the corresponding
-    `ExecutionPayloadHeader`, it must error.
+    A success response (200) indicates that the signed blinded beacon block was
+    valid. If the signed blinded beacon block was invalid, then the builder
+    must return an error response (400) with a description of the validation
+    failure.
   tags:
     - Builder
   parameters:

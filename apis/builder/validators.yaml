@@ -4,11 +4,12 @@ post:
   description: |
     Registers a validator's preferred fee recipient and gas limit.
 
-    Builders should verify that `pubkey` corresponds to an active or pending
-    validator, and that `signature` is valid under `pubkey`. Otherwise, builder
-    must error. Requests with `timestamp` less than the previous successful 
-    announcement must error. Requests with `timestamp` more than 10 seconds in 
-    the future must error.
+    A success response (200) indicates that the registration was valid. If the
+    registration passes validation, then the builder MUST integrate the
+    registration into its state, such that future blocks built for the
+    validator conform to the preferences expressed in the registration. If the
+    registration is invalid, then the builder MUST return an error response
+    (400) with a description of the validation failure.
   tags:
     - Builder
   requestBody:
