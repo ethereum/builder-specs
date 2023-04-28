@@ -35,7 +35,7 @@
 
 | Name | Value | Unit | Duration |
 | - | - | - | - |
-| `MAX_REGISTRATION_LOOKAHEAD` | uint64(10) | seconds | 10 seconds |
+| `MAX_REGISTRATION_LOOKAHEAD` | `uint64(10)` | seconds | 10 seconds |
 
 ## Containers
 
