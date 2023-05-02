@@ -149,16 +149,27 @@ root and Builder API messages to the SSZ representations defined
 
 ## Validator registration processing
 
+To assist in registration processing, we use a function from the [consensus specs][consensus-specs]: [`is_active_validator`][is-active-validator].
+
+### `is_pending_validator`
+
+```python
+def is_pending_validator(validator: Validator, epoch: Epoch) -> bool:
+    """
+    Check if ``validator`` is pending in ``epoch``.
+    """
+    return validator.activation_epoch > epoch
+```
+
 ### `is_eligible_for_registration`
 
 ```python
 def is_eligible_for_registration(state: BeaconState, validator: Validator) -> bool:
     """
-    Check if ``validator`` is either active or pending
+    Check if ``validator`` is active or pending.
     """
-
     epoch = get_current_epoch(state)
-    return is_active_validator(validator, epoch) or is_eligible_for_activation(state, validator) or is_eligible_for_activation_queue(validator)
+    return is_active_validator(validator, epoch) or is_pending_validator(validator, epoch)
 ```
 
 ### `verify_registration_signature`
@@ -255,3 +266,4 @@ https://ethereum.github.io/builder-specs/.
 [bls]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#bls-signatures
 [compute-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_signing_root
 [compute-domain]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_domain
+[is-active-validator]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#is_active_validator
