@@ -177,7 +177,8 @@ def is_eligible_for_registration(state: BeaconState, validator: Validator) -> bo
 ```python
 def verify_registration_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV1):
     pubkey = signed_registration.message.pubkey
-    signing_root = compute_signing_root(signed_registration.message, get_domain(state, DOMAIN_APPLICATION_BUILDER))
+    domain = compute_domain(DOMAIN_APPLICATION_BUILDER, fork_version=None, genesis_validators_root=None)
+    signing_root = compute_signing_root(signed_registration.message, domain)
     return bls.Verify(pubkey, signing_root, signed_registration.signature)
 ```
 
@@ -186,7 +187,7 @@ def verify_registration_signature(state: BeaconState, signed_registration: Signe
 ```python
 def process_registration(state: BeaconState,
                          registration: SignedValidatorRegistrationV1,
-                         latest_registrations: Dict[BLSPubkey, ValidatorRegistrationV1]):
+                         registrations: Dict[BLSPubkey, ValidatorRegistrationV1]):
     signature = registration.signature
     registration = registration.message
 
@@ -201,8 +202,8 @@ def process_registration(state: BeaconState,
     assert is_eligible_for_registration(state, validator)
 
     # If there exists a previous registration, then verify timestamp
-    if registration.pubkey in latest_registrations:
-        prev_registration = latest_registrations[registration.pubkey]
+    if registration.pubkey in registrations:
+        prev_registration = registrations[registration.pubkey]
         assert registration.timestamp >= prev_registration.timestamp
         assert registration.timestamp <= (compute_timestamp_at_slot(state, state.slot) + MAX_REGISTRATION_LOOKAHEAD)
 
@@ -210,46 +211,132 @@ def process_registration(state: BeaconState,
     assert verify_registration_signature(state, registration)
 ```
 
-## Constructing the `ExecutionPayloadHeader`
+## Building
 
-Given the `slot`, `parent_hash`, and `pubkey`, the builder MUST return the header of the valid execution payload that is able to pay the `fee_recipient` for the registered `pubkey` the most.
-If the builder has not processed a previous validator registration for `pubkey`, then the builder MUST return (the appropriate error code).
-If the validator registered for `pubkey` is not the proposer for `slot`, then the builder MUST return (the appropriate error code).
-If `parent_hash` does not correspond to the head block hash according to the fork choice of the builder, then the builder MUST return (the appropriate error code).
+Upon request, a builder is expected to build execution payloads for registered validators.
+The builder responds with a `SignedBuilderBid` that commits to the header of an execution payload.
+The builder only reveals the full execution payload once the validator accepts the bid.
+The validator accepts a bid and commits to a specific `ExecutionPayload` with a `SignedBlindedBeaconBlock`.
+
+### Bidding
+
+To assist in bidding, we use the following functions from the [consensus specs][consensus-specs]:
+
+* [`get_beacon_proposer_index`][get-beacon-proposer-index]
+* [`hash_tree_root`][hash-tree-root]
+
+Validators submit execution payload header requests for a specific `slot`, `parent_hash`, and `pubkey`.
+
+The builder validates the request according to `is_eligible_for_bid(state, registrations, slot, parent_hash, pubkey)` where:
+
+* `registrations` is the registry of validators [successfully registered](#process-registration) with the builder
+
+```python
+def is_valid_parent_hash(state: BeaconState, parent_hash: Hash32) -> bool:
+    """
+    Check if ``parent_hash`` is in ``state``.
+    """
+    # TODO
+```
+
+```python
+def is_eligible_for_bid(state: BeaconState,
+                        registrations: Dict[BLSPubkey, ValidatorRegistrationV1],
+                        slot: Slot,
+                        parent_hash: Hash32,
+                        pubkey: BLSPubkey) -> bool:
+    # Verify slot
+    if slot != state.slot:
+        return False
+
+    # Verify BLS public key corresponds to a registered validator
+    if pubkey not in registrations:
+        return False
+
+    # Verify BLS public key corresponds to the proposer for the slot
+    proposer_index = get_beacon_proposer_index(state)
+    if pubkey != state.validators[proposer_index].pubkey:
+        return False
+
+    # Verify parent hash
+    return is_valid_parent_hash(state, parent_hash)
+```
+
+#### Constructing the `ExecutionPayloadHeader`
+
+Suppose the builder receives an execution payload header request for `slot`, `parent_hash`, and `pubkey`.
+The builder MUST return the header of the valid execution payload that is able to pay the `fee_recipient` for the registered `pubkey` the most.
 If possible under the rules of consensus, the builder MUST return an execution payload header whose `gas_limit` is equal to the `gas_limit` of the latest registration for `pubkey`.
 Otherwise, the builder MUST return an execution payload header with `gas_limit` as close as possible to the desired value under the rules of consensus.
 
-## Blinded block processing
+#### Constructing the `BuilderBid`
 
-### `verify_blinded_block_signature`
+```python
+def get_bid(execution_payload: ExecutionPayload, value: uint256, pubkey: BLSPubkey) -> BuilderBid:
+    header = ExecutionPayloadHeader(
+        parent_hash=payload.parent_hash,
+        fee_recipient=payload.fee_recipient,
+        state_root=payload.state_root,
+        receipts_root=payload.receipts_root,
+        logs_bloom=payload.logs_bloom,
+        prev_randao=payload.prev_randao,
+        block_number=payload.block_number,
+        gas_limit=payload.gas_limit,
+        gas_used=payload.gas_used,
+        timestamp=payload.timestamp,
+        extra_data=payload.extra_data,
+        base_fee_per_gas=payload.base_fee_per_gas,
+        block_hash=payload.block_hash,
+        transactions_root=hash_tree_root(payload.transactions),
+    )
+    return BuilderBid(header=header, value=value, pubkey=pubkey)
+```
+
+#### Packaging into a `SignedBuilderBid`
+
+The builder packages `bid` into a `SignedBuilderBid`, denoted `signed_bid`, with `signed_bid=SignedBuilderBid(bid=bid, signature=signature)` where `signature` is obtained from:
+
+```python
+def get_bid_signature(state: BeaconState, bid: BuilderBid, privkey: int) -> BLSSignature:
+    domain = compute_domain(DOMAIN_APPLICATION_BUILDER, fork_version=None, genesis_validators_root=None)
+    signing_root = compute_signing_root(bid, domain)
+    return bls.Sign(privkey, signing_root)
+```
+
+### Revealing the `ExecutionPayload`
+
+#### Blinded block processing
+
+To assist in blinded block processing, we use the following functions from the [consensus specs][consensus-specs]:
+
+* [`compute_epoch_at_slot`][compute-epoch-at-slot]
+* [`get_domain`][get-domain]
+
+##### `verify_blinded_block_signature`
 
 ```python
 def verify_blinded_block_signature(state: BeaconState, signed_block: SignedBlindedBeaconBlock):
     proposer = state.validators[signed_block.message.proposer_index]
-    signing_root = compute_signing_root(signed_block.message, get_domain(state, DOMAIN_BEACON_PROPOSER))
+    epoch = compute_epoch_at_slot(signed_block.message.slot)
+    signing_root = compute_signing_root(signed_block.message, get_domain(state, DOMAIN_BEACON_PROPOSER, epoch))
     return bls.Verify(proposer.pubkey, signing_root, signed_block.signature)
 ```
 
-### `process_blinded_beacon_block`
+##### `process_blinded_beacon_block`
 
 ```python
 def process_blinded_beacon_block(state: BeaconState,
                                  block: SignedBlindedBeaconBlock,
-                                 bids: Dict[Slot, Set[BuilderBid]],
-                                 blocks: Dict[Slot, SignedBlindedBeaconBlock]):
+                                 bids: Dict[Slot, Set[ExecutionPayloadHeader]],
+                                 blocks: Dict[Slot, BlindedBeaconBlock]):
     block = block.message
 
-    # Verify slot
-    assert block.slot == state.slot
-
-    # Verify a previous block has not been submitted for the same slot
-    assert blocks[block.slot] is None
+    # Verify a previous, distinct block has not been submitted for the same slot
+    assert block.slot not in blocks or blocks[block.slot] == block
 
     # Verify the execution payload header corresponds to a previous bid
-    bid_headers = [b.header for b in bids[block.slot]]
-    assert block.body.execution_payload_header in bid_headers
-
-    # TODO: Verify the remainder of the block
+    assert block.slot in bids
+    assert block.body.execution_payload_header in bids[slot]
 
     # Verify block signature
     assert verify_blinded_block_signature(state, block)
@@ -261,9 +348,12 @@ Builder API endpoints are defined in `builder-oapi.yaml` in the root of the
 repository. A rendered version can be viewed at
 https://ethereum.github.io/builder-specs/.
 
-
 [consensus-specs]: https://github.com/ethereum/consensus-specs
 [bls]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#bls-signatures
 [compute-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_signing_root
 [compute-domain]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_domain
 [is-active-validator]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#is_active_validator
+[hash-tree-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#hash_tree_root
+[get-domain]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_domain
+[compute-epoch-at-slot]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_epoch_at_slot
+[get-beacon-proposer-index]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_beacon_proposer_index
