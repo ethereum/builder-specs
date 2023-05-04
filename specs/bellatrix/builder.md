@@ -304,6 +304,10 @@ To assist in blinded block processing, we use the following functions from the [
 * [`compute_epoch_at_slot`][compute-epoch-at-slot]
 * [`get_domain`][get-domain]
 
+A proposer accepts a bid with a `SignedBlindedBeaconBlock`.
+The proposer MUST accept at most one bid for a given `slot`.
+Otherwise, the builder can produce a [`ProposerSlashing`][proposer-slashing].
+
 ##### `verify_blinded_block_signature`
 
 ```python
@@ -349,3 +353,4 @@ https://ethereum.github.io/builder-specs/.
 [get-domain]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_domain
 [compute-epoch-at-slot]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_epoch_at_slot
 [get-beacon-proposer-index]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_beacon_proposer_index
+[proposer-slashing]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#proposerslashing
