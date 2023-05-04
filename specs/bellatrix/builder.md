@@ -177,7 +177,7 @@ def is_eligible_for_registration(state: BeaconState, validator: Validator) -> bo
 ```python
 def verify_registration_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV1):
     pubkey = signed_registration.message.pubkey
-    domain = compute_domain(DOMAIN_APPLICATION_BUILDER, fork_version=None, genesis_validators_root=None)
+    domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
     signing_root = compute_signing_root(signed_registration.message, domain)
     return bls.Verify(pubkey, signing_root, signed_registration.signature)
 ```
@@ -213,8 +213,8 @@ def process_registration(state: BeaconState,
 
 ## Building
 
-Upon request, a builder is expected to build execution payloads for registered validators.
-The builder responds with a `SignedBuilderBid` that commits to the header of an execution payload.
+The builder builds execution payloads for registered validators.
+The builder submits a `SignedBuilderBid` that commits to the header of an execution payload.
 The builder only reveals the full execution payload once the validator accepts the bid.
 The validator accepts a bid and commits to a specific `ExecutionPayload` with a `SignedBlindedBeaconBlock`.
 
@@ -225,19 +225,11 @@ To assist in bidding, we use the following functions from the [consensus specs][
 * [`get_beacon_proposer_index`][get-beacon-proposer-index]
 * [`hash_tree_root`][hash-tree-root]
 
-Validators submit execution payload header requests for a specific `slot`, `parent_hash`, and `pubkey`.
+Execution payloads are built for a specific `slot`, `parent_hash`, and `pubkey` tuple.
 
-The builder validates the request according to `is_eligible_for_bid(state, registrations, slot, parent_hash, pubkey)` where:
+The builder validates the tuple according to `is_eligible_for_bid(state, registrations, slot, parent_hash, pubkey)` where:
 
 * `registrations` is the registry of validators [successfully registered](#process-registration) with the builder
-
-```python
-def is_valid_parent_hash(state: BeaconState, parent_hash: Hash32) -> bool:
-    """
-    Check if ``parent_hash`` is in ``state``.
-    """
-    # TODO
-```
 
 ```python
 def is_eligible_for_bid(state: BeaconState,
@@ -259,15 +251,15 @@ def is_eligible_for_bid(state: BeaconState,
         return False
 
     # Verify parent hash
-    return is_valid_parent_hash(state, parent_hash)
+    return parent_hash == state.latest_execution_payload_header.block_hash
 ```
 
 #### Constructing the `ExecutionPayloadHeader`
 
-Suppose the builder receives an execution payload header request for `slot`, `parent_hash`, and `pubkey`.
-The builder MUST return the header of the valid execution payload that is able to pay the `fee_recipient` for the registered `pubkey` the most.
-If possible under the rules of consensus, the builder MUST return an execution payload header whose `gas_limit` is equal to the `gas_limit` of the latest registration for `pubkey`.
-Otherwise, the builder MUST return an execution payload header with `gas_limit` as close as possible to the desired value under the rules of consensus.
+Suppose the builder is bidding for `slot`, `parent_hash`, and `pubkey`.
+The builder MUST submit a bid for the valid execution payload that is able to pay the `fee_recipient` for the registered `pubkey` the most.
+If possible under the rules of consensus, the builder MUST build an execution payload whose `gas_limit` is equal to the `gas_limit` of the latest registration for `pubkey`.
+Otherwise, the builder MUST build an execution payload with `gas_limit` as close as possible to the desired value under the rules of consensus.
 
 #### Constructing the `BuilderBid`
 
@@ -298,7 +290,7 @@ The builder packages `bid` into a `SignedBuilderBid`, denoted `signed_bid`, with
 
 ```python
 def get_bid_signature(state: BeaconState, bid: BuilderBid, privkey: int) -> BLSSignature:
-    domain = compute_domain(DOMAIN_APPLICATION_BUILDER, fork_version=None, genesis_validators_root=None)
+    domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
     signing_root = compute_signing_root(bid, domain)
     return bls.Sign(privkey, signing_root)
 ```
