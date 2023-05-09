@@ -115,14 +115,25 @@ the following actions:
    to assemble a `SignedBeaconBlock` following the rest of the proposal process outlined in the
    [Bellatrix specs][bellatrix-specs].
 
-##### `process_builder_bid`
+##### Bid processing
 
 ```python
-def process_builder_bid(state: BeaconState, bid: SignedBuilderBid):
-    # TODO: Verify bid signature
-    # TODO: Verify BLS public key corresponds to a registered validator (?)
-    # TODO: Verify bid value (?)
-    # TODO: Verify execution payload header (?)
+def verify_bid_signature(state: BeaconState, signed_bid: SignedBuilderBid):
+    pubkey = signed_bid.message.pubkey
+    domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
+    signing_root = compute_signing_root(signed_registration.message, domain)
+    return bls.Verify(pubkey, signing_root, signed_bid.signature)
+```
+
+```python
+def process_bid(state: BeaconState, bid: SignedBuilderBid, parent_hash: Hash32, fee_recipient: ExecutionAddress):
+    # Verify execution payload header
+    header = bid.message.header
+    assert header.parent_hash == parent_hash
+    assert header.fee_recipient == fee_recipient
+
+    # Verify bid signature
+    verify_bid_signature(state, bid)
 ```
 
 ##### `prepare_blinded_beacon_block`
