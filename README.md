@@ -5,10 +5,7 @@
 The Builder API is an interface for consensus layer clients to source blocks
 built by external entities.
 
-In this repository:
-* [API specification][oas-spec]
-* [Builder specification][builder-spec]
-* [Honest validator specification][validator-spec]
+In this repository is the [API specification][oas-spec] along with specifications for actors in this ecosystem broken out by fork.
 
 ### Why?
 
@@ -73,7 +70,7 @@ Local changes will be observable if "dev" is selected in the "Select a
 definition" drop-down in the web UI.
 
 It may be necessary to tick the "Disable Cache" box in their browser's
-developer tools to see changes after modifying the source. 
+developer tools to see changes after modifying the source.
 
 ## Releasing
 
@@ -88,13 +85,11 @@ entry in `urls` field. Entry should be in following format (replace `<tag>`
 with real tag name from step 1.):
 
 ```javascript
-{url: "https://github.com/ethereum/builder-specs/releases/download/<tag>/builder-oapi.yaml", name: "<tag>"},
+{ url: "./releases/<tag>/builder-oapi.json", name: "<tag>" },
 ```
 
 [ci]: https://github.com/ethereum/builder-specs/workflows/CI/badge.svg
 [oas-spec]: https://ethereum.github.io/builder-specs/
-[builder-spec]: specs/builder.md
-[validator-spec]: specs/validator.md
 [pbs]: https://ethresear.ch/t/proposer-block-builder-separation-friendly-fee-market-designs/9725
 [mev-boost-ethr]: https://ethresear.ch/t/mev-boost-merge-ready-flashbots-architecture/11177
 [mev-boost]: https://github.com/flashbots/mev-boost
