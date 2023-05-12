@@ -23,7 +23,7 @@
 
 ## Introduction
 
-This is the modification of the builder specification accompanying the Capella upgrade.
+This is the modification of the builder specification accompanying the Deneb upgrade.
 
 ## Containers
 
