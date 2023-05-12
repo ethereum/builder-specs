@@ -52,7 +52,6 @@ class BlindedBlobSidecar(Container):
     kzg_proof: KZGProof
 ```
 
-
 #### `SignedBlindedBlobSidecar`
 
 ```python
@@ -66,7 +65,7 @@ class SignedBlindedBlobSidecar(Container):
 ```python
 class SignedBlindedBlockContents(Container):
     signed_blinded_block: SignedBlindedBeaconBlock
-    signed_blinded_blob_sidecars: List[SignedBlindedBlobSidecar]
+    signed_blinded_blob_sidecars: List[SignedBlindedBlobSidecar, MAX_BLOBS_PER_BLOCK]
 ```
 
 #### `BlobsBundle`
