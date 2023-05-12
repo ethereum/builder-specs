@@ -1,7 +1,6 @@
 Deneb:
   BlobsBundleCommon:
     type: object
-    description: "The `BlobsBundle` object from the CL Deneb spec"
     properties:
       commitments:
         type: array
@@ -34,6 +33,7 @@ Deneb:
     allOf:
       - $ref: '#/Deneb/BlobsBundleCommon'
     type: object
+    description: "The `BlobsBundle` object from the CL Deneb spec"
     properties:
       blobs:
         type: array
