@@ -1,9 +1,0 @@
-Deneb:
-  ExecutionPayloadAndBlobsSidecar:
-    type: object
-    description: "A wrapper object containing the ExecutionPayload and the BlobsSidecar"
-    properties:
-      execution_payload:
-        $ref: '../../beacon-apis/types/deneb/execution_payload.yaml#/Deneb/ExecutionPayload'
-      blobs_sidecar:
-        $ref: "../../beacon-apis/types/deneb/block_and_blobs_sidecar.yaml#/Deneb/BlobsSidecar"
