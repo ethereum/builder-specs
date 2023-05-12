@@ -1,7 +1,7 @@
 Deneb:
   ExecutionPayloadAndBlobsBundle:
     type: object
-    description: "A wrapper object containing the ExecutionPayload and the BlobSidecars"
+    description: "A wrapper object containing the ExecutionPayload and the BlobsBundle"
     properties:
       execution_payload:
         $ref: '../../beacon-apis/types/deneb/execution_payload.yaml#/Deneb/ExecutionPayload'
