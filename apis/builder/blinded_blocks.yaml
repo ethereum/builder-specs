@@ -11,7 +11,7 @@ post:
     `ExecutionPayloadHeader`, it must error.
 
     After Deneb, this endpoint will additionally accept `SignedBlindedBlobSidecars`, and return
-    unblinded blobs in response.
+    with additional unblinded blobs in response.
   tags:
     - Builder
   parameters:
