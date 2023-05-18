@@ -2,7 +2,6 @@ Deneb:
   BuilderBid:
     description: "The `BuilderBid` object from the Builder API Deneb spec."
     allOf:
-      - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
       - type: object
         properties:
           header:
@@ -11,6 +10,7 @@ Deneb:
           blinded_blobs:
             $ref: "./blobs_bundle.yaml#/Deneb/BlindedBlobsBundle"
             description: "`BlindedBlobsBundle` to use in block proposal."
+      - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
 
   SignedBuilderBid:
     type: object
