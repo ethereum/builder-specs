@@ -136,13 +136,6 @@ def process_bid(state: BeaconState, bid: SignedBuilderBid, parent_hash: Hash32, 
     verify_bid_signature(state, bid)
 ```
 
-##### `prepare_blinded_beacon_block`
-
-```python
-def prepare_blinded_beacon_block(state: BeaconState, accepted_bid: BuilderBid) -> SignedBlindedBeaconBlock:
-    # TODO
-```
-
 #### Relation to local block building
 
 The external builder network offers a service for proposers that may from time to time fail to produce a timely block.
