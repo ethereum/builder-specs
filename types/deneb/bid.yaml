@@ -1,0 +1,22 @@
+Deneb:
+  BuilderBid:
+    description: "The `BuilderBid` object from the Builder API Deneb spec."
+    allOf:
+      - type: object
+        properties:
+          header:
+            $ref: "../../beacon-apis/types/deneb/execution_payload.yaml#/Deneb/ExecutionPayloadHeader"
+            description: "`ExecutionPayloadHeader` to use in block proposal."
+          blinded_blobs:
+            $ref: "./blobs_bundle.yaml#/Deneb/BlindedBlobsBundle"
+            description: "`BlindedBlobsBundle` to use in block proposal."
+      - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
+
+  SignedBuilderBid:
+    type: object
+    description: "The `SignedBuilderBid` object from the Builder API spec."
+    properties:
+      message:
+        $ref: "#/Deneb/BuilderBid"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
