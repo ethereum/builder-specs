@@ -7,7 +7,7 @@ Deneb:
           header:
             $ref: "../../beacon-apis/types/deneb/execution_payload.yaml#/Deneb/ExecutionPayloadHeader"
             description: "`ExecutionPayloadHeader` to use in block proposal."
-          blinded_blobs:
+          blinded_blobs_bundle:
             $ref: "./blobs_bundle.yaml#/Deneb/BlindedBlobsBundle"
             description: "`BlindedBlobsBundle` to use in block proposal."
       - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
