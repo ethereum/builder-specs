@@ -89,7 +89,7 @@ Note: `SignedBuilderBid` is updated indirectly.
 ```python
 class BuilderBid(Container):
     header: ExecutionPayloadHeader # [Modified in Deneb]
-    blinded_blobs: BlindedBlobsBundle  # [New in Deneb]
+    blinded_blobs_bundle: BlindedBlobsBundle  # [New in Deneb]
     value: uint256
     pubkey: BLSPubkey
 ```
