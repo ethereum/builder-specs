@@ -115,5 +115,5 @@ class BlindedBeaconBlockBody(Container):
     sync_aggregate: SyncAggregate
     execution_payload_header: ExecutionPayloadHeader  # [Modified in Deneb]
     bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]
-    blob_kzg_commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]  # [New in Deneb]
+    blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]  # [New in Deneb]
 ```
