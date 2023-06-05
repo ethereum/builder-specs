@@ -117,6 +117,8 @@ the following actions:
 
 ##### Bid processing
 
+Bids received from step (1) above can be validated with `process_bid` below, where `state` corresponds to the state for the proposal without applying the block (currently under construction) and `fee_recipient` corresponds to the validator's most recently registered fee recipient address:
+
 ```python
 def verify_bid_signature(state: BeaconState, signed_bid: SignedBuilderBid):
     pubkey = signed_bid.message.pubkey
@@ -126,10 +128,10 @@ def verify_bid_signature(state: BeaconState, signed_bid: SignedBuilderBid):
 ```
 
 ```python
-def process_bid(state: BeaconState, bid: SignedBuilderBid, parent_hash: Hash32, fee_recipient: ExecutionAddress):
+def process_bid(state: BeaconState, bid: SignedBuilderBid, fee_recipient: ExecutionAddress):
     # Verify execution payload header
     header = bid.message.header
-    assert header.parent_hash == parent_hash
+    assert header.parent_hash == state.latest_execution_payload_header.block_hash
     assert header.fee_recipient == fee_recipient
 
     # Verify bid signature

@@ -187,7 +187,8 @@ def verify_registration_signature(state: BeaconState, signed_registration: Signe
 ```python
 def process_registration(state: BeaconState,
                          registration: SignedValidatorRegistrationV1,
-                         registrations: Dict[BLSPubkey, ValidatorRegistrationV1]):
+                         registrations: Dict[BLSPubkey, ValidatorRegistrationV1],
+                         current_timestamp: uint64):
     signature = registration.signature
     registration = registration.message
 
@@ -201,11 +202,13 @@ def process_registration(state: BeaconState,
     # Verify validator registration elibility
     assert is_eligible_for_registration(state, validator)
 
-    # If there exists a previous registration, then verify timestamp
+    # Verify timestamp is not too far in the future
+    assert registration.timestamp <= current_timestamp + MAX_REGISTRATION_LOOKAHEAD
+
+    # Verify timestamp is not less than the timestamp of the previous registration (if it exists)
     if registration.pubkey in registrations:
         prev_registration = registrations[registration.pubkey]
         assert registration.timestamp >= prev_registration.timestamp
-        assert registration.timestamp <= (compute_timestamp_at_slot(state, state.slot) + MAX_REGISTRATION_LOOKAHEAD)
 
     # Verify registration signature
     assert verify_registration_signature(state, registration)
@@ -325,6 +328,8 @@ def process_blinded_beacon_block(state: BeaconState,
                                  block: SignedBlindedBeaconBlock,
                                  bids: Dict[Slot, Set[ExecutionPayloadHeader]],
                                  blocks: Dict[Slot, BlindedBeaconBlock]):
+    # NOTE: this function is a work in progress
+
     block = block.message
 
     # Verify a previous, distinct block has not been submitted for the same slot
