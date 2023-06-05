@@ -9,6 +9,9 @@ post:
     valid. If the signed blinded beacon block was invalid, then the builder
     must return an error response (400) with a description of the validation
     failure.
+
+    After Deneb, this endpoint will additionally accept `SignedBlindedBlobSidecars`, and return
+    with additional unblinded blobs in response.
   tags:
     - Builder
   parameters:
@@ -19,7 +22,7 @@ post:
       name: Eth-Consensus-Version
       description: "Version of the block being submitted"
   requestBody:
-    description: A `SignedBlindedBeaconBlock`.
+    description: A `SignedBlindedBeaconBlock` before Deneb, or `SignedBlindedBlockContents` after Deneb.
     required: true
     content:
       application/json:
@@ -27,11 +30,14 @@ post:
           oneOf:
             - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
             - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBlindedBlockContents"
         examples:
           bellatrix:
             $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
           capella:
             $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBlindedBeaconBlock"
+          deneb:
+            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBlindedBlockContents"
 
   responses:
     "200":
@@ -44,17 +50,20 @@ post:
             properties:
               version:
                 type: string
-                enum: [ bellatrix, capella ]
+                enum: [ bellatrix, capella, deneb ]
                 example: "bellatrix"
               data:
                 oneOf:
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.ExecutionPayload"
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.ExecutionPayloadAndBlobsBundle"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"
             capella:
               $ref: "../../builder-oapi.yaml#/components/examples/Capella.ExecutionPayload"
+            deneb:
+              $ref: "../../builder-oapi.yaml#/components/examples/Deneb.ExecutionPayloadAndBlobsBundle"
     "400":
       description: Error response.
       content:
