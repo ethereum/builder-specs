@@ -42,11 +42,12 @@ paths:
       description: |
         Registers a validator's preferred fee recipient and gas limit.
 
-        Builders should verify that `pubkey` corresponds to an active or pending
-        validator, and that `signature` is valid under `pubkey`. Otherwise, builder
-        must error. Requests with `timestamp` less than the previous successful 
-        announcement must error. Requests with `timestamp` more than 10 seconds in 
-        the future must error.
+        A success response (200) indicates that the registration was valid. If the
+        registration passes validation, then the builder MUST integrate the
+        registration into its state, such that future blocks built for the
+        validator conform to the preferences expressed in the registration. If the
+        registration is invalid, then the builder MUST return an error response
+        (400) with a description of the validation failure.
       tags:
         - Builder
       requestBody:
@@ -146,19 +147,10 @@ paths:
         Requests a builder node to produce a valid execution payload header, which
         can be integrated into a blinded beacon block and signed.
 
-        Builder must immediately return the header that is able to pay the
-        proposer's registered `fee_recipient` the most. If the builder is unaware
-        of `parent_hash`, it must error. If `pubkey` does not match the builder's
-        expected proposer `pubkey` for `slot`, it must error. If the builder has
-        not received a validator registration associated with `pubkey`, it must
-        error.
-
-        When possible, the builder must return a header with `gas_limit` equal to
-        proposer's registered value. If this isn't possible due to the large
-        difference between `parent.gas_limit` and the preferred `gas_limit`, the
-        builder must return a header that moves `gas_limit` the maximum amount
-        allowed under the rules of consensus (currently `parent.gas_limit +/-
-        parent.gas_limit / 1024`).
+        If the builder is unable to produce a valid execution payload header, then
+        the builder MUST return a 204 response. If the request is invalid, then the
+        builder MUST return an error response (400) with a description of the
+        validation failure.
       tags:
         - Builder
       parameters:
@@ -676,12 +668,12 @@ paths:
       summary: Submit a signed blinded block and get unblinded execution payload.
       description: |
         Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
-        to the block. The builder is now able to unblind the transactions in
-        `ExecutionPayloadHeader` without the possibility of the validator modifying
-        them.
+        to the block.
 
-        If the builder is not able to unblind the corresponding
-        `ExecutionPayloadHeader`, it must error.
+        A success response (200) indicates that the signed blinded beacon block was
+        valid. If the signed blinded beacon block was invalid, then the builder
+        must return an error response (400) with a description of the validation
+        failure.
 
         After Deneb, this endpoint will additionally accept `SignedBlindedBlobSidecars`, and return
         with additional unblinded blobs in response.
