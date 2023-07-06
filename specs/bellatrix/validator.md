@@ -120,12 +120,14 @@ the following actions:
 Bids received from step (1) above can be validated with `process_bid` below, where `state` corresponds to the state for the proposal without applying the block (currently under construction) and `fee_recipient` corresponds to the validator's most recently registered fee recipient address:
 
 ```python
-def verify_bid_signature(state: BeaconState, signed_bid: SignedBuilderBid):
+def verify_bid_signature(state: BeaconState, signed_bid: SignedBuilderBid) -> bool:
     pubkey = signed_bid.message.pubkey
     domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
     signing_root = compute_signing_root(signed_registration.message, domain)
     return bls.Verify(pubkey, signing_root, signed_bid.signature)
 ```
+
+A `bid` is considered valid if the following function completes without raising any assertions:
 
 ```python
 def process_bid(state: BeaconState, bid: SignedBuilderBid, fee_recipient: ExecutionAddress):
