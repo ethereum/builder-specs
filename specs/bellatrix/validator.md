@@ -115,6 +115,31 @@ the following actions:
    to assemble a `SignedBeaconBlock` following the rest of the proposal process outlined in the
    [Bellatrix specs][bellatrix-specs].
 
+##### Bid processing
+
+Bids received from step (1) above can be validated with `process_bid` below, where `state` corresponds to the state for the proposal without applying the block (currently under construction) and `fee_recipient` corresponds to the validator's most recently registered fee recipient address:
+
+```python
+def verify_bid_signature(state: BeaconState, signed_bid: SignedBuilderBid) -> bool:
+    pubkey = signed_bid.message.pubkey
+    domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
+    signing_root = compute_signing_root(signed_registration.message, domain)
+    return bls.Verify(pubkey, signing_root, signed_bid.signature)
+```
+
+A `bid` is considered valid if the following function completes without raising any assertions:
+
+```python
+def process_bid(state: BeaconState, bid: SignedBuilderBid, fee_recipient: ExecutionAddress):
+    # Verify execution payload header
+    header = bid.message.header
+    assert header.parent_hash == state.latest_execution_payload_header.block_hash
+    assert header.fee_recipient == fee_recipient
+
+    # Verify bid signature
+    verify_bid_signature(state, bid)
+```
+
 #### Relation to local block building
 
 The external builder network offers a service for proposers that may from time to time fail to produce a timely block.

@@ -2,6 +2,7 @@ apis
 bellatrix
 bls
 bn
+bool
 capella
 cli
 dev
