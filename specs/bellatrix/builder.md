@@ -180,7 +180,7 @@ def is_eligible_for_registration(state: BeaconState, validator: Validator) -> bo
 ### `verify_registration_signature`
 
 ```python
-def verify_registration_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV1):
+def verify_registration_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV1) -> bool:
     pubkey = signed_registration.message.pubkey
     domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
     signing_root = compute_signing_root(signed_registration.message, domain)
@@ -324,7 +324,7 @@ The builder must ensure the `SignedBlindedBeaconBlock` is valid according to the
 ##### `verify_blinded_block_signature`
 
 ```python
-def verify_blinded_block_signature(state: BeaconState, signed_block: SignedBlindedBeaconBlock):
+def verify_blinded_block_signature(state: BeaconState, signed_block: SignedBlindedBeaconBlock) -> bool:
     proposer = state.validators[get_beacon_proposer_index(state)]
     epoch = get_current_epoch(state)
     signing_root = compute_signing_root(signed_block.message, get_domain(state, DOMAIN_BEACON_PROPOSER, epoch))
