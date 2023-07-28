@@ -7,13 +7,13 @@ Deneb:
         items:
           $ref: '../../beacon-apis/types/primitive.yaml#/KZGCommitment'
         minItems: 0
-        maxItems: 4
+        maxItems: 6
       proofs:
         type: array
         items:
           $ref: '../../beacon-apis/types/primitive.yaml#/KZGProof'
         minItems: 0
-        maxItems: 4
+        maxItems: 6
 
   BlindedBlobsBundle:
     allOf:
@@ -26,7 +26,7 @@ Deneb:
         items:
           $ref: "../../beacon-apis/types/primitive.yaml#/Root"
         minItems: 0
-        maxItems: 4
+        maxItems: 6
 
 
   BlobsBundle:
@@ -40,4 +40,4 @@ Deneb:
         items:
           $ref: "../../beacon-apis/types/primitive.yaml#/Blob"
         minItems: 0
-        maxItems: 4
+        maxItems: 6
