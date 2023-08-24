@@ -33,9 +33,9 @@ This is the modification of the builder specification accompanying the Deneb upg
 
 ```python
 class BlindedBlobsBundle(Container):
-    commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]
-    proofs: List[KZGProof, MAX_BLOBS_PER_BLOCK]
-    blob_roots: List[Root, MAX_BLOBS_PER_BLOCK]
+    commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
+    proofs: List[KZGProof, MAX_BLOB_COMMITMENTS_PER_BLOCK]
+    blob_roots: List[Root, MAX_BLOB_COMMITMENTS_PER_BLOCK]
 ```
 
 #### `BlindedBlobSidecar`
