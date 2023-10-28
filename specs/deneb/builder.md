@@ -43,10 +43,10 @@ class BlindedBlobsBundle(Container):
 ```python
 class BlindedBlobSidecar(Container):
     block_root: Root
-    index: uint64
-    slot: uint64
+    index: BlobIndex
+    slot: Slot
     block_parent_root: Root
-    proposer_index: uint64
+    proposer_index: ValidatorIndex
     blob_root: Root
     kzg_commitment: KZGCommitment
     kzg_proof: KZGProof
