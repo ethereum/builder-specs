@@ -9,6 +9,8 @@ get:
     the builder MUST return a 204 response. If the request is invalid, then the
     builder MUST return an error response (400) with a description of the
     validation failure.
+
+    After Deneb, return the KZG commitments for any associated blobs attached to the execution payload.
   tags:
     - Builder
   parameters:

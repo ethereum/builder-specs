@@ -15,20 +15,6 @@ Deneb:
         minItems: 0
         maxItems: 6
 
-  BlindedBlobsBundle:
-    allOf:
-      - $ref: '#/Deneb/BlobsBundleCommon'
-    type: object
-    description: "A blobs container with the SSZ root of the blobs rather than the full blobs."
-    properties:
-      blob_roots:
-        type: array
-        items:
-          $ref: "../../beacon-apis/types/primitive.yaml#/Root"
-        minItems: 0
-        maxItems: 6
-
-
   BlobsBundle:
     allOf:
       - $ref: '#/Deneb/BlobsBundleCommon'

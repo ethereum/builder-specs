@@ -8,10 +8,6 @@
 - [Introduction](#introduction)
 - [Containers](#containers)
   - [New containers](#new-containers)
-    - [`BlindedBlobsBundle`](#blindedblobsbundle)
-    - [`BlindedBlobSidecar`](#blindedblobsidecar)
-    - [`SignedBlindedBlobSidecar`](#signedblindedblobsidecar)
-    - [`SignedBlindedBlockContents`](#signedblindedblockcontents)
     - [`BlobsBundle`](#blobsbundle)
     - [`ExecutionPayloadAndBlobsBundle`](#executionpayloadandblobsbundle)
   - [Extended containers](#extended-containers)
@@ -28,45 +24,6 @@ This is the modification of the builder specification accompanying the Deneb upg
 ## Containers
 
 ### New containers
-
-#### `BlindedBlobsBundle`
-
-```python
-class BlindedBlobsBundle(Container):
-    commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
-    proofs: List[KZGProof, MAX_BLOB_COMMITMENTS_PER_BLOCK]
-    blob_roots: List[Root, MAX_BLOB_COMMITMENTS_PER_BLOCK]
-```
-
-#### `BlindedBlobSidecar`
-
-```python
-class BlindedBlobSidecar(Container):
-    block_root: Root
-    index: BlobIndex
-    slot: Slot
-    block_parent_root: Root
-    proposer_index: ValidatorIndex
-    blob_root: Root
-    kzg_commitment: KZGCommitment
-    kzg_proof: KZGProof
-```
-
-#### `SignedBlindedBlobSidecar`
-
-```python
-class SignedBlindedBlobSidecar(Container):
-    message: BlindedBlobSidecar
-    signature: BLSSignature
-```
-
-#### `SignedBlindedBlockContents`
-
-```python
-class SignedBlindedBlockContents(Container):
-    signed_blinded_block: SignedBlindedBeaconBlock
-    signed_blinded_blob_sidecars: List[SignedBlindedBlobSidecar, MAX_BLOBS_PER_BLOCK]
-```
 
 #### `BlobsBundle`
 
@@ -89,7 +46,7 @@ Note: `SignedBuilderBid` is updated indirectly.
 ```python
 class BuilderBid(Container):
     header: ExecutionPayloadHeader # [Modified in Deneb]
-    blinded_blobs_bundle: BlindedBlobsBundle  # [New in Deneb]
+    blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]  # [New in Deneb]
     value: uint256
     pubkey: BLSPubkey
 ```
@@ -117,3 +74,22 @@ class BlindedBeaconBlockBody(Container):
     bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]
     blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]  # [New in Deneb]
 ```
+
+## Building
+
+Builders provide bids as the have in prior forks.
+
+Relays have a few additional duties.
+
+### Bidding
+
+After a relay has verified the execution payload (including any blobs) is correctly constructed, the relay **MUST** additionally return any `KZGCommitments` for those blobs
+in the `SignedBuilderBid`.
+
+### Revealing the `ExecutionPayload`
+
+#### Blinded block processing
+
+Relays verify signed blinded beacon blocks as before, with the additional requirement
+that they must construct `SignedBlobSidecar` objects with the KZG commitment inclusion
+proof before gossiping the blobs alongside the unblinded block.
