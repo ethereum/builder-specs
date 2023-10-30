@@ -7,6 +7,7 @@
 
 - [Constants](#constants)
   - [Domain types](#domain-types)
+  - [Time parameters](#time-parameters)
 - [Containers](#containers)
   - [Independently Versioned](#independently-versioned)
     - [`ValidatorRegistrationV1`](#validatorregistrationv1)
@@ -19,6 +20,19 @@
       - [`BlindedBeaconBlock`](#blindedbeaconblock)
       - [`SignedBlindedBeaconBlock`](#signedblindedbeaconblock)
   - [Signing](#signing)
+- [Validator registration processing](#validator-registration-processing)
+  - [`is_pending_validator`](#is_pending_validator)
+  - [`is_eligible_for_registration`](#is_eligible_for_registration)
+  - [`verify_registration_signature`](#verify_registration_signature)
+  - [`process_registration`](#process_registration)
+- [Building](#building)
+  - [Bidding](#bidding)
+    - [Constructing the `ExecutionPayloadHeader`](#constructing-the-executionpayloadheader)
+    - [Constructing the `BuilderBid`](#constructing-the-builderbid)
+    - [Packaging into a `SignedBuilderBid`](#packaging-into-a-signedbuilderbid)
+  - [Revealing the `ExecutionPayload`](#revealing-the-executionpayload)
+    - [Blinded block processing](#blinded-block-processing)
+      - [`verify_blinded_block_signature`](#verify_blinded_block_signature)
 - [Endpoints](#endpoints)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->

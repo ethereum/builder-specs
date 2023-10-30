@@ -18,6 +18,7 @@
   - [Block proposal](#block-proposal)
     - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
       - [ExecutionPayload](#executionpayload)
+      - [Bid processing](#bid-processing)
     - [Relation to local block building](#relation-to-local-block-building)
 - [How to avoid slashing](#how-to-avoid-slashing)
   - [Proposer slashing](#proposer-slashing)
