@@ -146,7 +146,7 @@ class SignedBlindedBeaconBlock(Container):
 All signature operations should follow the [standard BLS operations][bls]
 interface defined in `consensus-specs`.
 
-To assist in signing, we use a function from the [consensus specs][consensus-specs]: 
+To assist in signing, we use a function from the [consensus specs][consensus-specs]:
 [`compute_domain`][compute-domain]
 
 There are two types of data to sign over in the Builder API:
