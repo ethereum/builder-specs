@@ -10,7 +10,7 @@ post:
     must return an error response (400) with a description of the validation
     failure.
 
-    After Deneb, this endpoint will additionally accept `SignedBlindedBlobSidecars`, and return
+    After Deneb, this endpoint will additionally accept `BlindedBlobSidecars`, and return
     with additional unblinded blobs in response.
   tags:
     - Builder

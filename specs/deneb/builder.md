@@ -10,7 +10,6 @@
   - [New containers](#new-containers)
     - [`BlindedBlobsBundle`](#blindedblobsbundle)
     - [`BlindedBlobSidecar`](#blindedblobsidecar)
-    - [`SignedBlindedBlobSidecar`](#signedblindedblobsidecar)
     - [`SignedBlindedBlockContents`](#signedblindedblockcontents)
     - [`BlobsBundle`](#blobsbundle)
     - [`ExecutionPayloadAndBlobsBundle`](#executionpayloadandblobsbundle)
@@ -42,22 +41,13 @@ class BlindedBlobsBundle(Container):
 
 ```python
 class BlindedBlobSidecar(Container):
-    block_root: Root
     index: BlobIndex
-    slot: Slot
-    block_parent_root: Root
-    proposer_index: ValidatorIndex
     blob_root: Root
     kzg_commitment: KZGCommitment
     kzg_proof: KZGProof
-```
-
-#### `SignedBlindedBlobSidecar`
-
-```python
-class SignedBlindedBlobSidecar(Container):
-    message: BlindedBlobSidecar
-    signature: BLSSignature
+    signed_block_header: SignedBeaconBlockHeader
+    kzg_commitment_inclusion_proof*:
+      array[KZG_COMMITMENT_INCLUSION_PROOF_DEPTH, Eth2Digest]
 ```
 
 #### `SignedBlindedBlockContents`
@@ -65,7 +55,7 @@ class SignedBlindedBlobSidecar(Container):
 ```python
 class SignedBlindedBlockContents(Container):
     signed_blinded_block: SignedBlindedBeaconBlock
-    signed_blinded_blob_sidecars: List[SignedBlindedBlobSidecar, MAX_BLOBS_PER_BLOCK]
+    blinded_blob_sidecars: List[BlindedBlobSidecar, MAX_BLOBS_PER_BLOCK]
 ```
 
 #### `BlobsBundle`
