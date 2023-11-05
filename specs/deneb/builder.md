@@ -27,7 +27,12 @@ This is the modification of the builder specification accompanying the Deneb upg
 
 #### `BlobsBundle`
 
-Same as [`BlobsBundle`](https://github.com/ethereum/consensus-specs/blob/dev/specs/deneb/validator.md#blobsbundle) in Deneb consensus specs.
+```python
+class BlobsBundle(container):
+  commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
+  proofs: List[KZGProof, MAX_BLOB_COMMITMENTS_PER_BLOCK]
+  blobs: List[Blob, MAX_BLOB_COMMITMENTS_PER_BLOCK]
+```
 
 #### `ExecutionPayloadAndBlobsBundle`
 
