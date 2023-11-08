@@ -7,9 +7,13 @@ Deneb:
           header:
             $ref: "../../beacon-apis/types/deneb/execution_payload.yaml#/Deneb/ExecutionPayloadHeader"
             description: "`ExecutionPayloadHeader` to use in block proposal."
-          blinded_blobs_bundle:
-            $ref: "./blobs_bundle.yaml#/Deneb/BlindedBlobsBundle"
-            description: "`BlindedBlobsBundle` to use in block proposal."
+          blob_kzg_commitments:
+            type: array
+            items:
+              $ref: '../../beacon-apis/types/primitive.yaml#/KZGCommitment'
+            minItems: 0
+            maxItems: 4096
+            description: "the `KZGCommitment`s for the associated blobs for this `header`"
       - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
 
   SignedBuilderBid:
