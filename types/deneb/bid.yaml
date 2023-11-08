@@ -12,7 +12,7 @@ Deneb:
             items:
               $ref: '../../beacon-apis/types/primitive.yaml#/KZGCommitment'
             minItems: 0
-            maxItems: 6
+            maxItems: 4096
             description: "the `KZGCommitment`s for the associated blobs for this `header`"
       - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
 

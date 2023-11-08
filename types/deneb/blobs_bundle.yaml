@@ -8,16 +8,16 @@ Deneb:
         items:
           $ref: "../../beacon-apis/types/primitive.yaml#/Blob"
         minItems: 0
-        maxItems: 6
+        maxItems: 4096
       commitments:
         type: array
         items:
           $ref: '../../beacon-apis/types/primitive.yaml#/KZGCommitment'
         minItems: 0
-        maxItems: 6
+        maxItems: 4096
       proofs:
         type: array
         items:
           $ref: '../../beacon-apis/types/primitive.yaml#/KZGProof'
         minItems: 0
-        maxItems: 6
+        maxItems: 4096
