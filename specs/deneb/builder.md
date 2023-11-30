@@ -96,5 +96,5 @@ in the `SignedBuilderBid`.
 #### Blinded block processing
 
 Relays verify signed blinded beacon blocks as before, with the additional requirement
-that they must construct `SignedBlobSidecar` objects with the KZG commitment inclusion
+that they must construct `BlobSidecar` objects with the KZG commitment inclusion
 proof before gossiping the blobs alongside the unblinded block.
