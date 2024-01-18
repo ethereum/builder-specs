@@ -14,6 +14,10 @@
     - [`BuilderBid`](#builderbid)
     - [`ExecutionPayloadHeader`](#executionpayloadheader)
       - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody)
+- [Building](#building)
+  - [Bidding](#bidding)
+  - [Revealing the `ExecutionPayload`](#revealing-the-executionpayload)
+    - [Blinded block processing](#blinded-block-processing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -98,3 +102,6 @@ in the `SignedBuilderBid`.
 Relays verify signed blinded beacon blocks as before, with the additional requirement
 that they must construct `BlobSidecar` objects with the KZG commitment inclusion
 proof before gossiping the blobs alongside the unblinded block.
+
+* NOTE: the [standard `beacon-apis` implemented by consensus clients](https://github.com/ethereum/beacon-APIs) will handle the construction of the `BlobSidecar`
+object following the block broadcast endpoints defined there.
