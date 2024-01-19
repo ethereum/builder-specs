@@ -13,7 +13,6 @@
       height: 68px;
       /* Width of new image */
     }
-
   </style>
   <link rel="icon" type="image/png" href="./dist/favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="./dist/favicon-16x16.png" sizes="16x16" />
@@ -34,7 +33,6 @@
       margin: 0;
       background: #fafafa;
     }
-
   </style>
 </head>
 
@@ -48,6 +46,7 @@
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
         urls: [
+          { url: "./releases/v0.4.0/builder-oapi.json", name: "v0.4.0" },
           { url: "./releases/v0.3.0/builder-oapi.json", name: "v0.3.0" },
           { url: "./releases/v0.2.0/builder-oapi.json", name: "v0.2.0" },
           { url: "./releases/v0.1.0/builder-oapi.json", name: "v0.1.0" },
