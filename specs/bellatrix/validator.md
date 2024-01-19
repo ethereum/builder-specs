@@ -20,6 +20,7 @@
       - [ExecutionPayload](#executionpayload)
       - [Bid processing](#bid-processing)
     - [Relation to local block building](#relation-to-local-block-building)
+- [Liveness failsafe](#liveness-failsafe)
 - [How to avoid slashing](#how-to-avoid-slashing)
   - [Proposer slashing](#proposer-slashing)
 - [Responsibilities during the Merge transition](#responsibilities-during-the-merge-transition)
@@ -155,6 +156,23 @@ the deadline and the external builder flow must be aborted in favor of a local b
 
 **WARNING**: Validators must be careful to not get slashed when orchestrating the duplicate building pathways.
   See the [section on slashing](#proposer-slashing) for more information.
+
+## Liveness failsafe
+
+Honest proposers implement a "circuit breaker" condition operationalized by the beacon node that is triggered when the
+node determines the chain is unhealthy. When the circuit breaker is fired, proposers **MUST** not utilize the external
+builder network and exclusively build locally.
+
+The exact conditions to determine chain health are implementation-dependent. Various categories of signals to consider
+include:
+
+- number of missed slots over an epoch
+- number of reorgs in an epoch
+- number of missed slots in a row
+- reorg depth over a given period of time
+- attestation target vote falls below certain % (or head if want to be strict)
+- lack of finality over a given period of time
+- hard fork boundaries
 
 ## How to avoid slashing
 
