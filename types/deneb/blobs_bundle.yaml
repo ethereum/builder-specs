@@ -2,6 +2,7 @@ Deneb:
   BlobsBundle:
     type: object
     description: "The `BlobsBundle` object from the CL Deneb spec"
+    required: [blobs, commitments, proofs]
     properties:
       blobs:
         type: array

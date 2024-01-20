@@ -46,6 +46,7 @@ post:
           schema:
             title: SubmitBlindedBlockResponse
             type: object
+            required: [version, data]
             properties:
               version:
                 type: string

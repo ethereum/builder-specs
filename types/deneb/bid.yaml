@@ -3,6 +3,7 @@ Deneb:
     description: "The `BuilderBid` object from the Builder API Deneb spec."
     allOf:
       - type: object
+        required: [header, blob_kzg_commitments]
         properties:
           header:
             $ref: "../../beacon-apis/types/deneb/execution_payload.yaml#/Deneb/ExecutionPayloadHeader"
@@ -19,6 +20,7 @@ Deneb:
   SignedBuilderBid:
     type: object
     description: "The `SignedBuilderBid` object from the Builder API spec."
+    required: [message, signature]
     properties:
       message:
         $ref: "#/Deneb/BuilderBid"
