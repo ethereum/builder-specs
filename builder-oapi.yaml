@@ -134,6 +134,9 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - code
+                  - message
                 properties:
                   code:
                     description: Either specific error code in case of invalid request or http status code
@@ -201,6 +204,9 @@ paths:
               schema:
                 title: GetHeaderResponse
                 type: object
+                required:
+                  - version
+                  - data
                 properties:
                   version:
                     type: string
@@ -213,11 +219,16 @@ paths:
                     oneOf:
                       - type: object
                         description: The `SignedBuilderBid` object from the Builder API spec.
+                        required:
+                          - message
+                          - signature
                         properties:
                           message:
                             description: The `BuilderBid` object from the Builder API Bellatrix spec.
                             allOf:
                               - type: object
+                                required:
+                                  - header
                                 properties:
                                   header:
                                     description: '`ExecutionPayloadHeader` to use in block proposal.'
@@ -307,6 +318,9 @@ paths:
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                               - type: object
+                                required:
+                                  - value
+                                  - pubkey
                                 properties:
                                   value:
                                     description: Payment in wei that will be paid to the `fee_recipient` account.
@@ -325,11 +339,16 @@ paths:
                             example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
                       - type: object
                         description: The `SignedBuilderBid` object from the Builder API spec.
+                        required:
+                          - message
+                          - signature
                         properties:
                           message:
                             description: The `BuilderBid` object from the Builder API Capella spec.
                             allOf:
                               - type: object
+                                required:
+                                  - header
                                 properties:
                                   header:
                                     description: '`ExecutionPayloadHeader` to use in block proposal.'
@@ -425,6 +444,9 @@ paths:
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                               - type: object
+                                required:
+                                  - value
+                                  - pubkey
                                 properties:
                                   value:
                                     description: Payment in wei that will be paid to the `fee_recipient` account.
@@ -443,11 +465,17 @@ paths:
                             example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
                       - type: object
                         description: The `SignedBuilderBid` object from the Builder API spec.
+                        required:
+                          - message
+                          - signature
                         properties:
                           message:
                             description: The `BuilderBid` object from the Builder API Deneb spec.
                             allOf:
                               - type: object
+                                required:
+                                  - header
+                                  - blob_kzg_commitments
                                 properties:
                                   header:
                                     description: '`ExecutionPayloadHeader` to use in block proposal.'
@@ -557,6 +585,9 @@ paths:
                                     maxItems: 4096
                                     description: the `KZGCommitment`s for the associated blobs for this `header`
                               - type: object
+                                required:
+                                  - value
+                                  - pubkey
                                 properties:
                                   value:
                                     description: Payment in wei that will be paid to the `fee_recipient` account.
@@ -684,6 +715,9 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - code
+                  - message
                 properties:
                   code:
                     description: Either specific error code in case of invalid request or http status code
@@ -3132,6 +3166,9 @@ paths:
               schema:
                 title: SubmitBlindedBlockResponse
                 type: object
+                required:
+                  - version
+                  - data
                 properties:
                   version:
                     type: string
@@ -3350,6 +3387,9 @@ paths:
                                 maxItems: 16
                       - type: object
                         description: A wrapper object containing the ExecutionPayload and the BlobsBundle
+                        required:
+                          - execution_payload
+                          - blobs_bundle
                         properties:
                           execution_payload:
                             allOf:
@@ -3477,6 +3517,10 @@ paths:
                           blobs_bundle:
                             type: object
                             description: The `BlobsBundle` object from the CL Deneb spec
+                            required:
+                              - blobs
+                              - commitments
+                              - proofs
                             properties:
                               blobs:
                                 type: array
@@ -3616,6 +3660,9 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - code
+                  - message
                 properties:
                   code:
                     description: Either specific error code in case of invalid request or http status code
@@ -3648,6 +3695,9 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - code
+                  - message
                 properties:
                   code:
                     description: Either specific error code in case of invalid request or http status code
@@ -4409,11 +4459,16 @@ components:
     Bellatrix.SignedBuilderBid:
       type: object
       description: The `SignedBuilderBid` object from the Builder API spec.
+      required:
+        - message
+        - signature
       properties:
         message:
           description: The `BuilderBid` object from the Builder API Bellatrix spec.
           allOf:
             - type: object
+              required:
+                - header
               properties:
                 header:
                   description: '`ExecutionPayloadHeader` to use in block proposal.'
@@ -4503,6 +4558,9 @@ components:
                           example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                           pattern: '^0x[a-fA-F0-9]{64}$'
             - type: object
+              required:
+                - value
+                - pubkey
               properties:
                 value:
                   description: Payment in wei that will be paid to the `fee_recipient` account.
@@ -5305,11 +5363,16 @@ components:
     Capella.SignedBuilderBid:
       type: object
       description: The `SignedBuilderBid` object from the Builder API spec.
+      required:
+        - message
+        - signature
       properties:
         message:
           description: The `BuilderBid` object from the Builder API Capella spec.
           allOf:
             - type: object
+              required:
+                - header
               properties:
                 header:
                   description: '`ExecutionPayloadHeader` to use in block proposal.'
@@ -5405,6 +5468,9 @@ components:
                           example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                           pattern: '^0x[a-fA-F0-9]{64}$'
             - type: object
+              required:
+                - value
+                - pubkey
               properties:
                 value:
                   description: Payment in wei that will be paid to the `fee_recipient` account.
@@ -6101,11 +6167,17 @@ components:
     Deneb.SignedBuilderBid:
       type: object
       description: The `SignedBuilderBid` object from the Builder API spec.
+      required:
+        - message
+        - signature
       properties:
         message:
           description: The `BuilderBid` object from the Builder API Deneb spec.
           allOf:
             - type: object
+              required:
+                - header
+                - blob_kzg_commitments
               properties:
                 header:
                   description: '`ExecutionPayloadHeader` to use in block proposal.'
@@ -6215,6 +6287,9 @@ components:
                   maxItems: 4096
                   description: the `KZGCommitment`s for the associated blobs for this `header`
             - type: object
+              required:
+                - value
+                - pubkey
               properties:
                 value:
                   description: Payment in wei that will be paid to the `fee_recipient` account.
@@ -6234,6 +6309,9 @@ components:
     Deneb.ExecutionPayloadAndBlobsBundle:
       type: object
       description: A wrapper object containing the ExecutionPayload and the BlobsBundle
+      required:
+        - execution_payload
+        - blobs_bundle
       properties:
         execution_payload:
           allOf:
@@ -6361,6 +6439,10 @@ components:
         blobs_bundle:
           type: object
           description: The `BlobsBundle` object from the CL Deneb spec
+          required:
+            - blobs
+            - commitments
+            - proofs
           properties:
             blobs:
               type: array
@@ -6438,6 +6520,9 @@ components:
         application/json:
           schema:
             type: object
+            required:
+              - code
+              - message
             properties:
               code:
                 description: Either specific error code in case of invalid request or http status code
