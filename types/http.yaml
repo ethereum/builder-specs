@@ -4,6 +4,7 @@ InternalError:
     application/json:
       schema:
         type: object
+        required: [code, message]
         properties:
           code:
             description: "Either specific error code in case of invalid request or http status code"
