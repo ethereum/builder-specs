@@ -15,6 +15,9 @@
     - [`ExecutionPayloadHeader`](#executionpayloadheader)
       - [`BlindedBeaconBlockBody`](#blindedbeaconblockbody)
 - [Building](#building)
+  - [Block scoring](#block-scoring)
+- [Relaying](#relaying)
+  - [Block scoring](#block-scoring-1)
   - [Bidding](#bidding)
   - [Revealing the `ExecutionPayload`](#revealing-the-executionpayload)
     - [Blinded block processing](#blinded-block-processing)
@@ -86,9 +89,40 @@ class BlindedBeaconBlockBody(Container):
 
 ## Building
 
-Builders provide bids as the have in prior forks.
+Builders provide bids as the have in prior forks, with a notable restriction to block scoring.
 
-Relays have a few additional duties.
+### Block scoring
+
+Builders **MUST** not include the `amount`s from the consensus block's withdrawals when computing the `value` for their `BuilderBid`.
+
+See [the section below on relay verification](#block-scoring-1) for the logic a builder's bid must satisfy.
+
+## Relaying
+
+Relays have a few additional duties to support the features in this upgrade.
+
+### Block scoring
+
+Relays **MUST** ensure the `value` in the `BuilderBid` corresponds to the payment delivered by the builder to the proposer, excluding any withdrawals.
+
+Consider the following validation logic following definitions in the `consensus-specs`:
+
+```python
+def verify_bid_value(execution_payload: ExecutionPayload, fee_recipient: ExecutionAddress, bid_value: uint256, balance_difference: uint256):
+    target_amounts = [w.amount for w in execution_payload.withdrawals if w.address == fee_recipient]
+    excluded_amount = sum(target_amounts)
+    proposer_payment = balance_difference - excluded_amount
+    assert proposer_payment == bid_value
+```
+
+`verify_bid_value` should execute completely, noting that assertion failures are errors.
+The `execution_payload`, `fee_recipient`, and `bid_value` are all provided by the builder in their payload submission.
+The `balance_difference` is computed by the relay during simulation of the `execution_payload` where
+`balance_difference = post_state_balance - pre_state_balance`.
+`pre_state_balance` is the ether amount at the `fee_recipient`’s address in the execution state before applying
+the `execution_payload` and the `post_state_balance` is the same data after applying the `execution_payload`.
+
+Any block submissions where `verify_bid_value` fails should be considered invalid and **MUST** not be served to proposers requesting bids.
 
 ### Bidding
 
