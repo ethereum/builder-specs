@@ -89,7 +89,7 @@ class BlindedBeaconBlockBody(Container):
 
 ## Building
 
-Builders provide bids as the have in prior forks, with a notable restriction to block scoring.
+Builders provide bids as they have in prior forks, with a notable restriction to block scoring.
 
 ### Block scoring
 
