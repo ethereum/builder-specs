@@ -109,8 +109,7 @@ Consider the following validation logic following definitions in the `consensus-
 
 ```python
 def verify_bid_value(execution_payload: ExecutionPayload, fee_recipient: ExecutionAddress, bid_value: uint256, balance_difference: uint256):
-    target_amounts = [w.amount for w in execution_payload.withdrawals if w.address == fee_recipient]
-    excluded_amount = sum(target_amounts)
+    excluded_amount = sum([w.amount for w in execution_payload.withdrawals if w.address == fee_recipient])
     proposer_payment = balance_difference - excluded_amount
     assert proposer_payment == bid_value
 ```
