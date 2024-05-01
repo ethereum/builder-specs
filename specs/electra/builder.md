@@ -8,29 +8,11 @@ This is the modification of the builder specification accompanying the Electra u
 
 ### Extended containers
 
-#### `ExecutionPayloadAndBlobsBundle`
-
-```python
-class ExecutionPayloadAndBlobsBundle(Container):
-    execution_payload: ExecutionPayload # [Modified in Electra]
-    blobs_bundle: BlobsBundle
-```
-
-#### `BuilderBid`
-
-Note: `SignedBuilderBid` is updated indirectly.
-
-```python
-class BuilderBid(Container):
-    header: ExecutionPayloadHeader # [Modified in Electra]
-    blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
-    value: uint256
-    pubkey: BLSPubkey
-```
-
 #### `ExecutionPayloadHeader`
 
 See [`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/dev/specs/electra/beacon-chain.md#executionpayloadheader) in Electra consensus specs.
+
+Note: `ExecutionPayloadAndBlobsBundle` and `BuilderBid` and `SignedBuilderBid` types are updated indirectly.
 
 ##### `BlindedBeaconBlockBody`
 
