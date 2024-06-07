@@ -1,0 +1,66 @@
+get:
+  operationId: "getHeaderWithProof"
+  summary: Get an execution payload header with proof.
+  description: |
+    Requests a builder node to produce a valid execution payload header with proof, which
+    can be integrated into a blinded beacon block and signed.
+
+    If the builder is unable to produce a valid execution payload header, then
+    the builder MUST return a 204 response. If the request is invalid, then the
+    builder MUST return an error response (400) with a description of the
+    validation failure.
+
+    After Deneb, return the KZG commitments for any associated blobs attached to the execution payload, along with the proof of inclusion.
+  tags:
+    - Builder
+  parameters:
+    - name: slot
+      in: path
+      required: true
+      description: The slot for which the block should be proposed.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
+    - name: parent_hash
+      in: path
+      required: true
+      description: Hash of execution layer block the proposer will build on.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Root"
+    - name: pubkey
+      in: path
+      required: true
+      description: The validator's BLS public key.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Pubkey"
+  responses:
+    "200":
+      description: Success response.
+      content:
+        application/json:
+          schema:
+            title: GetHeaderWithProofResponse
+            type: object
+            required: [version, data]
+            properties:
+              version:
+                type: string
+                example: "deneb"
+              data:
+                $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBuilderBidWithProof"
+          examples:
+            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBuilderBidWithProof"
+    "204":
+      description: No header is available.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            InvalidRequest:
+              value:
+                code: 400
+                message: "Unknown hash: missing parent hash"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
