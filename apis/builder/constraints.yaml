@@ -1,0 +1,44 @@
+post:
+  operationId: "submitConstraints"
+  summary: "Submit a validator's block constraints."
+  description: |
+    Submits a validator's constraints for block building.
+
+    A success response (200) indicates that the submission was valid and the constraints
+    will be considered for block building. If the submission is invalid, the builder
+    MUST return an error response (400) with a description of the validation failure.
+  tags:
+    - Builder
+  requestBody:
+    description: |
+      A signed declaration of a validator's block constraints.
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedConstraints"
+        examples:
+          InclusionConstraint:
+            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.InclusionConstraint"
+          BundleConstraint:
+            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.BundleConstraint"
+          AtomicConstraint:
+            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.AtomicConstraint"
+  responses:
+    "200":
+      description: Success response.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: "invalid constraints"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

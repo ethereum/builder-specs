@@ -1,0 +1,24 @@
+{
+  "value": [
+    {
+      "message": {
+        "validatorIndex": 97,
+        "slot": 987432,
+        "constraints": [
+          { "tx": "0xabc", "index": null }
+        ]
+      },
+      "signature": "0x..."
+    },
+    {
+      "message": {
+        "validatorIndex": 97,
+        "slot": 987432,
+        "constraints": [
+          { "tx": "0xdef", "index": null }
+        ]
+      },
+      "signature": "0x..."
+    }
+  ]
+}
