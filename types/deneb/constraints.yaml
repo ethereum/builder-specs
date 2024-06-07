@@ -1,0 +1,39 @@
+Deneb:
+  SignedConstraints:
+      type: object
+      properties:
+        message:
+          $ref: "#/Deneb/ConstraintsMessage"
+        signature:
+          type: string
+          description: |
+            The ECDSA signature of the ConstraintsMessage object, encoded as bytes and
+            hashed with the keccak256 hash. The signature must come from the key-pair
+            associated with the proposer opted-in into Bolt.
+  ConstraintsMessage:
+    type: object
+    properties:
+      validator_index:
+        type: string
+        items:
+          $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
+      slot:
+        type: string
+        items:
+          $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
+      constraints:
+        type: array
+        items:
+          $ref: "#/Deneb/Constraint"
+  Constraint:
+    type: object
+    properties:
+      tx:
+        type: string
+        description: Transaction bytes.
+      index:
+        type: integer
+        items:
+          $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
+        nullable: true
+        description: Position index in the block.

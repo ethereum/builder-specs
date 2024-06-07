@@ -1,0 +1,41 @@
+Deneb:
+  SignedBuilderBidWithProof:
+    type: object
+    description: "The `SignedBuilderBidWithProof` object from the Builder API Deneb spec."
+    required: [message, signature, proof]
+    properties:
+      bid:
+        $ref: "./bid.yaml#/Deneb/SignedBuilderBid"
+      proof:
+        $ref: "#/Deneb/InclusionProof"
+
+  InclusionProof:
+      type: object
+      properties:
+        transaction_hashes:
+          type: array
+          items:
+            type: string
+            description: Bytes32
+          description: List of transaction hashes.
+        generalized_indexes:
+          type: array
+          items:
+            type: string
+            format: uint64
+          description: List of generalized indexes.
+        merkle_hashes:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+            description: List of merkle hashes.
+          description: List of lists containing merkle hashes.
+      description: |
+        The InclusionProof object contains proof data including transaction hashes,
+        generalized indexes, and merkle hashes for inclusion proof in the Merkle tree.
+
+
+
+

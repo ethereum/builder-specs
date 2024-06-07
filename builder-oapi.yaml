@@ -46,6 +46,10 @@ paths:
     $ref: "./apis/builder/blinded_blocks.yaml"
   /eth/v1/builder/status:
     $ref: "./apis/builder/status.yaml"
+  /eth/v1/builder/constraints:
+    $ref: "./apis/builder/constraints.yaml"
+  /eth/v1/builder/header_with_proofs/\{slot\}/\{parent_hash\}/\{pubkey\}: 
+    $ref: "./apis/builder/header_with_proofs.yaml"
 
 components:
   schemas:
@@ -73,8 +77,12 @@ components:
       $ref: "./beacon-apis/types/deneb/block.yaml#/Deneb/SignedBlindedBeaconBlock"
     Deneb.SignedBuilderBid:
       $ref: "./types/deneb/bid.yaml#/Deneb/SignedBuilderBid"
+    Deneb.SignedBuilderBidWithProof:
+      $ref: "./types/deneb/bid_proof.yaml#/Deneb/SignedBuilderBidWithProof"
     Deneb.ExecutionPayloadAndBlobsBundle:
       $ref: "./types/deneb/execution_payload_and_blobs_bundle.yaml#/Deneb/ExecutionPayloadAndBlobsBundle"
+    Deneb.SignedConstraints:
+      $ref: "./types/deneb/constraints.yaml#/Deneb/SignedConstraints"
     SignedValidatorRegistration:
       $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistration"
 
@@ -101,3 +109,11 @@ components:
       $ref: "./examples/deneb/execution_payload_and_blobs_bundle.json"
     Deneb.SignedBuilderBid:
       $ref: "./examples/deneb/signed_builder_bid.json"
+    Deneb.SignedBuilderBidWithProof:
+      $ref: "./examples/deneb/signed_builder_bid_with_proof.json"
+    Deneb.InclusionConstraint:
+      $ref: "./examples/deneb/inclusion_constraint.json"
+    Deneb.BundleConstraint:
+      $ref: "./examples/deneb/bundle_constraint.json"
+    Deneb.AtomicConstraint:
+      $ref: "./examples/deneb/atomic_constraint.json"
