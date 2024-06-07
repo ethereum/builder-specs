@@ -48,7 +48,7 @@ paths:
     $ref: "./apis/builder/status.yaml"
   /eth/v1/builder/constraints:
     $ref: "./apis/builder/constraints.yaml"
-  /eth/v1/builder/header_with_proofs/\{slot\}/\{parent_hash\}/\{pubkey\}: 
+  /eth/v1/builder/header_with_proofs/{slot}/{parent_hash}/{pubkey}: 
     $ref: "./apis/builder/header_with_proofs.yaml"
 
 components:
