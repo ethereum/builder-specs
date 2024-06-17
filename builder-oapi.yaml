@@ -77,8 +77,8 @@ components:
       $ref: "./beacon-apis/types/deneb/block.yaml#/Deneb/SignedBlindedBeaconBlock"
     Deneb.SignedBuilderBid:
       $ref: "./types/deneb/bid.yaml#/Deneb/SignedBuilderBid"
-    Deneb.SignedBuilderBidWithProof:
-      $ref: "./types/deneb/bid_proof.yaml#/Deneb/SignedBuilderBidWithProof"
+    Deneb.SignedBuilderBidWithProofs:
+      $ref: "./types/deneb/bid_proof.yaml#/Deneb/SignedBuilderBidWithProofs"
     Deneb.ExecutionPayloadAndBlobsBundle:
       $ref: "./types/deneb/execution_payload_and_blobs_bundle.yaml#/Deneb/ExecutionPayloadAndBlobsBundle"
     Deneb.SignedConstraints:
@@ -109,11 +109,11 @@ components:
       $ref: "./examples/deneb/execution_payload_and_blobs_bundle.json"
     Deneb.SignedBuilderBid:
       $ref: "./examples/deneb/signed_builder_bid.json"
-    Deneb.SignedBuilderBidWithProof:
-      $ref: "./examples/deneb/signed_builder_bid_with_proof.json"
+    Deneb.SignedBuilderBidWithProofs:
+      $ref: "./examples/deneb/signed_builder_bid_with_proofs.json"
     Deneb.InclusionConstraint:
       $ref: "./examples/deneb/inclusion_constraint.json"
     Deneb.BundleConstraint:
       $ref: "./examples/deneb/bundle_constraint.json"
-    Deneb.AtomicConstraint:
-      $ref: "./examples/deneb/atomic_constraint.json"
+    Deneb.PositionalConstraint:
+      $ref: "./examples/deneb/positional_constraint.json"

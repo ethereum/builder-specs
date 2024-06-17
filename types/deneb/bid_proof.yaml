@@ -1,15 +1,5 @@
 Deneb:
-  SignedBuilderBidWithProof:
-    type: object
-    description: "The `SignedBuilderBidWithProof` object from the Builder API Deneb spec."
-    required: [message, signature, proof]
-    properties:
-      bid:
-        $ref: "./bid.yaml#/Deneb/SignedBuilderBid"
-      proof:
-        $ref: "#/Deneb/InclusionProof"
-
-  InclusionProof:
+  ConstraintProofs:
       type: object
       properties:
         transaction_hashes:
@@ -33,8 +23,39 @@ Deneb:
             description: List of merkle hashes.
           description: List of lists containing merkle hashes.
       description: |
-        The InclusionProof object contains proof data including transaction hashes,
+        The ConstraintProofs object contains proof data including transaction hashes,
         generalized indexes, and merkle hashes for inclusion proof in the Merkle tree.
+
+  BuilderBidWithProofs:
+    description: "The `BuilderBid` object from the Builder API Deneb spec with constraint proofs."
+    allOf:
+      - type: object
+        required: [header, blob_kzg_commitments]
+        properties:
+          header:
+            $ref: "../../beacon-apis/types/deneb/execution_payload.yaml#/Deneb/ExecutionPayloadHeader"
+            description: "`ExecutionPayloadHeader` to use in block proposal."
+          blob_kzg_commitments:
+            type: array
+            items:
+              $ref: '../../beacon-apis/types/primitive.yaml#/KZGCommitment'
+            minItems: 0
+            maxItems: 4096
+            description: "the `KZGCommitment`s for the associated blobs for this `header`"
+          constraint_proofs:
+            $ref: "#/Deneb/ConstraintProofs"
+      - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
+
+  SignedBuilderBidWithProofs:
+    type: object
+    description: "The `SignedBuilderBidWithProofs` object from the Builder API spec."
+    required: [message, signature]
+    properties:
+      message:
+        $ref: "#/Deneb/BuilderBidWithProofs"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
+
 
 
 

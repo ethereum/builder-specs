@@ -1,11 +1,11 @@
 get:
-  operationId: "getHeaderWithProof"
+  operationId: "getHeaderWithProofs"
   summary: Get an execution payload header with proof.
   description: |
-    Requests a builder node to produce a valid execution payload header with proof, which
+    Requests a builder node to produce a valid execution payload header with constraint proofs, which
     can be integrated into a blinded beacon block and signed.
 
-    If the builder is unable to produce a valid execution payload header, then
+    If the builder is unable to produce a valid execution payload header (with valid proofs for the given constraints), then
     the builder MUST return a 204 response. If the request is invalid, then the
     builder MUST return an error response (400) with a description of the
     validation failure.
@@ -38,7 +38,7 @@ get:
       content:
         application/json:
           schema:
-            title: GetHeaderWithProofResponse
+            title: GetHeaderWithProofsResponse
             type: object
             required: [version, data]
             properties:
@@ -46,9 +46,10 @@ get:
                 type: string
                 example: "deneb"
               data:
-                $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBuilderBidWithProof"
+                $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBuilderBidWithProofs"
           examples:
-            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBuilderBidWithProof"
+            deneb:
+              $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBuilderBidWithProofs"
     "204":
       description: No header is available.
     "400":
