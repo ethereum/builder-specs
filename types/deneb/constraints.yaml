@@ -5,14 +5,14 @@ Deneb:
         message:
           $ref: "#/Deneb/ConstraintsMessage"
         signature:
-          type: string
-          description: |
-            The ECDSA signature of the ConstraintsMessage object, encoded as bytes and
-            hashed with the keccak256 hash. The signature must come from the key-pair
-            associated with the proposer opted-in into Bolt.
+          $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
   ConstraintsMessage:
     type: object
     properties:
+      type:
+        type: integer
+        items:
+          $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
       validator_index:
         type: string
         items:

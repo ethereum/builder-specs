@@ -1,8 +1,8 @@
 post:
   operationId: "submitConstraints"
-  summary: "Submit a validator's block constraints."
+  summary: "Submit signed constraints for a certain slot."
   description: |
-    Submits a validator's constraints for block building.
+    Submits a validator's constraints for a certain slot.
 
     A success response (200) indicates that the submission was valid and the constraints
     will be considered for block building. If the submission is invalid, the builder
@@ -18,12 +18,12 @@ post:
         schema:
           $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedConstraints"
         examples:
-          InclusionConstraint:
+          inclusion:
             $ref: "../../builder-oapi.yaml#/components/examples/Deneb.InclusionConstraint"
-          BundleConstraint:
+          bundle:
             $ref: "../../builder-oapi.yaml#/components/examples/Deneb.BundleConstraint"
-          AtomicConstraint:
-            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.AtomicConstraint"
+          positional:
+            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.PositionalConstraint"
   responses:
     "200":
       description: Success response.
