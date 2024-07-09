@@ -35,6 +35,10 @@ get:
   responses:
     "200":
       description: Success response.
+      headers:
+        Eth-Consensus-Version:
+          $ref: "../../builder-oapi.yaml#/components/headers/Eth-Consensus-Version"
+          required: false
       content:
         application/json:
           schema:
@@ -58,6 +62,9 @@ get:
               $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBuilderBid"
             deneb:
               $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBuilderBid"
+        application/octet-stream:
+          schema:
+            description: "SSZ serialized `SignedBuilderBid` bytes. Use Accept header to choose this response type"
     "204":
       description: No header is available.
     "400":
@@ -71,5 +78,7 @@ get:
               value:
                 code: 400
                 message: "Unknown hash: missing parent hash"
+    "406":
+      $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "500":
       $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

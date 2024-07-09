@@ -11,12 +11,15 @@ post:
     failure.
 
     After Deneb, this endpoint will additionally return the associated blobs in the response.
+
+    Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
+    request.
   tags:
     - Builder
   parameters:
     - in: header
       schema:
-        $ref: '../../beacon-apis/beacon-node-oapi.yaml#/components/schemas/ConsensusVersion'
+        $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
       required: false
       name: Eth-Consensus-Version
       description: "Version of the block being submitted"
@@ -37,10 +40,16 @@ post:
             $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBlindedBeaconBlock"
           deneb:
             $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBlindedBeaconBlock"
-
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `SignedBlindedBeaconBlock` bytes. Use content type header to indicate that SSZ data is contained in the request body."
   responses:
     "200":
       description: Success response.
+      headers:
+        Eth-Consensus-Version:
+          $ref: "../../beacon-apis/beacon-node-oapi.yaml#/components/headers/Eth-Consensus-Version"
+          required: false
       content:
         application/json:
           schema:
@@ -64,6 +73,9 @@ post:
               $ref: "../../builder-oapi.yaml#/components/examples/Capella.ExecutionPayload"
             deneb:
               $ref: "../../builder-oapi.yaml#/components/examples/Deneb.ExecutionPayloadAndBlobsBundle"
+        application/octet-stream:
+          schema:
+            description: "SSZ serialized `ExecutionPayload` or `ExecutionPayloadAndBlobsBundle` bytes. Use Accept header to choose this response type"
     "400":
       description: Error response.
       content:
@@ -74,5 +86,9 @@ post:
               - example:
                   code: 400
                   message: "Invalid block: missing signature"
+    "406":
+      $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
+    "415":
+      $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
     "500":
       $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
