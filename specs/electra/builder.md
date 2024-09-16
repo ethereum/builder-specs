@@ -8,7 +8,7 @@ This is the modification of the builder specification accompanying the Electra u
 
 ### Extended containers
 
-##### `BlindedBeaconBlockBody`
+#### `BlindedBeaconBlockBody`
 
 Note: `BlindedBeaconBlock` and `SignedBlindedBeaconBlock` types are updated indirectly.
 
@@ -18,8 +18,8 @@ class BlindedBeaconBlockBody(Container):
     eth1_data: Eth1Data
     graffiti: Bytes32
     proposer_slashings: List[ProposerSlashing, MAX_PROPOSER_SLASHINGS]
-    attester_slashings: List[AttesterSlashing, MAX_ATTESTER_SLASHINGS]
-    attestations: List[Attestation, MAX_ATTESTATIONS]
+    attester_slashings: List[AttesterSlashing, MAX_ATTESTER_SLASHINGS_ELECTRA] # [Modified in Electra:EIP7549]
+    attestations: List[Attestation, MAX_ATTESTATIONS_ELECTRA] # [Modified in Electra:EIP7549]
     deposits: List[Deposit, MAX_DEPOSITS]
     voluntary_exits: List[SignedVoluntaryExit, MAX_VOLUNTARY_EXITS]
     sync_aggregate: SyncAggregate
