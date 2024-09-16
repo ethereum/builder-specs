@@ -6,7 +6,31 @@ This is the modification of the builder specification accompanying the Electra u
 
 ## Containers
 
+### New containers
+
+#### ExecutionBundle
+
+```python
+class ExecutionBundle(Container):
+    execution_payload: ExecutionPayload
+    blobs_bundle: BlobsBundle
+    execution_requests: ExecutionRequests # [New in Electra]
+```
+
 ### Extended containers
+
+#### `BuilderBid`
+
+Note: `SignedBuilderBid` is updated indirectly.
+
+```python
+class BuilderBid(Container):
+    header: ExecutionPayloadHeader
+    blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
+    execution_requests_root: Root # [New in Electra]
+    value: uint256
+    pubkey: BLSPubkey
+```
 
 #### `BlindedBeaconBlockBody`
 
