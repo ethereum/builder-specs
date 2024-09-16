@@ -26,5 +26,5 @@ class BlindedBeaconBlockBody(Container):
     execution_payload_header: ExecutionPayloadHeader
     bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]
     blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
-    execution_requests: ExecutionRequests # [New in Electra]
+    execution_requests_root: Root # [New in Electra]
 ```
