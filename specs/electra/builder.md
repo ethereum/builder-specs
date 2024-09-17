@@ -8,13 +8,13 @@ This is the modification of the builder specification accompanying the Electra u
 
 ### New containers
 
-#### ExecutionBundle
+#### `ExecutionBundle`
 
 ```python
 class ExecutionBundle(Container):
     execution_payload: ExecutionPayload
     blobs_bundle: BlobsBundle
-    execution_requests: ExecutionRequests # [New in Electra]
+    execution_requests: ExecutionRequests
 ```
 
 ### Extended containers
