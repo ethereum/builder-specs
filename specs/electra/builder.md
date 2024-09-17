@@ -12,7 +12,7 @@ The behavior defined by the specification is consistent with previous forks exce
 
 #### `ExecutionBundle`
 
-The `ExecutionBundle` supersedes the [`ExecutionPayloadAndBlobsBundle`](execution-payload-and-blobs-bundle-deneb).
+The `ExecutionBundle` supersedes the [`ExecutionPayloadAndBlobsBundle`][execution-payload-and-blobs-bundle-deneb].
 
 ```python
 class ExecutionBundle(Container):
