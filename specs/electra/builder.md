@@ -4,11 +4,15 @@
 
 This is the modification of the builder specification accompanying the Electra upgrade.
 
+The behavior defined by the specification is consistent with previous forks except for the changes to the types given below.
+
 ## Containers
 
 ### New containers
 
 #### `ExecutionBundle`
+
+The `ExecutionBundle` supersedes the [`ExecutionPayloadAndBlobsBundle`](execution-payload-and-blobs-bundle-deneb).
 
 ```python
 class ExecutionBundle(Container):
@@ -52,3 +56,5 @@ class BlindedBeaconBlockBody(Container):
     blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
     execution_requests_root: Root # [New in Electra]
 ```
+
+[execution-payload-and-blobs-bundle-deneb]: ../deneb/builder.md#executionpayloadandblobsbundle
