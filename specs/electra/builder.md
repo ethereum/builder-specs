@@ -8,19 +8,6 @@ The behavior defined by the specification is consistent with previous forks exce
 
 ## Containers
 
-### New containers
-
-#### `ExecutionBundle`
-
-The `ExecutionBundle` supersedes the [`ExecutionPayloadAndBlobsBundle`][execution-payload-and-blobs-bundle-deneb].
-
-```python
-class ExecutionBundle(Container):
-    execution_payload: ExecutionPayload
-    blobs_bundle: BlobsBundle
-    execution_requests: ExecutionRequests
-```
-
 ### Extended containers
 
 #### `BuilderBid`
