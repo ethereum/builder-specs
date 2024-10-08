@@ -30,6 +30,7 @@ post:
             - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
             - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBlindedBeaconBlock"
             - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Electra.SignedBlindedBeaconBlock"
         examples:
           bellatrix:
             $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
@@ -37,6 +38,8 @@ post:
             $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBlindedBeaconBlock"
           deneb:
             $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBlindedBeaconBlock"
+          electra:
+            $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBlindedBeaconBlock"
 
   responses:
     "200":
@@ -50,7 +53,7 @@ post:
             properties:
               version:
                 type: string
-                enum: [ bellatrix, capella, deneb ]
+                enum: [ bellatrix, capella, deneb, electra ]
                 example: "bellatrix"
               data:
                 oneOf:
