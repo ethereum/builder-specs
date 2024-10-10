@@ -216,7 +216,7 @@ paths:
                       - deneb
                     example: bellatrix
                   data:
-                    oneOf:
+                    anyOf:
                       - type: object
                         description: The `SignedBuilderBid` object from the Builder API spec.
                         required:
@@ -770,7 +770,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
+              anyOf:
                 - type: object
                   description: 'A variant of the [`SignedBeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#signedbeaconblock) object envelope from the CL Bellatrix spec, which contains a `BlindedBeaconBlock` rather than a `BeaconBlock`.'
                   required:
@@ -3178,7 +3178,7 @@ paths:
                       - deneb
                     example: bellatrix
                   data:
-                    oneOf:
+                    anyOf:
                       - allOf:
                           - type: object
                             description: 'The [`ExecutionPayload`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/bellatrix/beacon-chain.md#executionpayload) object from the CL Bellatrix spec.'
