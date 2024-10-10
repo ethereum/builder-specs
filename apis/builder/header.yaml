@@ -58,6 +58,8 @@ get:
             capella:
               $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBuilderBid"
             deneb:
+              $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBuilderBid"
+            electra:
               $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBuilderBid"
     "204":
       description: No header is available.

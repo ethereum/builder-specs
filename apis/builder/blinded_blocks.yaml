@@ -67,6 +67,8 @@ post:
               $ref: "../../builder-oapi.yaml#/components/examples/Capella.ExecutionPayload"
             deneb:
               $ref: "../../builder-oapi.yaml#/components/examples/Deneb.ExecutionPayloadAndBlobsBundle"
+            electra:
+              $ref: "../../builder-oapi.yaml#/components/examples/Deneb.ExecutionPayloadAndBlobsBundle"
     "400":
       description: Error response.
       content:
