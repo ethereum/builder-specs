@@ -26,7 +26,7 @@ post:
     content:
       application/json:
         schema:
-          oneOf:
+          anyOf:
             - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
             - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBlindedBeaconBlock"
             - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBlindedBeaconBlock"
@@ -53,7 +53,7 @@ post:
                 enum: [ bellatrix, capella, deneb ]
                 example: "bellatrix"
               data:
-                oneOf:
+                anyOf:
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.ExecutionPayload"
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.ExecutionPayloadAndBlobsBundle"
