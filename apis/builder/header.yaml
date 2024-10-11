@@ -48,13 +48,14 @@ get:
             properties:
               version:
                 type: string
-                enum: [ bellatrix, capella, deneb ]
+                enum: [ bellatrix, capella, deneb, electra ]
                 example: "bellatrix"
               data:
-                oneOf:
+                anyOf:
                  - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBuilderBid"
                  - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBuilderBid"
                  - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBuilderBid"
+                 - $ref: "../../builder-oapi.yaml#/components/schemas/Electra.SignedBuilderBid"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBuilderBid"
@@ -62,6 +63,8 @@ get:
               $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBuilderBid"
             deneb:
               $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBuilderBid"
+            electra:
+              $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBuilderBid"
         application/octet-stream:
           schema:
             description: "SSZ serialized `SignedBuilderBid` bytes. Use Accept header to choose this response type"
