@@ -16,8 +16,12 @@ Electra:
             maxItems: 4096
             description: "the `KZGCommitment`s for the associated blobs for this `header`"
           execution_requests:
-            $ref: "../../beacon-apis/types/electra/execution_requests.yaml#/Electra/ExecutionRequests"
-            description: "`ExecutionRequests` to include in block proposal."
+            type: array
+            items:
+              $ref: '../../beacon-apis/types/primitive.yaml#/Bitvector'
+            minItems: 3
+            maxItems: 3
+            description: "EIP-7685 encoded `ExecutionRequests` to include in block proposal."
       - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'
 
   SignedBuilderBid:

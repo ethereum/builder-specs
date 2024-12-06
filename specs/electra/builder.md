@@ -18,7 +18,7 @@ Note: `SignedBuilderBid` is updated indirectly.
 class BuilderBid(Container):
     header: ExecutionPayloadHeader
     blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
-    execution_requests: ExecutionRequests # [New in Electra]
+    execution_requests: OpaqueExecutionRequests # [New in Electra]
     value: uint256
     pubkey: BLSPubkey
 ```
@@ -41,7 +41,32 @@ class BlindedBeaconBlockBody(Container):
     execution_payload_header: ExecutionPayloadHeader
     bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]
     blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
-    execution_requests: ExecutionRequests # [New in Electra]
+    execution_requests: OpaqueExecutionRequests # [New in Electra]
 ```
+
+### New Containers
+
+### `OpaqueExecutionRequests`
+
+```python
+class OpaqueExecutionRequests(List[Bitvector]):
+    pass
+```
+
+`OpaqueExecutionRequests` is simply a "type alias" for a `List[Bitvector]`, this type follows the encoding of execution
+requests as explained in EIP-7865.  Specifically for Electra, the list should contain three elements, one for
+each of the type-prefixed and byte-encoded `Deposit`, `Withdrawal` and `Consolidation` request lists.
+
+Note that while each `Bitvector` appears as an arbitrary-length byte sequence, technically each entry is bound 
+by the encoded length of each request type and the maximum amount of each request type allowed in a block.
+
+## Building
+
+Builders provide bids as they have in prior forks, with the addition of execution requests.
+
+### Execution Requests
+
+The actual payloads for each request type are generated as side-effects of block-building, see EIP-6110 for 
+`Deposit`, EIP-7002 for `Withdrawal` and EIP-7251 for `Consolidation` requests.  
 
 [execution-payload-and-blobs-bundle-deneb]: ../deneb/builder.md#executionpayloadandblobsbundle
