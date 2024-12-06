@@ -19,7 +19,7 @@ Electra:
             type: array
             items:
               $ref: '../../beacon-apis/types/primitive.yaml#/Bitvector'
-            minItems: 3
+            minItems: 0
             maxItems: 3
             description: "EIP-7685 encoded `ExecutionRequests` to include in block proposal."
       - $ref: '../bellatrix/bid.yaml#/Bellatrix/BuilderBidCommon'

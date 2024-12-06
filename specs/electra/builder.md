@@ -54,8 +54,10 @@ class OpaqueExecutionRequests(List[Bitvector]):
 ```
 
 `OpaqueExecutionRequests` is simply a "type alias" for a `List[Bitvector]`, this type follows the encoding of execution
-requests as explained in EIP-7865.  Specifically for Electra, the list should contain three elements, one for
-each of the type-prefixed and byte-encoded `Deposit`, `Withdrawal` and `Consolidation` request lists.
+requests as explained in EIP-7865.  Specifically for Electra, the list should contain up to three elements, one for
+each of the type-prefixed and byte-encoded `Deposit`, `Withdrawal` and `Consolidation` request lists, see 
+[`get_execution_requests_list`](https://github.com/ethereum/consensus-specs/blob/dev/specs/electra/beacon-chain.md#new-get_execution_requests_list)
+for an example encoding.
 
 Note that while each `Bitvector` appears as an arbitrary-length byte sequence, technically each entry is bound 
 by the encoded length of each request type and the maximum amount of each request type allowed in a block.
