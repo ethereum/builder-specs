@@ -29,7 +29,7 @@ jobs:
       - name: Save releases (artifact)
         uses: actions/upload-artifact@v4
         with:
-          name: releases
+          name: releases-${{ matrix.release }}
           retention-days: 7
           path: |
             deploy/releases
@@ -51,8 +51,9 @@ jobs:
       - name: Restore releases
         uses: actions/download-artifact@v4
         with:
-          name: releases
           path: deploy/releases
+          pattern: releases-*
+	  merge-multiple: true
       - name: Bundle spec
         run: "swagger-cli bundle ./builder-oapi.yaml -r -t yaml -o ./deploy/builder-oapi.yaml"
       - name: Publish to Github Pages
