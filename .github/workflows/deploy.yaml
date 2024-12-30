@@ -27,7 +27,7 @@ jobs:
           file: 'builder-oapi.json'
           target: 'deploy/releases/${{ matrix.release }}/builder-oapi.json'
       - name: Save releases (artifact)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: releases
           retention-days: 7
@@ -37,7 +37,7 @@ jobs:
     needs: releases
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - uses: actions/setup-node@v2
@@ -49,14 +49,14 @@ jobs:
           cp -r assets ./deploy
           cp index.html ./deploy
       - name: Restore releases
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: releases
           path: deploy/releases
       - name: Bundle spec
         run: "swagger-cli bundle ./builder-oapi.yaml -r -t yaml -o ./deploy/builder-oapi.yaml"
       - name: Publish to Github Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./deploy
