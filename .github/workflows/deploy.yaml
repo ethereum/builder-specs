@@ -53,7 +53,7 @@ jobs:
         with:
           path: deploy/releases
           pattern: releases-*
-	  merge-multiple: true
+          merge-multiple: true
       - name: Bundle spec
         run: "swagger-cli bundle ./builder-oapi.yaml -r -t yaml -o ./deploy/builder-oapi.yaml"
       - name: Publish to Github Pages
@@ -61,4 +61,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./deploy
-          publish_branch: gh-pages
