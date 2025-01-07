@@ -349,9 +349,9 @@ paths:
                                   - pubkey
                                 properties:
                                   value:
-                                    description: Payment in wei that will be paid to the `fee_recipient` account.
                                     type: string
                                     example: '1'
+                                    description: Payment in wei that will be paid to the `fee_recipient` account.
                                   pubkey:
                                     description: BLS public key of builder.
                                     type: string
@@ -475,9 +475,9 @@ paths:
                                   - pubkey
                                 properties:
                                   value:
-                                    description: Payment in wei that will be paid to the `fee_recipient` account.
                                     type: string
                                     example: '1'
+                                    description: Payment in wei that will be paid to the `fee_recipient` account.
                                   pubkey:
                                     description: BLS public key of builder.
                                     type: string
@@ -616,9 +616,9 @@ paths:
                                   - pubkey
                                 properties:
                                   value:
-                                    description: Payment in wei that will be paid to the `fee_recipient` account.
                                     type: string
                                     example: '1'
+                                    description: Payment in wei that will be paid to the `fee_recipient` account.
                                   pubkey:
                                     description: BLS public key of builder.
                                     type: string
@@ -779,11 +779,11 @@ paths:
                                               pattern: '^0x[a-fA-F0-9]{96}$'
                                               example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                             withdrawal_credentials:
-                                              description: The withdrawal credentials.
                                               type: string
                                               format: hex
                                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                               pattern: '^0x[a-fA-F0-9]{64}$'
+                                              description: The withdrawal credentials.
                                             amount:
                                               description: The value to be deposited (gwei).
                                               type: string
@@ -794,9 +794,9 @@ paths:
                                               pattern: '^0x[a-fA-F0-9]{192}$'
                                               example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
                                             index:
-                                              description: The index of the deposit request.
                                               type: string
                                               example: '1'
+                                              description: The index of the deposit request.
                                         maxItems: 8192
                                       withdrawals:
                                         type: array
@@ -809,9 +809,9 @@ paths:
                                             - amount
                                           properties:
                                             source_address:
-                                              description: Execution address which sent the request.
                                               type: string
                                               format: hex
+                                              description: An address on the execution (Ethereum 1) network.
                                               example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                               pattern: '^0x[a-fA-F0-9]{40}$'
                                             validator_pubkey:
@@ -836,9 +836,9 @@ paths:
                                             - target_pubkey
                                           properties:
                                             source_address:
-                                              description: Execution address which sent the request.
                                               type: string
                                               format: hex
+                                              description: An address on the execution (Ethereum 1) network.
                                               example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                               pattern: '^0x[a-fA-F0-9]{40}$'
                                             source_pubkey:
@@ -860,9 +860,9 @@ paths:
                                   - pubkey
                                 properties:
                                   value:
-                                    description: Payment in wei that will be paid to the `fee_recipient` account.
                                     type: string
                                     example: '1'
+                                    description: Payment in wei that will be paid to the `fee_recipient` account.
                                   pubkey:
                                     description: BLS public key of builder.
                                     type: string
@@ -1131,25 +1131,25 @@ paths:
                             - state_root
                           properties:
                             slot:
+                              type: string
+                              example: '1'
                               description: The slot to which this block corresponds.
-                              type: string
-                              example: '1'
                             proposer_index:
-                              description: Index of validator in validator registry.
                               type: string
                               example: '1'
+                              description: Index of validator in validator registry.
                             parent_root:
+                              type: string
+                              format: hex
+                              example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                              pattern: '^0x[a-fA-F0-9]{64}$'
                               description: The signing Merkle root of the parent `BeaconBlock`.
-                              type: string
-                              format: hex
-                              example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                              pattern: '^0x[a-fA-F0-9]{64}$'
                             state_root:
-                              description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                         - type: object
                           required:
                             - body
@@ -1171,11 +1171,11 @@ paths:
                                     - sync_aggregate
                                   properties:
                                     randao_reveal:
-                                      description: The RanDAO reveal value provided by the validator.
                                       type: string
                                       format: hex
                                       pattern: '^0x[a-fA-F0-9]{192}$'
                                       example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                      description: The RanDAO reveal value provided by the validator.
                                     eth1_data:
                                       type: object
                                       description: 'The [`Eth1Data`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#eth1data) object from the CL spec.'
@@ -1185,21 +1185,21 @@ paths:
                                         - block_hash
                                       properties:
                                         deposit_root:
-                                          description: Root of the deposit tree.
                                           type: string
                                           format: hex
                                           example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                           pattern: '^0x[a-fA-F0-9]{64}$'
+                                          description: Root of the deposit tree.
                                         deposit_count:
-                                          description: Total number of deposits.
                                           type: string
                                           example: '1'
+                                          description: Total number of deposits.
                                         block_hash:
-                                          description: Ethereum 1.x block hash.
                                           type: string
                                           format: hex
                                           example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                           pattern: '^0x[a-fA-F0-9]{64}$'
+                                          description: Ethereum 1.x block hash.
                                     graffiti:
                                       type: string
                                       format: hex
@@ -1232,35 +1232,35 @@ paths:
                                                       - state_root
                                                     properties:
                                                       slot:
+                                                        type: string
+                                                        example: '1'
                                                         description: The slot to which this block corresponds.
-                                                        type: string
-                                                        example: '1'
                                                       proposer_index:
-                                                        description: Index of validator in validator registry.
                                                         type: string
                                                         example: '1'
+                                                        description: Index of validator in validator registry.
                                                       parent_root:
+                                                        type: string
+                                                        format: hex
+                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                         description: The signing merkle root of the parent `BeaconBlock`.
-                                                        type: string
-                                                        format: hex
-                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                       state_root:
-                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                   - type: object
                                                     required:
                                                       - body_root
                                                     properties:
                                                       body_root:
-                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                               signature:
                                                 type: string
                                                 format: hex
@@ -1284,35 +1284,35 @@ paths:
                                                       - state_root
                                                     properties:
                                                       slot:
+                                                        type: string
+                                                        example: '1'
                                                         description: The slot to which this block corresponds.
-                                                        type: string
-                                                        example: '1'
                                                       proposer_index:
-                                                        description: Index of validator in validator registry.
                                                         type: string
                                                         example: '1'
+                                                        description: Index of validator in validator registry.
                                                       parent_root:
+                                                        type: string
+                                                        format: hex
+                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                         description: The signing merkle root of the parent `BeaconBlock`.
-                                                        type: string
-                                                        format: hex
-                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                       state_root:
-                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                   - type: object
                                                     required:
                                                       - body_root
                                                     properties:
                                                       body_root:
-                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                               signature:
                                                 type: string
                                                 format: hex
@@ -1359,11 +1359,11 @@ paths:
                                                     type: string
                                                     example: '1'
                                                   beacon_block_root:
-                                                    description: LMD GHOST vote.
                                                     type: string
                                                     format: hex
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                                    description: LMD GHOST vote.
                                                   source:
                                                     type: object
                                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -1395,11 +1395,11 @@ paths:
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                               signature:
-                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                           attestation_2:
                                             type: object
                                             description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#indexedattestation) object from the CL spec.'
@@ -1432,11 +1432,11 @@ paths:
                                                     type: string
                                                     example: '1'
                                                   beacon_block_root:
-                                                    description: LMD GHOST vote.
                                                     type: string
                                                     format: hex
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                                    description: LMD GHOST vote.
                                                   source:
                                                     type: object
                                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -1468,11 +1468,11 @@ paths:
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                               signature:
-                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     attestations:
                                       type: array
                                       items:
@@ -1506,11 +1506,11 @@ paths:
                                                 type: string
                                                 example: '1'
                                               beacon_block_root:
-                                                description: LMD GHOST vote.
                                                 type: string
                                                 format: hex
                                                 example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: LMD GHOST vote.
                                               source:
                                                 type: object
                                                 description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -1542,11 +1542,11 @@ paths:
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
                                           signature:
-                                            description: BLS aggregate signature.
                                             type: string
                                             format: hex
                                             pattern: '^0x[a-fA-F0-9]{192}$'
                                             example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                            description: BLS aggregate signature.
                                     deposits:
                                       type: array
                                       items:
@@ -1582,21 +1582,21 @@ paths:
                                                 description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                                 example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                               withdrawal_credentials:
-                                                description: The withdrawal credentials.
                                                 type: string
                                                 format: hex
                                                 example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The withdrawal credentials.
                                               amount:
                                                 description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
                                               signature:
-                                                description: Container self-signature.
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: Container self-signature.
                                     voluntary_exits:
                                       type: array
                                       items:
@@ -1614,13 +1614,13 @@ paths:
                                               - validator_index
                                             properties:
                                               epoch:
+                                                type: string
+                                                example: '1'
                                                 description: Minimum epoch for processing exit.
-                                                type: string
-                                                example: '1'
                                               validator_index:
-                                                description: Index of the exiting validator.
                                                 type: string
                                                 example: '1'
+                                                description: Index of the exiting validator.
                                           signature:
                                             type: string
                                             format: hex
@@ -1757,25 +1757,25 @@ paths:
                             - state_root
                           properties:
                             slot:
+                              type: string
+                              example: '1'
                               description: The slot to which this block corresponds.
-                              type: string
-                              example: '1'
                             proposer_index:
-                              description: Index of validator in validator registry.
                               type: string
                               example: '1'
+                              description: Index of validator in validator registry.
                             parent_root:
+                              type: string
+                              format: hex
+                              example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                              pattern: '^0x[a-fA-F0-9]{64}$'
                               description: The signing Merkle root of the parent `BeaconBlock`.
-                              type: string
-                              format: hex
-                              example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                              pattern: '^0x[a-fA-F0-9]{64}$'
                             state_root:
-                              description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                         - type: object
                           required:
                             - body
@@ -1798,11 +1798,11 @@ paths:
                                     - bls_to_execution_changes
                                   properties:
                                     randao_reveal:
-                                      description: The RanDAO reveal value provided by the validator.
                                       type: string
                                       format: hex
                                       pattern: '^0x[a-fA-F0-9]{192}$'
                                       example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                      description: The RanDAO reveal value provided by the validator.
                                     eth1_data:
                                       type: object
                                       description: 'The [`Eth1Data`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#eth1data) object from the CL spec.'
@@ -1812,21 +1812,21 @@ paths:
                                         - block_hash
                                       properties:
                                         deposit_root:
-                                          description: Root of the deposit tree.
                                           type: string
                                           format: hex
                                           example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                           pattern: '^0x[a-fA-F0-9]{64}$'
+                                          description: Root of the deposit tree.
                                         deposit_count:
-                                          description: Total number of deposits.
                                           type: string
                                           example: '1'
+                                          description: Total number of deposits.
                                         block_hash:
-                                          description: Ethereum 1.x block hash.
                                           type: string
                                           format: hex
                                           example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                           pattern: '^0x[a-fA-F0-9]{64}$'
+                                          description: Ethereum 1.x block hash.
                                     graffiti:
                                       type: string
                                       format: hex
@@ -1859,35 +1859,35 @@ paths:
                                                       - state_root
                                                     properties:
                                                       slot:
+                                                        type: string
+                                                        example: '1'
                                                         description: The slot to which this block corresponds.
-                                                        type: string
-                                                        example: '1'
                                                       proposer_index:
-                                                        description: Index of validator in validator registry.
                                                         type: string
                                                         example: '1'
+                                                        description: Index of validator in validator registry.
                                                       parent_root:
+                                                        type: string
+                                                        format: hex
+                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                         description: The signing merkle root of the parent `BeaconBlock`.
-                                                        type: string
-                                                        format: hex
-                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                       state_root:
-                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                   - type: object
                                                     required:
                                                       - body_root
                                                     properties:
                                                       body_root:
-                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                               signature:
                                                 type: string
                                                 format: hex
@@ -1911,35 +1911,35 @@ paths:
                                                       - state_root
                                                     properties:
                                                       slot:
+                                                        type: string
+                                                        example: '1'
                                                         description: The slot to which this block corresponds.
-                                                        type: string
-                                                        example: '1'
                                                       proposer_index:
-                                                        description: Index of validator in validator registry.
                                                         type: string
                                                         example: '1'
+                                                        description: Index of validator in validator registry.
                                                       parent_root:
+                                                        type: string
+                                                        format: hex
+                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                         description: The signing merkle root of the parent `BeaconBlock`.
-                                                        type: string
-                                                        format: hex
-                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                       state_root:
-                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                   - type: object
                                                     required:
                                                       - body_root
                                                     properties:
                                                       body_root:
-                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                               signature:
                                                 type: string
                                                 format: hex
@@ -1986,11 +1986,11 @@ paths:
                                                     type: string
                                                     example: '1'
                                                   beacon_block_root:
-                                                    description: LMD GHOST vote.
                                                     type: string
                                                     format: hex
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                                    description: LMD GHOST vote.
                                                   source:
                                                     type: object
                                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -2022,11 +2022,11 @@ paths:
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                               signature:
-                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                           attestation_2:
                                             type: object
                                             description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#indexedattestation) object from the CL spec.'
@@ -2059,11 +2059,11 @@ paths:
                                                     type: string
                                                     example: '1'
                                                   beacon_block_root:
-                                                    description: LMD GHOST vote.
                                                     type: string
                                                     format: hex
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                                    description: LMD GHOST vote.
                                                   source:
                                                     type: object
                                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -2095,11 +2095,11 @@ paths:
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                               signature:
-                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     attestations:
                                       type: array
                                       items:
@@ -2133,11 +2133,11 @@ paths:
                                                 type: string
                                                 example: '1'
                                               beacon_block_root:
-                                                description: LMD GHOST vote.
                                                 type: string
                                                 format: hex
                                                 example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: LMD GHOST vote.
                                               source:
                                                 type: object
                                                 description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -2169,11 +2169,11 @@ paths:
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
                                           signature:
-                                            description: BLS aggregate signature.
                                             type: string
                                             format: hex
                                             pattern: '^0x[a-fA-F0-9]{192}$'
                                             example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                            description: BLS aggregate signature.
                                     deposits:
                                       type: array
                                       items:
@@ -2209,21 +2209,21 @@ paths:
                                                 description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                                 example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                               withdrawal_credentials:
-                                                description: The withdrawal credentials.
                                                 type: string
                                                 format: hex
                                                 example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The withdrawal credentials.
                                               amount:
                                                 description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
                                               signature:
-                                                description: Container self-signature.
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: Container self-signature.
                                     voluntary_exits:
                                       type: array
                                       items:
@@ -2241,13 +2241,13 @@ paths:
                                               - validator_index
                                             properties:
                                               epoch:
+                                                type: string
+                                                example: '1'
                                                 description: Minimum epoch for processing exit.
-                                                type: string
-                                                example: '1'
                                               validator_index:
-                                                description: Index of the exiting validator.
                                                 type: string
                                                 example: '1'
+                                                description: Index of the exiting validator.
                                           signature:
                                             type: string
                                             format: hex
@@ -2289,19 +2289,19 @@ paths:
                                               - to_execution_address
                                             properties:
                                               validator_index:
-                                                description: Index of the validator for which credentials will be changed.
                                                 type: string
                                                 example: '1'
+                                                description: Index of the validator for which credentials will be changed.
                                               from_bls_pubkey:
-                                                description: Public key of existing credentials.
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{96}$'
+                                                description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                                 example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                               to_execution_address:
-                                                description: Execution address to which the credentials will be changed.
                                                 type: string
                                                 format: hex
+                                                description: An address on the execution (Ethereum 1) network.
                                                 example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                                 pattern: '^0x[a-fA-F0-9]{40}$'
                                           signature:
@@ -2428,25 +2428,25 @@ paths:
                             - state_root
                           properties:
                             slot:
+                              type: string
+                              example: '1'
                               description: The slot to which this block corresponds.
-                              type: string
-                              example: '1'
                             proposer_index:
-                              description: Index of validator in validator registry.
                               type: string
                               example: '1'
+                              description: Index of validator in validator registry.
                             parent_root:
+                              type: string
+                              format: hex
+                              example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                              pattern: '^0x[a-fA-F0-9]{64}$'
                               description: The signing Merkle root of the parent `BeaconBlock`.
-                              type: string
-                              format: hex
-                              example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                              pattern: '^0x[a-fA-F0-9]{64}$'
                             state_root:
-                              description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                         - type: object
                           required:
                             - body
@@ -2485,21 +2485,21 @@ paths:
                                         - block_hash
                                       properties:
                                         deposit_root:
-                                          description: Root of the deposit tree.
                                           type: string
                                           format: hex
                                           example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                           pattern: '^0x[a-fA-F0-9]{64}$'
+                                          description: Root of the deposit tree.
                                         deposit_count:
-                                          description: Total number of deposits.
                                           type: string
                                           example: '1'
+                                          description: Total number of deposits.
                                         block_hash:
-                                          description: Ethereum 1.x block hash.
                                           type: string
                                           format: hex
                                           example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                           pattern: '^0x[a-fA-F0-9]{64}$'
+                                          description: Ethereum 1.x block hash.
                                     graffiti:
                                       type: string
                                       format: hex
@@ -2532,35 +2532,35 @@ paths:
                                                       - state_root
                                                     properties:
                                                       slot:
+                                                        type: string
+                                                        example: '1'
                                                         description: The slot to which this block corresponds.
-                                                        type: string
-                                                        example: '1'
                                                       proposer_index:
-                                                        description: Index of validator in validator registry.
                                                         type: string
                                                         example: '1'
+                                                        description: Index of validator in validator registry.
                                                       parent_root:
+                                                        type: string
+                                                        format: hex
+                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                         description: The signing merkle root of the parent `BeaconBlock`.
-                                                        type: string
-                                                        format: hex
-                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                       state_root:
-                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                   - type: object
                                                     required:
                                                       - body_root
                                                     properties:
                                                       body_root:
-                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                               signature:
                                                 type: string
                                                 format: hex
@@ -2584,35 +2584,35 @@ paths:
                                                       - state_root
                                                     properties:
                                                       slot:
+                                                        type: string
+                                                        example: '1'
                                                         description: The slot to which this block corresponds.
-                                                        type: string
-                                                        example: '1'
                                                       proposer_index:
-                                                        description: Index of validator in validator registry.
                                                         type: string
                                                         example: '1'
+                                                        description: Index of validator in validator registry.
                                                       parent_root:
+                                                        type: string
+                                                        format: hex
+                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                         description: The signing merkle root of the parent `BeaconBlock`.
-                                                        type: string
-                                                        format: hex
-                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                       state_root:
-                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                   - type: object
                                                     required:
                                                       - body_root
                                                     properties:
                                                       body_root:
-                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                               signature:
                                                 type: string
                                                 format: hex
@@ -2659,11 +2659,11 @@ paths:
                                                     type: string
                                                     example: '1'
                                                   beacon_block_root:
-                                                    description: LMD GHOST vote.
                                                     type: string
                                                     format: hex
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                                    description: LMD GHOST vote.
                                                   source:
                                                     type: object
                                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -2695,11 +2695,11 @@ paths:
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                               signature:
-                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                           attestation_2:
                                             type: object
                                             description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#indexedattestation) object from the CL spec.'
@@ -2732,11 +2732,11 @@ paths:
                                                     type: string
                                                     example: '1'
                                                   beacon_block_root:
-                                                    description: LMD GHOST vote.
                                                     type: string
                                                     format: hex
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                                    description: LMD GHOST vote.
                                                   source:
                                                     type: object
                                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -2768,11 +2768,11 @@ paths:
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                               signature:
-                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     attestations:
                                       type: array
                                       items:
@@ -2806,11 +2806,11 @@ paths:
                                                 type: string
                                                 example: '1'
                                               beacon_block_root:
-                                                description: LMD GHOST vote.
                                                 type: string
                                                 format: hex
                                                 example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: LMD GHOST vote.
                                               source:
                                                 type: object
                                                 description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -2842,11 +2842,11 @@ paths:
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
                                           signature:
-                                            description: BLS aggregate signature.
                                             type: string
                                             format: hex
                                             pattern: '^0x[a-fA-F0-9]{192}$'
                                             example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                            description: BLS aggregate signature.
                                     deposits:
                                       type: array
                                       items:
@@ -2882,21 +2882,21 @@ paths:
                                                 description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                                 example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                               withdrawal_credentials:
-                                                description: The withdrawal credentials.
                                                 type: string
                                                 format: hex
                                                 example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The withdrawal credentials.
                                               amount:
                                                 description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
                                               signature:
-                                                description: Container self-signature.
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: Container self-signature.
                                     voluntary_exits:
                                       type: array
                                       items:
@@ -2914,13 +2914,13 @@ paths:
                                               - validator_index
                                             properties:
                                               epoch:
+                                                type: string
+                                                example: '1'
                                                 description: Minimum epoch for processing exit.
-                                                type: string
-                                                example: '1'
                                               validator_index:
-                                                description: Index of the exiting validator.
                                                 type: string
                                                 example: '1'
+                                                description: Index of the exiting validator.
                                           signature:
                                             type: string
                                             format: hex
@@ -2962,19 +2962,19 @@ paths:
                                               - to_execution_address
                                             properties:
                                               validator_index:
-                                                description: Index of the validator for which credentials will be changed.
                                                 type: string
                                                 example: '1'
+                                                description: Index of the validator for which credentials will be changed.
                                               from_bls_pubkey:
-                                                description: Public key of existing credentials.
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{96}$'
+                                                description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                                 example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                               to_execution_address:
-                                                description: Execution address to which the credentials will be changed.
                                                 type: string
                                                 format: hex
+                                                description: An address on the execution (Ethereum 1) network.
                                                 example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                                 pattern: '^0x[a-fA-F0-9]{40}$'
                                           signature:
@@ -3112,25 +3112,25 @@ paths:
                             - state_root
                           properties:
                             slot:
+                              type: string
+                              example: '1'
                               description: The slot to which this block corresponds.
-                              type: string
-                              example: '1'
                             proposer_index:
-                              description: Index of validator in validator registry.
                               type: string
                               example: '1'
+                              description: Index of validator in validator registry.
                             parent_root:
+                              type: string
+                              format: hex
+                              example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                              pattern: '^0x[a-fA-F0-9]{64}$'
                               description: The signing Merkle root of the parent `BeaconBlock`.
-                              type: string
-                              format: hex
-                              example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                              pattern: '^0x[a-fA-F0-9]{64}$'
                             state_root:
-                              description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                         - type: object
                           required:
                             - body
@@ -3169,21 +3169,21 @@ paths:
                                         - block_hash
                                       properties:
                                         deposit_root:
-                                          description: Root of the deposit tree.
                                           type: string
                                           format: hex
                                           example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                           pattern: '^0x[a-fA-F0-9]{64}$'
+                                          description: Root of the deposit tree.
                                         deposit_count:
-                                          description: Total number of deposits.
                                           type: string
                                           example: '1'
+                                          description: Total number of deposits.
                                         block_hash:
-                                          description: Ethereum 1.x block hash.
                                           type: string
                                           format: hex
                                           example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                           pattern: '^0x[a-fA-F0-9]{64}$'
+                                          description: Ethereum 1.x block hash.
                                     graffiti:
                                       type: string
                                       format: hex
@@ -3216,35 +3216,35 @@ paths:
                                                       - state_root
                                                     properties:
                                                       slot:
+                                                        type: string
+                                                        example: '1'
                                                         description: The slot to which this block corresponds.
-                                                        type: string
-                                                        example: '1'
                                                       proposer_index:
-                                                        description: Index of validator in validator registry.
                                                         type: string
                                                         example: '1'
+                                                        description: Index of validator in validator registry.
                                                       parent_root:
+                                                        type: string
+                                                        format: hex
+                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                         description: The signing merkle root of the parent `BeaconBlock`.
-                                                        type: string
-                                                        format: hex
-                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                       state_root:
-                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                   - type: object
                                                     required:
                                                       - body_root
                                                     properties:
                                                       body_root:
-                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                               signature:
                                                 type: string
                                                 format: hex
@@ -3268,35 +3268,35 @@ paths:
                                                       - state_root
                                                     properties:
                                                       slot:
+                                                        type: string
+                                                        example: '1'
                                                         description: The slot to which this block corresponds.
-                                                        type: string
-                                                        example: '1'
                                                       proposer_index:
-                                                        description: Index of validator in validator registry.
                                                         type: string
                                                         example: '1'
+                                                        description: Index of validator in validator registry.
                                                       parent_root:
+                                                        type: string
+                                                        format: hex
+                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                         description: The signing merkle root of the parent `BeaconBlock`.
-                                                        type: string
-                                                        format: hex
-                                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                                        pattern: '^0x[a-fA-F0-9]{64}$'
                                                       state_root:
-                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                                   - type: object
                                                     required:
                                                       - body_root
                                                     properties:
                                                       body_root:
-                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                                         type: string
                                                         format: hex
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                                        description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                               signature:
                                                 type: string
                                                 format: hex
@@ -3343,11 +3343,11 @@ paths:
                                                     type: string
                                                     example: '1'
                                                   beacon_block_root:
-                                                    description: LMD GHOST vote.
                                                     type: string
                                                     format: hex
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                                    description: LMD GHOST vote.
                                                   source:
                                                     type: object
                                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -3379,11 +3379,11 @@ paths:
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                               signature:
-                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                           attestation_2:
                                             type: object
                                             description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.5.0-alpha.3/specs/electra/beacon-chain.md#indexedattestation) object from the CL spec.'
@@ -3416,11 +3416,11 @@ paths:
                                                     type: string
                                                     example: '1'
                                                   beacon_block_root:
-                                                    description: LMD GHOST vote.
                                                     type: string
                                                     format: hex
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                                    description: LMD GHOST vote.
                                                   source:
                                                     type: object
                                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -3452,11 +3452,11 @@ paths:
                                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                         pattern: '^0x[a-fA-F0-9]{64}$'
                                               signature:
-                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     attestations:
                                       type: array
                                       items:
@@ -3491,11 +3491,11 @@ paths:
                                                 type: string
                                                 example: '1'
                                               beacon_block_root:
-                                                description: LMD GHOST vote.
                                                 type: string
                                                 format: hex
                                                 example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: LMD GHOST vote.
                                               source:
                                                 type: object
                                                 description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -3527,11 +3527,11 @@ paths:
                                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                     pattern: '^0x[a-fA-F0-9]{64}$'
                                           signature:
-                                            description: BLS aggregate signature.
                                             type: string
                                             format: hex
                                             pattern: '^0x[a-fA-F0-9]{192}$'
                                             example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                            description: BLS aggregate signature.
                                           committee_bits:
                                             description: Committee bits.
                                             example: '0x0000000000000001'
@@ -3573,21 +3573,21 @@ paths:
                                                 description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                                 example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                               withdrawal_credentials:
-                                                description: The withdrawal credentials.
                                                 type: string
                                                 format: hex
                                                 example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The withdrawal credentials.
                                               amount:
                                                 description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
                                               signature:
-                                                description: Container self-signature.
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                                description: Container self-signature.
                                     voluntary_exits:
                                       type: array
                                       items:
@@ -3605,13 +3605,13 @@ paths:
                                               - validator_index
                                             properties:
                                               epoch:
+                                                type: string
+                                                example: '1'
                                                 description: Minimum epoch for processing exit.
-                                                type: string
-                                                example: '1'
                                               validator_index:
-                                                description: Index of the exiting validator.
                                                 type: string
                                                 example: '1'
+                                                description: Index of the exiting validator.
                                           signature:
                                             type: string
                                             format: hex
@@ -3653,19 +3653,19 @@ paths:
                                               - to_execution_address
                                             properties:
                                               validator_index:
-                                                description: Index of the validator for which credentials will be changed.
                                                 type: string
                                                 example: '1'
+                                                description: Index of the validator for which credentials will be changed.
                                               from_bls_pubkey:
-                                                description: Public key of existing credentials.
                                                 type: string
                                                 format: hex
                                                 pattern: '^0x[a-fA-F0-9]{96}$'
+                                                description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                                 example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                               to_execution_address:
-                                                description: Execution address to which the credentials will be changed.
                                                 type: string
                                                 format: hex
+                                                description: An address on the execution (Ethereum 1) network.
                                                 example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                                 pattern: '^0x[a-fA-F0-9]{40}$'
                                           signature:
@@ -3809,11 +3809,11 @@ paths:
                                                 pattern: '^0x[a-fA-F0-9]{96}$'
                                                 example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                               withdrawal_credentials:
-                                                description: The withdrawal credentials.
                                                 type: string
                                                 format: hex
                                                 example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The withdrawal credentials.
                                               amount:
                                                 description: The value to be deposited (gwei).
                                                 type: string
@@ -3824,9 +3824,9 @@ paths:
                                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
                                               index:
-                                                description: The index of the deposit request.
                                                 type: string
                                                 example: '1'
+                                                description: The index of the deposit request.
                                           maxItems: 8192
                                         withdrawals:
                                           type: array
@@ -3839,9 +3839,9 @@ paths:
                                               - amount
                                             properties:
                                               source_address:
-                                                description: Execution address which sent the request.
                                                 type: string
                                                 format: hex
+                                                description: An address on the execution (Ethereum 1) network.
                                                 example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                                 pattern: '^0x[a-fA-F0-9]{40}$'
                                               validator_pubkey:
@@ -3866,9 +3866,9 @@ paths:
                                               - target_pubkey
                                             properties:
                                               source_address:
-                                                description: Execution address which sent the request.
                                                 type: string
                                                 format: hex
+                                                description: An address on the execution (Ethereum 1) network.
                                                 example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                                 pattern: '^0x[a-fA-F0-9]{40}$'
                                               source_pubkey:
@@ -4711,17 +4711,17 @@ paths:
                                     - amount
                                   properties:
                                     index:
+                                      type: string
+                                      example: '1'
                                       description: The index of the withdrawal.
-                                      type: string
-                                      example: '1'
                                     validator_index:
-                                      description: The index of the withdrawing validator.
                                       type: string
                                       example: '1'
+                                      description: The index of the withdrawing validator.
                                     address:
-                                      description: The address to which the withdrawal is credited.
                                       type: string
                                       format: hex
+                                      description: An address on the execution (Ethereum 1) network.
                                       example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                       pattern: '^0x[a-fA-F0-9]{40}$'
                                     amount:
@@ -4840,17 +4840,17 @@ paths:
                                         - amount
                                       properties:
                                         index:
+                                          type: string
+                                          example: '1'
                                           description: The index of the withdrawal.
-                                          type: string
-                                          example: '1'
                                         validator_index:
-                                          description: The index of the withdrawing validator.
                                           type: string
                                           example: '1'
+                                          description: The index of the withdrawing validator.
                                         address:
-                                          description: The address to which the withdrawal is credited.
                                           type: string
                                           format: hex
+                                          description: An address on the execution (Ethereum 1) network.
                                           example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                           pattern: '^0x[a-fA-F0-9]{40}$'
                                         amount:
@@ -5180,13 +5180,15 @@ components:
           items:
             type: string
     ConsensusVersion:
+      type: string
       enum:
+        - phase0
+        - altair
         - bellatrix
         - capella
         - deneb
         - electra
-      example: bellatrix
-      type: string
+      example: phase0
     Bellatrix.ExecutionPayload:
       allOf:
         - type: object
@@ -5294,25 +5296,25 @@ components:
                 - state_root
               properties:
                 slot:
+                  type: string
+                  example: '1'
                   description: The slot to which this block corresponds.
-                  type: string
-                  example: '1'
                 proposer_index:
-                  description: Index of validator in validator registry.
                   type: string
                   example: '1'
+                  description: Index of validator in validator registry.
                 parent_root:
+                  type: string
+                  format: hex
+                  example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                  pattern: '^0x[a-fA-F0-9]{64}$'
                   description: The signing Merkle root of the parent `BeaconBlock`.
-                  type: string
-                  format: hex
-                  example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                  pattern: '^0x[a-fA-F0-9]{64}$'
                 state_root:
-                  description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                   type: string
                   format: hex
                   example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                   pattern: '^0x[a-fA-F0-9]{64}$'
+                  description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
             - type: object
               required:
                 - body
@@ -5334,11 +5336,11 @@ components:
                         - sync_aggregate
                       properties:
                         randao_reveal:
-                          description: The RanDAO reveal value provided by the validator.
                           type: string
                           format: hex
                           pattern: '^0x[a-fA-F0-9]{192}$'
                           example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                          description: The RanDAO reveal value provided by the validator.
                         eth1_data:
                           type: object
                           description: 'The [`Eth1Data`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#eth1data) object from the CL spec.'
@@ -5348,21 +5350,21 @@ components:
                             - block_hash
                           properties:
                             deposit_root:
-                              description: Root of the deposit tree.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: Root of the deposit tree.
                             deposit_count:
-                              description: Total number of deposits.
                               type: string
                               example: '1'
+                              description: Total number of deposits.
                             block_hash:
-                              description: Ethereum 1.x block hash.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: Ethereum 1.x block hash.
                         graffiti:
                           type: string
                           format: hex
@@ -5395,35 +5397,35 @@ components:
                                           - state_root
                                         properties:
                                           slot:
+                                            type: string
+                                            example: '1'
                                             description: The slot to which this block corresponds.
-                                            type: string
-                                            example: '1'
                                           proposer_index:
-                                            description: Index of validator in validator registry.
                                             type: string
                                             example: '1'
+                                            description: Index of validator in validator registry.
                                           parent_root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                             description: The signing merkle root of the parent `BeaconBlock`.
-                                            type: string
-                                            format: hex
-                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                           state_root:
-                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                       - type: object
                                         required:
                                           - body_root
                                         properties:
                                           body_root:
-                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                   signature:
                                     type: string
                                     format: hex
@@ -5447,35 +5449,35 @@ components:
                                           - state_root
                                         properties:
                                           slot:
+                                            type: string
+                                            example: '1'
                                             description: The slot to which this block corresponds.
-                                            type: string
-                                            example: '1'
                                           proposer_index:
-                                            description: Index of validator in validator registry.
                                             type: string
                                             example: '1'
+                                            description: Index of validator in validator registry.
                                           parent_root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                             description: The signing merkle root of the parent `BeaconBlock`.
-                                            type: string
-                                            format: hex
-                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                           state_root:
-                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                       - type: object
                                         required:
                                           - body_root
                                         properties:
                                           body_root:
-                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                   signature:
                                     type: string
                                     format: hex
@@ -5522,11 +5524,11 @@ components:
                                         type: string
                                         example: '1'
                                       beacon_block_root:
-                                        description: LMD GHOST vote.
                                         type: string
                                         format: hex
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: LMD GHOST vote.
                                       source:
                                         type: object
                                         description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -5558,11 +5560,11 @@ components:
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                                   signature:
-                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                               attestation_2:
                                 type: object
                                 description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#indexedattestation) object from the CL spec.'
@@ -5595,11 +5597,11 @@ components:
                                         type: string
                                         example: '1'
                                       beacon_block_root:
-                                        description: LMD GHOST vote.
                                         type: string
                                         format: hex
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: LMD GHOST vote.
                                       source:
                                         type: object
                                         description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -5631,11 +5633,11 @@ components:
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                                   signature:
-                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                         attestations:
                           type: array
                           items:
@@ -5669,11 +5671,11 @@ components:
                                     type: string
                                     example: '1'
                                   beacon_block_root:
-                                    description: LMD GHOST vote.
                                     type: string
                                     format: hex
                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                    description: LMD GHOST vote.
                                   source:
                                     type: object
                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -5705,11 +5707,11 @@ components:
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
                               signature:
-                                description: BLS aggregate signature.
                                 type: string
                                 format: hex
                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                description: BLS aggregate signature.
                         deposits:
                           type: array
                           items:
@@ -5745,21 +5747,21 @@ components:
                                     description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                     example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                   withdrawal_credentials:
-                                    description: The withdrawal credentials.
                                     type: string
                                     format: hex
                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                    description: The withdrawal credentials.
                                   amount:
                                     description: Amount in Gwei.
                                     type: string
                                     example: '1'
                                   signature:
-                                    description: Container self-signature.
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: Container self-signature.
                         voluntary_exits:
                           type: array
                           items:
@@ -5777,13 +5779,13 @@ components:
                                   - validator_index
                                 properties:
                                   epoch:
+                                    type: string
+                                    example: '1'
                                     description: Minimum epoch for processing exit.
-                                    type: string
-                                    example: '1'
                                   validator_index:
-                                    description: Index of the exiting validator.
                                     type: string
                                     example: '1'
+                                    description: Index of the exiting validator.
                               signature:
                                 type: string
                                 format: hex
@@ -6010,9 +6012,9 @@ components:
                 - pubkey
               properties:
                 value:
-                  description: Payment in wei that will be paid to the `fee_recipient` account.
                   type: string
                   example: '1'
+                  description: Payment in wei that will be paid to the `fee_recipient` account.
                 pubkey:
                   description: BLS public key of builder.
                   type: string
@@ -6125,17 +6127,17 @@ components:
                   - amount
                 properties:
                   index:
+                    type: string
+                    example: '1'
                     description: The index of the withdrawal.
-                    type: string
-                    example: '1'
                   validator_index:
-                    description: The index of the withdrawing validator.
                     type: string
                     example: '1'
+                    description: The index of the withdrawing validator.
                   address:
-                    description: The address to which the withdrawal is credited.
                     type: string
                     format: hex
+                    description: An address on the execution (Ethereum 1) network.
                     example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                     pattern: '^0x[a-fA-F0-9]{40}$'
                   amount:
@@ -6161,25 +6163,25 @@ components:
                 - state_root
               properties:
                 slot:
+                  type: string
+                  example: '1'
                   description: The slot to which this block corresponds.
-                  type: string
-                  example: '1'
                 proposer_index:
-                  description: Index of validator in validator registry.
                   type: string
                   example: '1'
+                  description: Index of validator in validator registry.
                 parent_root:
+                  type: string
+                  format: hex
+                  example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                  pattern: '^0x[a-fA-F0-9]{64}$'
                   description: The signing Merkle root of the parent `BeaconBlock`.
-                  type: string
-                  format: hex
-                  example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                  pattern: '^0x[a-fA-F0-9]{64}$'
                 state_root:
-                  description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                   type: string
                   format: hex
                   example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                   pattern: '^0x[a-fA-F0-9]{64}$'
+                  description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
             - type: object
               required:
                 - body
@@ -6202,11 +6204,11 @@ components:
                         - bls_to_execution_changes
                       properties:
                         randao_reveal:
-                          description: The RanDAO reveal value provided by the validator.
                           type: string
                           format: hex
                           pattern: '^0x[a-fA-F0-9]{192}$'
                           example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                          description: The RanDAO reveal value provided by the validator.
                         eth1_data:
                           type: object
                           description: 'The [`Eth1Data`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#eth1data) object from the CL spec.'
@@ -6216,21 +6218,21 @@ components:
                             - block_hash
                           properties:
                             deposit_root:
-                              description: Root of the deposit tree.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: Root of the deposit tree.
                             deposit_count:
-                              description: Total number of deposits.
                               type: string
                               example: '1'
+                              description: Total number of deposits.
                             block_hash:
-                              description: Ethereum 1.x block hash.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: Ethereum 1.x block hash.
                         graffiti:
                           type: string
                           format: hex
@@ -6263,35 +6265,35 @@ components:
                                           - state_root
                                         properties:
                                           slot:
+                                            type: string
+                                            example: '1'
                                             description: The slot to which this block corresponds.
-                                            type: string
-                                            example: '1'
                                           proposer_index:
-                                            description: Index of validator in validator registry.
                                             type: string
                                             example: '1'
+                                            description: Index of validator in validator registry.
                                           parent_root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                             description: The signing merkle root of the parent `BeaconBlock`.
-                                            type: string
-                                            format: hex
-                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                           state_root:
-                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                       - type: object
                                         required:
                                           - body_root
                                         properties:
                                           body_root:
-                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                   signature:
                                     type: string
                                     format: hex
@@ -6315,35 +6317,35 @@ components:
                                           - state_root
                                         properties:
                                           slot:
+                                            type: string
+                                            example: '1'
                                             description: The slot to which this block corresponds.
-                                            type: string
-                                            example: '1'
                                           proposer_index:
-                                            description: Index of validator in validator registry.
                                             type: string
                                             example: '1'
+                                            description: Index of validator in validator registry.
                                           parent_root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                             description: The signing merkle root of the parent `BeaconBlock`.
-                                            type: string
-                                            format: hex
-                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                           state_root:
-                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                       - type: object
                                         required:
                                           - body_root
                                         properties:
                                           body_root:
-                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                   signature:
                                     type: string
                                     format: hex
@@ -6390,11 +6392,11 @@ components:
                                         type: string
                                         example: '1'
                                       beacon_block_root:
-                                        description: LMD GHOST vote.
                                         type: string
                                         format: hex
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: LMD GHOST vote.
                                       source:
                                         type: object
                                         description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -6426,11 +6428,11 @@ components:
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                                   signature:
-                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                               attestation_2:
                                 type: object
                                 description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#indexedattestation) object from the CL spec.'
@@ -6463,11 +6465,11 @@ components:
                                         type: string
                                         example: '1'
                                       beacon_block_root:
-                                        description: LMD GHOST vote.
                                         type: string
                                         format: hex
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: LMD GHOST vote.
                                       source:
                                         type: object
                                         description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -6499,11 +6501,11 @@ components:
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                                   signature:
-                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                         attestations:
                           type: array
                           items:
@@ -6537,11 +6539,11 @@ components:
                                     type: string
                                     example: '1'
                                   beacon_block_root:
-                                    description: LMD GHOST vote.
                                     type: string
                                     format: hex
                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                    description: LMD GHOST vote.
                                   source:
                                     type: object
                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -6573,11 +6575,11 @@ components:
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
                               signature:
-                                description: BLS aggregate signature.
                                 type: string
                                 format: hex
                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                description: BLS aggregate signature.
                         deposits:
                           type: array
                           items:
@@ -6613,21 +6615,21 @@ components:
                                     description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                     example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                   withdrawal_credentials:
-                                    description: The withdrawal credentials.
                                     type: string
                                     format: hex
                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                    description: The withdrawal credentials.
                                   amount:
                                     description: Amount in Gwei.
                                     type: string
                                     example: '1'
                                   signature:
-                                    description: Container self-signature.
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: Container self-signature.
                         voluntary_exits:
                           type: array
                           items:
@@ -6645,13 +6647,13 @@ components:
                                   - validator_index
                                 properties:
                                   epoch:
+                                    type: string
+                                    example: '1'
                                     description: Minimum epoch for processing exit.
-                                    type: string
-                                    example: '1'
                                   validator_index:
-                                    description: Index of the exiting validator.
                                     type: string
                                     example: '1'
+                                    description: Index of the exiting validator.
                               signature:
                                 type: string
                                 format: hex
@@ -6693,19 +6695,19 @@ components:
                                   - to_execution_address
                                 properties:
                                   validator_index:
-                                    description: Index of the validator for which credentials will be changed.
                                     type: string
                                     example: '1'
+                                    description: Index of the validator for which credentials will be changed.
                                   from_bls_pubkey:
-                                    description: Public key of existing credentials.
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{96}$'
+                                    description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                     example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                   to_execution_address:
-                                    description: Execution address to which the credentials will be changed.
                                     type: string
                                     format: hex
+                                    description: An address on the execution (Ethereum 1) network.
                                     example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                     pattern: '^0x[a-fA-F0-9]{40}$'
                               signature:
@@ -6928,9 +6930,9 @@ components:
                 - pubkey
               properties:
                 value:
-                  description: Payment in wei that will be paid to the `fee_recipient` account.
                   type: string
                   example: '1'
+                  description: Payment in wei that will be paid to the `fee_recipient` account.
                 pubkey:
                   description: BLS public key of builder.
                   type: string
@@ -6960,25 +6962,25 @@ components:
                 - state_root
               properties:
                 slot:
+                  type: string
+                  example: '1'
                   description: The slot to which this block corresponds.
-                  type: string
-                  example: '1'
                 proposer_index:
-                  description: Index of validator in validator registry.
                   type: string
                   example: '1'
+                  description: Index of validator in validator registry.
                 parent_root:
+                  type: string
+                  format: hex
+                  example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                  pattern: '^0x[a-fA-F0-9]{64}$'
                   description: The signing Merkle root of the parent `BeaconBlock`.
-                  type: string
-                  format: hex
-                  example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                  pattern: '^0x[a-fA-F0-9]{64}$'
                 state_root:
-                  description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                   type: string
                   format: hex
                   example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                   pattern: '^0x[a-fA-F0-9]{64}$'
+                  description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
             - type: object
               required:
                 - body
@@ -7017,21 +7019,21 @@ components:
                             - block_hash
                           properties:
                             deposit_root:
-                              description: Root of the deposit tree.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: Root of the deposit tree.
                             deposit_count:
-                              description: Total number of deposits.
                               type: string
                               example: '1'
+                              description: Total number of deposits.
                             block_hash:
-                              description: Ethereum 1.x block hash.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: Ethereum 1.x block hash.
                         graffiti:
                           type: string
                           format: hex
@@ -7064,35 +7066,35 @@ components:
                                           - state_root
                                         properties:
                                           slot:
+                                            type: string
+                                            example: '1'
                                             description: The slot to which this block corresponds.
-                                            type: string
-                                            example: '1'
                                           proposer_index:
-                                            description: Index of validator in validator registry.
                                             type: string
                                             example: '1'
+                                            description: Index of validator in validator registry.
                                           parent_root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                             description: The signing merkle root of the parent `BeaconBlock`.
-                                            type: string
-                                            format: hex
-                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                           state_root:
-                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                       - type: object
                                         required:
                                           - body_root
                                         properties:
                                           body_root:
-                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                   signature:
                                     type: string
                                     format: hex
@@ -7116,35 +7118,35 @@ components:
                                           - state_root
                                         properties:
                                           slot:
+                                            type: string
+                                            example: '1'
                                             description: The slot to which this block corresponds.
-                                            type: string
-                                            example: '1'
                                           proposer_index:
-                                            description: Index of validator in validator registry.
                                             type: string
                                             example: '1'
+                                            description: Index of validator in validator registry.
                                           parent_root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                             description: The signing merkle root of the parent `BeaconBlock`.
-                                            type: string
-                                            format: hex
-                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                           state_root:
-                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                       - type: object
                                         required:
                                           - body_root
                                         properties:
                                           body_root:
-                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                   signature:
                                     type: string
                                     format: hex
@@ -7191,11 +7193,11 @@ components:
                                         type: string
                                         example: '1'
                                       beacon_block_root:
-                                        description: LMD GHOST vote.
                                         type: string
                                         format: hex
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: LMD GHOST vote.
                                       source:
                                         type: object
                                         description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -7227,11 +7229,11 @@ components:
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                                   signature:
-                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                               attestation_2:
                                 type: object
                                 description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#indexedattestation) object from the CL spec.'
@@ -7264,11 +7266,11 @@ components:
                                         type: string
                                         example: '1'
                                       beacon_block_root:
-                                        description: LMD GHOST vote.
                                         type: string
                                         format: hex
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: LMD GHOST vote.
                                       source:
                                         type: object
                                         description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -7300,11 +7302,11 @@ components:
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                                   signature:
-                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                         attestations:
                           type: array
                           items:
@@ -7338,11 +7340,11 @@ components:
                                     type: string
                                     example: '1'
                                   beacon_block_root:
-                                    description: LMD GHOST vote.
                                     type: string
                                     format: hex
                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                    description: LMD GHOST vote.
                                   source:
                                     type: object
                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -7374,11 +7376,11 @@ components:
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
                               signature:
-                                description: BLS aggregate signature.
                                 type: string
                                 format: hex
                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                description: BLS aggregate signature.
                         deposits:
                           type: array
                           items:
@@ -7414,21 +7416,21 @@ components:
                                     description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                     example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                   withdrawal_credentials:
-                                    description: The withdrawal credentials.
                                     type: string
                                     format: hex
                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                    description: The withdrawal credentials.
                                   amount:
                                     description: Amount in Gwei.
                                     type: string
                                     example: '1'
                                   signature:
-                                    description: Container self-signature.
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: Container self-signature.
                         voluntary_exits:
                           type: array
                           items:
@@ -7446,13 +7448,13 @@ components:
                                   - validator_index
                                 properties:
                                   epoch:
+                                    type: string
+                                    example: '1'
                                     description: Minimum epoch for processing exit.
-                                    type: string
-                                    example: '1'
                                   validator_index:
-                                    description: Index of the exiting validator.
                                     type: string
                                     example: '1'
+                                    description: Index of the exiting validator.
                               signature:
                                 type: string
                                 format: hex
@@ -7494,19 +7496,19 @@ components:
                                   - to_execution_address
                                 properties:
                                   validator_index:
-                                    description: Index of the validator for which credentials will be changed.
                                     type: string
                                     example: '1'
+                                    description: Index of the validator for which credentials will be changed.
                                   from_bls_pubkey:
-                                    description: Public key of existing credentials.
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{96}$'
+                                    description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                     example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                   to_execution_address:
-                                    description: Execution address to which the credentials will be changed.
                                     type: string
                                     format: hex
+                                    description: An address on the execution (Ethereum 1) network.
                                     example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                     pattern: '^0x[a-fA-F0-9]{40}$'
                               signature:
@@ -7755,9 +7757,9 @@ components:
                 - pubkey
               properties:
                 value:
-                  description: Payment in wei that will be paid to the `fee_recipient` account.
                   type: string
                   example: '1'
+                  description: Payment in wei that will be paid to the `fee_recipient` account.
                 pubkey:
                   description: BLS public key of builder.
                   type: string
@@ -7881,17 +7883,17 @@ components:
                       - amount
                     properties:
                       index:
+                        type: string
+                        example: '1'
                         description: The index of the withdrawal.
-                        type: string
-                        example: '1'
                       validator_index:
-                        description: The index of the withdrawing validator.
                         type: string
                         example: '1'
+                        description: The index of the withdrawing validator.
                       address:
-                        description: The address to which the withdrawal is credited.
                         type: string
                         format: hex
+                        description: An address on the execution (Ethereum 1) network.
                         example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                         pattern: '^0x[a-fA-F0-9]{40}$'
                       amount:
@@ -7994,25 +7996,25 @@ components:
                 - state_root
               properties:
                 slot:
+                  type: string
+                  example: '1'
                   description: The slot to which this block corresponds.
-                  type: string
-                  example: '1'
                 proposer_index:
-                  description: Index of validator in validator registry.
                   type: string
                   example: '1'
+                  description: Index of validator in validator registry.
                 parent_root:
+                  type: string
+                  format: hex
+                  example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                  pattern: '^0x[a-fA-F0-9]{64}$'
                   description: The signing Merkle root of the parent `BeaconBlock`.
-                  type: string
-                  format: hex
-                  example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                  pattern: '^0x[a-fA-F0-9]{64}$'
                 state_root:
-                  description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
                   type: string
                   format: hex
                   example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                   pattern: '^0x[a-fA-F0-9]{64}$'
+                  description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
             - type: object
               required:
                 - body
@@ -8051,21 +8053,21 @@ components:
                             - block_hash
                           properties:
                             deposit_root:
-                              description: Root of the deposit tree.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: Root of the deposit tree.
                             deposit_count:
-                              description: Total number of deposits.
                               type: string
                               example: '1'
+                              description: Total number of deposits.
                             block_hash:
-                              description: Ethereum 1.x block hash.
                               type: string
                               format: hex
                               example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                               pattern: '^0x[a-fA-F0-9]{64}$'
+                              description: Ethereum 1.x block hash.
                         graffiti:
                           type: string
                           format: hex
@@ -8098,35 +8100,35 @@ components:
                                           - state_root
                                         properties:
                                           slot:
+                                            type: string
+                                            example: '1'
                                             description: The slot to which this block corresponds.
-                                            type: string
-                                            example: '1'
                                           proposer_index:
-                                            description: Index of validator in validator registry.
                                             type: string
                                             example: '1'
+                                            description: Index of validator in validator registry.
                                           parent_root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                             description: The signing merkle root of the parent `BeaconBlock`.
-                                            type: string
-                                            format: hex
-                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                           state_root:
-                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                       - type: object
                                         required:
                                           - body_root
                                         properties:
                                           body_root:
-                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                   signature:
                                     type: string
                                     format: hex
@@ -8150,35 +8152,35 @@ components:
                                           - state_root
                                         properties:
                                           slot:
+                                            type: string
+                                            example: '1'
                                             description: The slot to which this block corresponds.
-                                            type: string
-                                            example: '1'
                                           proposer_index:
-                                            description: Index of validator in validator registry.
                                             type: string
                                             example: '1'
+                                            description: Index of validator in validator registry.
                                           parent_root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                             description: The signing merkle root of the parent `BeaconBlock`.
-                                            type: string
-                                            format: hex
-                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
-                                            pattern: '^0x[a-fA-F0-9]{64}$'
                                           state_root:
-                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
                                       - type: object
                                         required:
                                           - body_root
                                         properties:
                                           body_root:
-                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                             type: string
                                             format: hex
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
                                   signature:
                                     type: string
                                     format: hex
@@ -8225,11 +8227,11 @@ components:
                                         type: string
                                         example: '1'
                                       beacon_block_root:
-                                        description: LMD GHOST vote.
                                         type: string
                                         format: hex
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: LMD GHOST vote.
                                       source:
                                         type: object
                                         description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -8261,11 +8263,11 @@ components:
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                                   signature:
-                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                               attestation_2:
                                 type: object
                                 description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.5.0-alpha.3/specs/electra/beacon-chain.md#indexedattestation) object from the CL spec.'
@@ -8298,11 +8300,11 @@ components:
                                         type: string
                                         example: '1'
                                       beacon_block_root:
-                                        description: LMD GHOST vote.
                                         type: string
                                         format: hex
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: LMD GHOST vote.
                                       source:
                                         type: object
                                         description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -8334,11 +8336,11 @@ components:
                                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                             pattern: '^0x[a-fA-F0-9]{64}$'
                                   signature:
-                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
                         attestations:
                           type: array
                           items:
@@ -8373,11 +8375,11 @@ components:
                                     type: string
                                     example: '1'
                                   beacon_block_root:
-                                    description: LMD GHOST vote.
                                     type: string
                                     format: hex
                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                    description: LMD GHOST vote.
                                   source:
                                     type: object
                                     description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint'
@@ -8409,11 +8411,11 @@ components:
                                         example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                         pattern: '^0x[a-fA-F0-9]{64}$'
                               signature:
-                                description: BLS aggregate signature.
                                 type: string
                                 format: hex
                                 pattern: '^0x[a-fA-F0-9]{192}$'
                                 example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                description: BLS aggregate signature.
                               committee_bits:
                                 description: Committee bits.
                                 example: '0x0000000000000001'
@@ -8455,21 +8457,21 @@ components:
                                     description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                     example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                   withdrawal_credentials:
-                                    description: The withdrawal credentials.
                                     type: string
                                     format: hex
                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                    description: The withdrawal credentials.
                                   amount:
                                     description: Amount in Gwei.
                                     type: string
                                     example: '1'
                                   signature:
-                                    description: Container self-signature.
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: Container self-signature.
                         voluntary_exits:
                           type: array
                           items:
@@ -8487,13 +8489,13 @@ components:
                                   - validator_index
                                 properties:
                                   epoch:
+                                    type: string
+                                    example: '1'
                                     description: Minimum epoch for processing exit.
-                                    type: string
-                                    example: '1'
                                   validator_index:
-                                    description: Index of the exiting validator.
                                     type: string
                                     example: '1'
+                                    description: Index of the exiting validator.
                               signature:
                                 type: string
                                 format: hex
@@ -8535,19 +8537,19 @@ components:
                                   - to_execution_address
                                 properties:
                                   validator_index:
-                                    description: Index of the validator for which credentials will be changed.
                                     type: string
                                     example: '1'
+                                    description: Index of the validator for which credentials will be changed.
                                   from_bls_pubkey:
-                                    description: Public key of existing credentials.
                                     type: string
                                     format: hex
                                     pattern: '^0x[a-fA-F0-9]{96}$'
+                                    description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
                                     example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                   to_execution_address:
-                                    description: Execution address to which the credentials will be changed.
                                     type: string
                                     format: hex
+                                    description: An address on the execution (Ethereum 1) network.
                                     example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                     pattern: '^0x[a-fA-F0-9]{40}$'
                               signature:
@@ -8691,11 +8693,11 @@ components:
                                     pattern: '^0x[a-fA-F0-9]{96}$'
                                     example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                                   withdrawal_credentials:
-                                    description: The withdrawal credentials.
                                     type: string
                                     format: hex
                                     example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                                     pattern: '^0x[a-fA-F0-9]{64}$'
+                                    description: The withdrawal credentials.
                                   amount:
                                     description: The value to be deposited (gwei).
                                     type: string
@@ -8706,9 +8708,9 @@ components:
                                     pattern: '^0x[a-fA-F0-9]{192}$'
                                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
                                   index:
-                                    description: The index of the deposit request.
                                     type: string
                                     example: '1'
+                                    description: The index of the deposit request.
                               maxItems: 8192
                             withdrawals:
                               type: array
@@ -8721,9 +8723,9 @@ components:
                                   - amount
                                 properties:
                                   source_address:
-                                    description: Execution address which sent the request.
                                     type: string
                                     format: hex
+                                    description: An address on the execution (Ethereum 1) network.
                                     example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                     pattern: '^0x[a-fA-F0-9]{40}$'
                                   validator_pubkey:
@@ -8748,9 +8750,9 @@ components:
                                   - target_pubkey
                                 properties:
                                   source_address:
-                                    description: Execution address which sent the request.
                                     type: string
                                     format: hex
+                                    description: An address on the execution (Ethereum 1) network.
                                     example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                     pattern: '^0x[a-fA-F0-9]{40}$'
                                   source_pubkey:
@@ -8921,11 +8923,11 @@ components:
                             pattern: '^0x[a-fA-F0-9]{96}$'
                             example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
                           withdrawal_credentials:
-                            description: The withdrawal credentials.
                             type: string
                             format: hex
                             example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
                             pattern: '^0x[a-fA-F0-9]{64}$'
+                            description: The withdrawal credentials.
                           amount:
                             description: The value to be deposited (gwei).
                             type: string
@@ -8936,9 +8938,9 @@ components:
                             pattern: '^0x[a-fA-F0-9]{192}$'
                             example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
                           index:
-                            description: The index of the deposit request.
                             type: string
                             example: '1'
+                            description: The index of the deposit request.
                       maxItems: 8192
                     withdrawals:
                       type: array
@@ -8951,9 +8953,9 @@ components:
                           - amount
                         properties:
                           source_address:
-                            description: Execution address which sent the request.
                             type: string
                             format: hex
+                            description: An address on the execution (Ethereum 1) network.
                             example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                             pattern: '^0x[a-fA-F0-9]{40}$'
                           validator_pubkey:
@@ -8978,9 +8980,9 @@ components:
                           - target_pubkey
                         properties:
                           source_address:
-                            description: Execution address which sent the request.
                             type: string
                             format: hex
+                            description: An address on the execution (Ethereum 1) network.
                             example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                             pattern: '^0x[a-fA-F0-9]{40}$'
                           source_pubkey:
@@ -9002,9 +9004,9 @@ components:
                 - pubkey
               properties:
                 value:
-                  description: Payment in wei that will be paid to the `fee_recipient` account.
                   type: string
                   example: '1'
+                  description: Payment in wei that will be paid to the `fee_recipient` account.
                 pubkey:
                   description: BLS public key of builder.
                   type: string
