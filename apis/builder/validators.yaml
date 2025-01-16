@@ -24,7 +24,7 @@ post:
               $ref: "../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration"
       application/octet-stream:
         schema:
-          description: "SSZ serialized `SignedValidatorRegistration` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+          description: "SSZ serialized `List[SignedValidatorRegistrationV1]` bytes. Use content type header to indicate that SSZ data is contained in the request body."
   responses:
     "200":
       description: Success response.
