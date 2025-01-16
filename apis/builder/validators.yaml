@@ -22,6 +22,9 @@ post:
           type: array
           items:
               $ref: "../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration"
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `SignedValidatorRegistration` bytes. Use content type header to indicate that SSZ data is contained in the request body."
   responses:
     "200":
       description: Success response.
@@ -35,5 +38,7 @@ post:
               - example:
                   code: 400
                   message: "unknown validator"
+    "415":
+      $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
     "500":
       $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
