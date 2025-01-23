@@ -32,6 +32,17 @@ get:
       description: The validator's BLS public key.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/Pubkey"
+    - name: Date-Milliseconds
+      in: header
+      required: false
+      description: |
+        Optional header containing a Unix timestamp in milliseconds representing
+        the point-in-time the request was sent. This header can be used to measure
+        latency.
+      schema:
+        type: integer
+        format: int64
+        example: 1710338135000
   responses:
     "200":
       description: Success response.
