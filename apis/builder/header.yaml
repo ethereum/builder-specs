@@ -32,6 +32,12 @@ get:
       description: The validator's BLS public key.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/Pubkey"
+    - in: header
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
+      required: false
+      name: Eth-Consensus-Version
+      description: "The active consensus version to which the slot belongs."
   responses:
     "200":
       description: Success response.
