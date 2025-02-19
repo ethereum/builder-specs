@@ -30,10 +30,9 @@ post:
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
-              - example:
-                  code: 400
-                  message: "unknown validator"
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          example:
+            code: 400
+            message: "unknown validator"
     "500":
       $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
