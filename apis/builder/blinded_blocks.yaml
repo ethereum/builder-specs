@@ -51,7 +51,7 @@ post:
       description: Success response.
       headers:
         Eth-Consensus-Version:
-          $ref: "../../beacon-apis/beacon-node-oapi.yaml#/components/headers/Eth-Consensus-Version"
+          $ref: "../../builder-oapi.yaml#/components/headers/Eth-Consensus-Version"
           required: false
       content:
         application/json:
@@ -86,11 +86,10 @@ post:
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
-              - example:
-                  code: 400
-                  message: "Invalid block: missing signature"
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          example:
+            code: 400
+            message: "Invalid block: missing signature"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "415":
