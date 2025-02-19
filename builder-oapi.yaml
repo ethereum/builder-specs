@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Builder API
   description: |
@@ -118,27 +118,26 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - type: object
-                    required:
-                      - code
-                      - message
-                    properties:
-                      code:
-                        description: Either specific error code in case of invalid request or http status code
-                        type: number
-                        example: 404
-                      message:
-                        description: Message describing error
-                        type: string
-                      stacktraces:
-                        description: 'Optional stacktraces, sent when node is in debug mode'
-                        type: array
-                        items:
-                          type: string
-                  - example:
-                      code: 400
-                      message: unknown validator
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: Either specific error code in case of invalid request or http status code
+                    type: number
+                    example: 404
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 400
+                message: unknown validator
         '500':
           description: Builder node internal error.
           content:
@@ -4502,19 +4501,17 @@ paths:
           headers:
             Eth-Consensus-Version:
               required: false
-              description: |
-                The active consensus version to which the data belongs. Required in response so client can deserialize returned json or ssz data 
-                more effectively.
               schema:
-                type: string
                 enum:
-                  - phase0
-                  - altair
                   - bellatrix
                   - capella
                   - deneb
                   - electra
-                example: phase0
+                example: bellatrix
+                type: string
+              description: |
+                The active consensus version to which the data belongs. Required in response so client can deserialize returned json or ssz data 
+                more effectively.
           content:
             application/json:
               schema:
@@ -5025,27 +5022,26 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - type: object
-                    required:
-                      - code
-                      - message
-                    properties:
-                      code:
-                        description: Either specific error code in case of invalid request or http status code
-                        type: number
-                        example: 404
-                      message:
-                        description: Message describing error
-                        type: string
-                      stacktraces:
-                        description: 'Optional stacktraces, sent when node is in debug mode'
-                        type: array
-                        items:
-                          type: string
-                  - example:
-                      code: 400
-                      message: 'Invalid block: missing signature'
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: Either specific error code in case of invalid request or http status code
+                    type: number
+                    example: 404
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 400
+                message: 'Invalid block: missing signature'
         '406':
           description: Accepted media type is not supported.
           content:
@@ -5191,15 +5187,13 @@ components:
           items:
             type: string
     ConsensusVersion:
-      type: string
       enum:
-        - phase0
-        - altair
         - bellatrix
         - capella
         - deneb
         - electra
-      example: phase0
+      example: bellatrix
+      type: string
     Bellatrix.ExecutionPayload:
       allOf:
         - type: object
