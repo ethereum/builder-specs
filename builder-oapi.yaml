@@ -110,6 +110,9 @@ paths:
                     format: hex
                     pattern: '^0x[a-fA-F0-9]{192}$'
                     example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+          application/octet-stream:
+            schema:
+              description: 'SSZ serialized `List[SignedValidatorRegistrationV1, VALIDATOR_REGISTRY_LIMIT]` bytes. Use content type header to indicate that SSZ data is contained in the request body.'
       responses:
         '200':
           description: Success response.
@@ -138,6 +141,31 @@ paths:
               example:
                 code: 400
                 message: unknown validator
+        '415':
+          description: Supplied content-type is not supported.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: 'The media type in "Content-Type" header is unsupported, and the request has been rejected. This occurs when a HTTP request supplies a payload in a content-type that the server is not able to handle.'
+                    type: number
+                    example: 415
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 415
+                message: Cannot read the supplied content type.
         '500':
           description: Builder node internal error.
           content:
