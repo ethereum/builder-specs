@@ -62,13 +62,14 @@ post:
             properties:
               version:
                 type: string
-                enum: [ bellatrix, capella, deneb, electra ]
+                enum: [bellatrix, capella, deneb, electra, fulu]
                 example: "bellatrix"
               data:
                 anyOf:
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.ExecutionPayload"
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.ExecutionPayload"
                   - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.ExecutionPayloadAndBlobsBundle"
+                  - $ref: "../../builder-oapi.yaml#/components/schemas/Fulu.ExecutionPayloadAndBlobsBundle"
           examples:
             bellatrix:
               $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.ExecutionPayload"
@@ -78,6 +79,8 @@ post:
               $ref: "../../builder-oapi.yaml#/components/examples/Deneb.ExecutionPayloadAndBlobsBundle"
             electra:
               $ref: "../../builder-oapi.yaml#/components/examples/Deneb.ExecutionPayloadAndBlobsBundle"
+            fulu:
+              $ref: "../../builder-oapi.yaml#/components/examples/Fulu.ExecutionPayloadAndBlobsBundle"
         application/octet-stream:
           schema:
             description: "SSZ serialized `ExecutionPayload` or `ExecutionPayloadAndBlobsBundle` bytes. Use Accept header to choose this response type"
