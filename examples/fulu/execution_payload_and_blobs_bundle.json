@@ -35,7 +35,7 @@
         "commitments": [
           "0x8dab030c51e16e84be9caab84ee3d0b8bbec1db4a0e4de76439da8424d9b957370a10a78851f97e4b54d2ce1ab0d686f"
         ],
-        "cell_proofs": [
+        "proofs": [
           "0x86e25aa4267f8b11aded591be91fed683d2a708b7c77a910ed9e18ab6a2f976429811ea034319321eb06d99f270137f0",
           "0xb0e21a34db02b2dc360e448c6a7315cae1c455cb234fe6c4a9d74a8ee45b8fadc1012b1b3d07912c692782cc642ad200",
           "0xae7b2bba4d5c6e90609182319d5182c4a9bf194420cfcd88b71ca35f5c56e94849510a39afef43234562dd604657fe27",

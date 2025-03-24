@@ -2,9 +2,7 @@ Fulu:
   BlobsBundle:
     type: object
     description: "The `BlobsBundle` object from the CL Fulu spec"
-    required: [blobs, commitments]
-    # proofs should be present before Fulu
-    # cellProofs should be present after Fulu
+    required: [blobs, commitments, proofs]
     properties:
       blobs:
         type: array
@@ -22,12 +20,6 @@ Fulu:
         type: array
         items:
           $ref: "../../beacon-apis/types/primitive.yaml#/KZGProof"
+        # 1024 (MAX_CELLS_PER_EXT_BLOB) * 4096 (blobs)
         minItems: 0
-        maxItems: 4096
-      cellProofs:
-        type: array
-        items:
-          $ref: "../../beacon-apis/types/primitive.yaml#/KZGProof"
-        minItems: 0
-        # 128 (cells per blob) * 4096 (blobs)
-        maxItems: 524288
+        maxItems: 4194304
