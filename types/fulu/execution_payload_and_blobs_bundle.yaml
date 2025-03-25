@@ -5,6 +5,6 @@ Fulu:
     required: [execution_payload, blobs_bundle]
     properties:
       execution_payload:
-        $ref: "../../beacon-apis/types/deneb/execution_payload.yaml#/Deneb/ExecutionPayload"
+        $ref: "../../beacon-apis/types/fulu/execution_payload.yaml#/Fulu/ExecutionPayload"
       blobs_bundle:
         $ref: "./blobs_bundle.yaml#/Fulu/BlobsBundle"

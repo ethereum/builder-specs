@@ -70,7 +70,7 @@ components:
       $ref: "./beacon-apis/types/http.yaml#/ErrorMessage"
     ConsensusVersion:
       $ref: "./beacon-apis/beacon-node-oapi.yaml#/components/schemas/ConsensusVersion"
-      enum: [bellatrix, capella, deneb, electra]
+      enum: [bellatrix, capella, deneb, electra, fulu]
       example: "bellatrix"
     Bellatrix.ExecutionPayload:
       $ref: "./beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayload"
