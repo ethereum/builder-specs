@@ -36,9 +36,9 @@ This is the modification of the builder specification accompanying the Deneb upg
 
 ```python
 class BlobsBundle(Container):
-  commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
-  proofs: List[KZGProof, MAX_BLOB_COMMITMENTS_PER_BLOCK]
-  blobs: List[Blob, MAX_BLOB_COMMITMENTS_PER_BLOCK]
+    commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
+    proofs: List[KZGProof, MAX_BLOB_COMMITMENTS_PER_BLOCK]
+    blobs: List[Blob, MAX_BLOB_COMMITMENTS_PER_BLOCK]
 ```
 
 #### `ExecutionPayloadAndBlobsBundle`
