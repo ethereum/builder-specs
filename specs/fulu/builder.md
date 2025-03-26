@@ -26,8 +26,7 @@ This is the modification of the builder specification accompanying the Fulu upgr
 ```python
 class BlobsBundle(Container):
     commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
-    # [Modified in Fulu:EIP7594]
-    proofs: List[KZGProof, FIELD_ELEMENTS_PER_EXT_BLOB * MAX_BLOB_COMMITMENTS_PER_BLOCK]
+    proofs: List[KZGProof, FIELD_ELEMENTS_PER_EXT_BLOB * MAX_BLOB_COMMITMENTS_PER_BLOCK] # [Modified in Fulu:EIP7594]
     blobs: List[Blob, MAX_BLOB_COMMITMENTS_PER_BLOCK]
 ```
 

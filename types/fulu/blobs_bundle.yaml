@@ -20,6 +20,5 @@ Fulu:
         type: array
         items:
           $ref: "../../beacon-apis/types/primitive.yaml#/KZGProof"
-        # 8192 (FIELD_ELEMENTS_PER_EXT_BLOB) * 4096 (blobs)
         minItems: 0
-        maxItems: 33554432
+        maxItems: 33554432 # 8192 (FIELD_ELEMENTS_PER_EXT_BLOB) * 4096 (MAX_BLOB_COMMITMENTS_PER_BLOCK)
