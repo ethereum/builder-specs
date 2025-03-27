@@ -40,6 +40,6 @@ See [`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/
 
 ```python
 class ExecutionPayloadAndBlobsBundle(Container):
-    execution_payload: ExecutionPayload  # [Modified in Fulu:EIP7594]
+    execution_payload: ExecutionPayload
     blobs_bundle: BlobsBundle  # [Modified in Fulu:EIP7594]
 ```

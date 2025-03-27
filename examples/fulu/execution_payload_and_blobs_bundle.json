@@ -28,8 +28,7 @@
             "address": "0xabcf8e0d4e9587369b2301d0790347320302cc09",
             "amount": "32000000000"
           }
-        ],
-        "proof_version": "1"
+        ]
       },
       "blobs_bundle": {
         "commitments": [
