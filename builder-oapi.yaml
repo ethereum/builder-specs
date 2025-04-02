@@ -108,6 +108,7 @@ components:
   headers:
     Eth-Consensus-Version:
       $ref: "./beacon-apis/beacon-node-oapi.yaml#/components/headers/Eth-Consensus-Version"
+      description: "The active consensus version to which the data belongs. Required if response is SSZ encoded."
       schema:
         $ref: "#/components/schemas/ConsensusVersion"
 
