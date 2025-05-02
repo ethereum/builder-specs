@@ -22,7 +22,7 @@ post:
         $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
       required: false
       name: Eth-Consensus-Version
-      description: "Version of the block being submitted"
+      description: "The active consensus version to which the block being submitted belongs. Required if request is SSZ encoded."
   requestBody:
     description: A `SignedBlindedBeaconBlock`.
     required: true
