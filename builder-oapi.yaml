@@ -251,6 +251,7 @@ paths:
           headers:
             Eth-Consensus-Version:
               required: false
+              description: The active consensus version to which the data belongs. Required if response is SSZ encoded.
               schema:
                 enum:
                   - bellatrix
@@ -259,9 +260,6 @@ paths:
                   - electra
                 example: bellatrix
                 type: string
-              description: |
-                The active consensus version to which the data belongs. Required in response so client can deserialize returned json or ssz data 
-                more effectively.
           content:
             application/json:
               schema:
@@ -1142,7 +1140,7 @@ paths:
             type: string
           required: false
           name: Eth-Consensus-Version
-          description: Version of the block being submitted
+          description: The active consensus version to which the block being submitted belongs. Required if request is SSZ encoded.
       requestBody:
         description: A `SignedBlindedBeaconBlock`.
         required: true
@@ -4525,6 +4523,7 @@ paths:
           headers:
             Eth-Consensus-Version:
               required: false
+              description: The active consensus version to which the data belongs. Required if response is SSZ encoded.
               schema:
                 enum:
                   - bellatrix
@@ -4533,9 +4532,6 @@ paths:
                   - electra
                 example: bellatrix
                 type: string
-              description: |
-                The active consensus version to which the data belongs. Required in response so client can deserialize returned json or ssz data 
-                more effectively.
           content:
             application/json:
               schema:
@@ -9121,6 +9117,7 @@ components:
             message: Cannot read the supplied content type.
   headers:
     Eth-Consensus-Version:
+      description: The active consensus version to which the data belongs. Required if response is SSZ encoded.
       schema:
         type: string
         enum:
@@ -9131,9 +9128,6 @@ components:
           - deneb
           - electra
         example: electra
-      description: |
-        The active consensus version to which the data belongs. Required in response so client can deserialize returned json or ssz data 
-        more effectively.
       required: true
   examples:
     Bellatrix.SignedBlindedBeaconBlock:
