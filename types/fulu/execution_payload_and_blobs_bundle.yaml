@@ -1,0 +1,10 @@
+Fulu:
+  ExecutionPayloadAndBlobsBundle:
+    type: object
+    description: "A wrapper object containing the ExecutionPayload and the BlobsBundle"
+    required: [execution_payload, blobs_bundle]
+    properties:
+      execution_payload:
+        $ref: "../../beacon-apis/types/deneb/execution_payload.yaml#/Deneb/ExecutionPayload"
+      blobs_bundle:
+        $ref: "./blobs_bundle.yaml#/Fulu/BlobsBundle"

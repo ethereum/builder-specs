@@ -70,7 +70,7 @@ components:
       $ref: "./beacon-apis/types/http.yaml#/ErrorMessage"
     ConsensusVersion:
       $ref: "./beacon-apis/beacon-node-oapi.yaml#/components/schemas/ConsensusVersion"
-      enum: [ bellatrix, capella, deneb, electra ]
+      enum: [bellatrix, capella, deneb, electra, fulu]
       example: "bellatrix"
     Bellatrix.ExecutionPayload:
       $ref: "./beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayload"
@@ -96,6 +96,10 @@ components:
       $ref: "./beacon-apis/types/electra/block.yaml#/Electra/SignedBlindedBeaconBlock"
     Electra.SignedBuilderBid:
       $ref: "./types/electra/bid.yaml#/Electra/SignedBuilderBid"
+    Fulu.BlobsBundle:
+      $ref: "./types/fulu/blobs_bundle.yaml#/Fulu/BlobsBundle"
+    Fulu.ExecutionPayloadAndBlobsBundle:
+      $ref: "./types/fulu/execution_payload_and_blobs_bundle.yaml#/Fulu/ExecutionPayloadAndBlobsBundle"
 
   responses:
     InternalError:
@@ -135,3 +139,5 @@ components:
       $ref: "./examples/electra/signed_blinded_beacon_block.json"
     Electra.SignedBuilderBid:
       $ref: "./examples/electra/signed_builder_bid.json"
+    Fulu.ExecutionPayloadAndBlobsBundle:
+      $ref: "./examples/fulu/execution_payload_and_blobs_bundle.json"
