@@ -43,6 +43,8 @@ post:
             $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBlindedBeaconBlock"
           electra:
             $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBlindedBeaconBlock"
+          fulu:
+            $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBlindedBeaconBlock"
       application/octet-stream:
         schema:
           description: "SSZ serialized `SignedBlindedBeaconBlock` bytes. Use content type header to indicate that SSZ data is contained in the request body."

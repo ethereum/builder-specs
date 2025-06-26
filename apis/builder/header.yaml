@@ -59,7 +59,7 @@ get:
             properties:
               version:
                 type: string
-                enum: [ bellatrix, capella, deneb, electra ]
+                enum: [ bellatrix, capella, deneb, electra, fulu ]
                 example: "bellatrix"
               data:
                 anyOf:
@@ -75,6 +75,8 @@ get:
             deneb:
               $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBuilderBid"
             electra:
+              $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBuilderBid"
+            fulu:
               $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBuilderBid"
         application/octet-stream:
           schema:
