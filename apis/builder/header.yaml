@@ -77,7 +77,7 @@ get:
             electra:
               $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBuilderBid"
             fulu:
-              $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBuilderBid"
+              $ref: "../../builder-oapi.yaml#/components/examples/Fulu.SignedBuilderBid"
         application/octet-stream:
           schema:
             description: "SSZ serialized `SignedBuilderBid` bytes. Use Accept header to choose this response type"
