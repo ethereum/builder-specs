@@ -139,5 +139,11 @@ components:
       $ref: "./examples/electra/signed_blinded_beacon_block.json"
     Electra.SignedBuilderBid:
       $ref: "./examples/electra/signed_builder_bid.json"
+    Electra.ExecutionPayloadAndBlobsBundle:
+      $ref: "./examples/electra/execution_payload_and_blobs_bundle.json"
     Fulu.ExecutionPayloadAndBlobsBundle:
       $ref: "./examples/fulu/execution_payload_and_blobs_bundle.json"
+    Fulu.SignedBlindedBeaconBlock:
+      $ref: "./examples/fulu/signed_blinded_beacon_block.json"
+    Fulu.SignedBuilderBid:
+      $ref: "./examples/fulu/signed_builder_bid.json"
