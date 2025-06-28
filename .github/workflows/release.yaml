@@ -9,10 +9,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
       - run: npm i -g @apidevtools/swagger-cli@4
       - name: Bundle yaml spec
         run: "swagger-cli bundle ./builder-oapi.yaml -r -t yaml -o ./deploy/builder-oapi.yaml"
