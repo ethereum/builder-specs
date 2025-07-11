@@ -1,6 +1,6 @@
 post:
-  operationId: "submitBlindedBlock"
-  summary: Submit a signed blinded block and get a success response if the signed blinded block is valid and has been published to the network successfully.
+  operationId: "submitBlindedBlockV2"
+  summary: Submit a signed blinded beacon block, the builder publishes the signed unblinded beacon block and blobs to the network.
   description: |
     Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
     to the block.
@@ -10,7 +10,7 @@ post:
     must return an error response (400) with a description of the validation
     failure.
 
-    The builder MUST publish the signed beacon block to the network. 
+    The builder MUST publish the signed unblinded beacon block and blobs to the network. 
 
     Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
     request.

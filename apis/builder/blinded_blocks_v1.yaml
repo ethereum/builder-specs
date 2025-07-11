@@ -1,5 +1,5 @@
 post:
-  operationId: "submitBlindedBlock"
+  operationId: "submitBlindedBlockV1"
   summary: Submit a signed blinded block and get unblinded execution payload.
   description: |
     Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
