@@ -1,0 +1,68 @@
+post:
+  operationId: "submitBlindedBlock"
+  summary: Submit a signed blinded block and get a success response if the signed blinded block is valid and has been published to the network successfully.
+  description: |
+    Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
+    to the block.
+
+    A success response (200) indicates that the signed blinded beacon block was
+    valid. If the signed blinded beacon block was invalid, then the builder
+    must return an error response (400) with a description of the validation
+    failure.
+
+    The builder MUST publish the signed beacon block to the network. 
+
+    Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
+    request.
+  tags:
+    - Builder
+  parameters:
+    - in: header
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
+      required: false
+      name: Eth-Consensus-Version
+      description: "The active consensus version to which the block being submitted belongs. Required if request is SSZ encoded."
+  requestBody:
+    description: A `SignedBlindedBeaconBlock`.
+    required: true
+    content:
+      application/json:
+        schema:
+          anyOf:
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBlindedBeaconBlock"
+            - $ref: "../../builder-oapi.yaml#/components/schemas/Electra.SignedBlindedBeaconBlock"
+        examples:
+          bellatrix:
+            $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
+          capella:
+            $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBlindedBeaconBlock"
+          deneb:
+            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBlindedBeaconBlock"
+          electra:
+            $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBlindedBeaconBlock"
+          fulu:
+            $ref: "../../builder-oapi.yaml#/components/examples/Fulu.SignedBlindedBeaconBlock"
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `SignedBlindedBeaconBlock` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+  responses:
+    "200":
+      description: Success response.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          example:
+            code: 400
+            message: "Invalid block: missing signature"
+    "406":
+      $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
+    "415":
+      $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
