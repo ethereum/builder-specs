@@ -1,5 +1,5 @@
 post:
-  operationId: "submitBlindedBlockV1"
+  operationId: "submitBlindedBlock"
   summary: Submit a signed blinded block and get unblinded execution payload.
   description: |
     Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
@@ -11,6 +11,8 @@ post:
     failure.
 
     After Deneb, this endpoint will additionally return the associated blobs in the response.
+
+    After Fulu, this endpoint will be deprecated.
 
     Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
     request.

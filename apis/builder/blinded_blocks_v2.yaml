@@ -6,7 +6,7 @@ post:
     to the block.
 
     A success response (200) indicates that the signed blinded beacon block was
-    valid. If the signed blinded beacon block was invalid, then the builder
+    valid and published to the network. If the signed blinded beacon block was invalid, then the builder
     must return an error response (400) with a description of the validation
     failure.
 
