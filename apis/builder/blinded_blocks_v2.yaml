@@ -60,8 +60,6 @@ post:
           example:
             code: 400
             message: "Invalid block: missing signature"
-    "406":
-      $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "415":
       $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
     "500":

@@ -1,6 +1,7 @@
 post:
   operationId: "submitBlindedBlock"
   summary: Submit a signed blinded block and get unblinded execution payload.
+  deprecated: true
   description: |
     Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
     to the block.
