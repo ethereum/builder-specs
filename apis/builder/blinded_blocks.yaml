@@ -14,6 +14,8 @@ post:
     After Deneb, this endpoint will additionally return the associated blobs in the response.
 
     After Fulu, this endpoint will be deprecated.
+    
+    After Fulu, this endpoint will not support JSON requests and responses. Client will have to send an SSZ encoded request and receive an SSZ encoded response.
 
     Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
     request.
@@ -30,24 +32,6 @@ post:
     description: A `SignedBlindedBeaconBlock`.
     required: true
     content:
-      application/json:
-        schema:
-          anyOf:
-            - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBlindedBeaconBlock"
-            - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBlindedBeaconBlock"
-            - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBlindedBeaconBlock"
-            - $ref: "../../builder-oapi.yaml#/components/schemas/Electra.SignedBlindedBeaconBlock"
-        examples:
-          bellatrix:
-            $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBlindedBeaconBlock"
-          capella:
-            $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBlindedBeaconBlock"
-          deneb:
-            $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBlindedBeaconBlock"
-          electra:
-            $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBlindedBeaconBlock"
-          fulu:
-            $ref: "../../builder-oapi.yaml#/components/examples/Fulu.SignedBlindedBeaconBlock"
       application/octet-stream:
         schema:
           description: "SSZ serialized `SignedBlindedBeaconBlock` bytes. Use content type header to indicate that SSZ data is contained in the request body."

@@ -10,6 +10,8 @@ post:
     validator conform to the preferences expressed in the registration. If the
     registration is invalid, then the builder MUST return an error response
     (400) with a description of the validation failure.
+
+    After Fulu, this endpoint will not support JSON requests and responses. Client will have to send an SSZ encoded request and receive an SSZ encoded response.
   tags:
     - Builder
   requestBody:
@@ -17,11 +19,6 @@ post:
       A signed declaration of a validator's block building preferences.
     required: true
     content:
-      application/json:
-        schema:
-          type: array
-          items:
-            $ref: "../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration"
       application/octet-stream:
         schema:
           description: "SSZ serialized `List[SignedValidatorRegistrationV1, VALIDATOR_REGISTRY_LIMIT]` bytes. Use content type header to indicate that SSZ data is contained in the request body."

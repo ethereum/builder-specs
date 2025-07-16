@@ -11,6 +11,8 @@ get:
     validation failure.
 
     After Deneb, return the KZG commitments for any associated blobs attached to the execution payload.
+
+    After Fulu, this endpoint will not support JSON requests and responses. Client will have to send an SSZ encoded request and receive an SSZ encoded response.
   tags:
     - Builder
   parameters:
@@ -51,33 +53,6 @@ get:
           $ref: "../../builder-oapi.yaml#/components/headers/Eth-Consensus-Version"
           required: false
       content:
-        application/json:
-          schema:
-            title: GetHeaderResponse
-            type: object
-            required: [version, data]
-            properties:
-              version:
-                type: string
-                enum: [ bellatrix, capella, deneb, electra, fulu ]
-                example: "bellatrix"
-              data:
-                anyOf:
-                 - $ref: "../../builder-oapi.yaml#/components/schemas/Bellatrix.SignedBuilderBid"
-                 - $ref: "../../builder-oapi.yaml#/components/schemas/Capella.SignedBuilderBid"
-                 - $ref: "../../builder-oapi.yaml#/components/schemas/Deneb.SignedBuilderBid"
-                 - $ref: "../../builder-oapi.yaml#/components/schemas/Electra.SignedBuilderBid"
-          examples:
-            bellatrix:
-              $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedBuilderBid"
-            capella:
-              $ref: "../../builder-oapi.yaml#/components/examples/Capella.SignedBuilderBid"
-            deneb:
-              $ref: "../../builder-oapi.yaml#/components/examples/Deneb.SignedBuilderBid"
-            electra:
-              $ref: "../../builder-oapi.yaml#/components/examples/Electra.SignedBuilderBid"
-            fulu:
-              $ref: "../../builder-oapi.yaml#/components/examples/Fulu.SignedBuilderBid"
         application/octet-stream:
           schema:
             description: "SSZ serialized `SignedBuilderBid` bytes. Use Accept header to choose this response type"
