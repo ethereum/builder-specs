@@ -49,7 +49,7 @@ post:
         schema:
           description: "SSZ serialized `SignedBlindedBeaconBlock` bytes. Use content type header to indicate that SSZ data is contained in the request body."
   responses:
-    "200":
+    "202":
       description: Success response.
     "400":
       description: Error response.
