@@ -14,9 +14,6 @@ post:
     After Deneb, this endpoint will additionally return the associated blobs in the response.
 
     After Fulu, this endpoint will be deprecated.
-
-    Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
-    request.
   tags:
     - Builder
   parameters:

@@ -5,15 +5,12 @@ post:
     Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
     to the block.
 
-    A success response (200) indicates that the signed blinded beacon block was
-    valid and published to the network. If the signed blinded beacon block was invalid, then the builder
+    A success response (202) indicates that the signed blinded beacon block was
+    valid. If the signed blinded beacon block was invalid, then the builder
     must return an error response (400) with a description of the validation
     failure.
 
     The builder MUST publish the signed unblinded beacon block and blobs to the network. 
-
-    Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
-    request.
   tags:
     - Builder
   parameters:
