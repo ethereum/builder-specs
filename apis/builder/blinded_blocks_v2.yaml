@@ -11,6 +11,9 @@ post:
     failure.
 
     The builder MUST publish the signed unblinded beacon block and blobs to the network. 
+
+    Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
+    request.
   tags:
     - Builder
   parameters:
