@@ -30,3 +30,4 @@ wei
 EIP
 Fulu
 fulu
+submitBlindedBlockV
