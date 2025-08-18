@@ -24,7 +24,7 @@ post:
             $ref: "../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistration"
         examples:
           bellatrix:
-            $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedValidatorRegistrationV1"
+            $ref: "../../builder-oapi.yaml#/components/examples/Bellatrix.SignedValidatorRegistrations"
       application/octet-stream:
         schema:
           description: "SSZ serialized `List[SignedValidatorRegistrationV1, VALIDATOR_REGISTRY_LIMIT]` bytes. Use content type header to indicate that SSZ data is contained in the request body."
