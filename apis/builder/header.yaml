@@ -43,6 +43,17 @@ get:
         type: integer
         format: int64
         example: 1710338135000
+    - name: X-Timeout-Ms
+      in: header
+      required: false
+      description: |
+        Optional header containing the proposer's timeout in milliseconds. This indicates 
+        the maximum amount of time the relay can delay the getHeader request to maximize 
+        block rewards without causing the proposer to face HTTP timeouts.
+      schema:
+        type: integer
+        format: int64
+        example: 10000
   responses:
     "200":
       description: Success response.
