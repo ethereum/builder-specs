@@ -119,6 +119,8 @@ components:
         $ref: "#/components/schemas/ConsensusVersion"
 
   examples:
+    SignedValidatorRegistrations:
+      $ref: "./examples/bellatrix/signed_validator_registrations.json"
     Bellatrix.SignedBlindedBeaconBlock:
       $ref: "./examples/bellatrix/signed_blinded_beacon_block.json"
     Bellatrix.ExecutionPayload:
