@@ -47,9 +47,10 @@ get:
       in: header
       required: false
       description: |
-        Optional header containing the proposer's timeout in milliseconds. This indicates 
-        the maximum amount of time the relay can delay the getHeader request to maximize 
-        block rewards without causing the proposer to face HTTP timeouts.
+        Optional header containing the proposer's timeout for the request in milliseconds. 
+        Relays should use this header to adjust the amount of time by which they delay getHeader 
+        requests to maximise block rewards. Otherwise, getHeader requests will timeout and the proposer 
+        will not receive the header in time.
       schema:
         type: integer
         format: int64
