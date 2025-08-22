@@ -79,6 +79,8 @@ developer tools to see changes after modifying the source.
      tagging.
    - CI will create a github release and upload bundled spec file
 2. Add release entrypoint in `index.html`
+3. Create a directory with the release version in `releases` and add the corresponding 
+builder-oapi.json  to it.
 
 In `SwaggerUIBundle` configuration (inside `index.html` file), add another
 entry in `urls` field. Entry should be in following format (replace `<tag>`
