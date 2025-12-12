@@ -30,7 +30,7 @@ get:
       required: false
       description: |
         Optional header containing the proposer's timeout for the request in milliseconds. 
-        Relays should use this header to adjust the amount of time by which they delay getBid 
+        Builders should use this header to adjust the amount of time by which they delay getBid 
         requests to maximise block rewards. Otherwise, getBid requests will timeout and the proposer 
         will not receive the header in time.
       schema:
