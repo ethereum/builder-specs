@@ -14,6 +14,30 @@ get:
   tags:
     - Builder
   parameters:
+    - name: slot
+      in: path
+      required: true
+      description: The slot for which the block should be proposed.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
+    - name: parent_hash
+      in: path
+      required: true
+      description: Hash of execution layer block the proposer will build on.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Root"
+    - name: parent_root
+      in: path
+      required: true
+      description: Root of the execution layer block the proposer will build on.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Root"
+    - name: proposer_index
+      in: path
+      required: true
+      description: Index of the proposer.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
     - name: Date-Milliseconds
       in: header
       required: false
