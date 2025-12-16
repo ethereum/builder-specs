@@ -1,0 +1,45 @@
+post:
+  operationId: "registerValidatorV2"
+  summary: Register or update a validator's block building preferences for Gloas.
+  description: |
+    Registers a validator's preferred fee recipient, gas limit and preferences.
+
+    A success response (200) indicates that the registration was valid. If the
+    registration passes validation, then the builder MUST integrate the
+    registration into its state, such that future blocks built for the
+    validator conform to the preferences expressed in the registration. If the
+    registration is invalid, then the builder MUST return an error response
+    (400) with a description of the validation failure.
+  tags:
+    - Builder
+  requestBody:
+    description: |
+      A signed declaration of a validator's block building preferences.
+    required: true
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            $ref: "../../builder-oapi.yaml#/components/schemas/SignedValidatorRegistrationV2"
+        example:
+          $ref: "../../builder-oapi.yaml#/components/examples/SignedValidatorRegistrations/value"
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `List[SignedValidatorRegistrationV2, VALIDATOR_REGISTRY_LIMIT]` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+  responses:
+    "200":
+      description: Success response.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          example:
+            code: 400
+            message: "unknown validator"
+    "415":
+      $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

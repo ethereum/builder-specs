@@ -98,6 +98,8 @@ components:
       $ref: "./types/deneb/execution_payload_and_blobs_bundle.yaml#/Deneb/ExecutionPayloadAndBlobsBundle"
     SignedValidatorRegistration:
       $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistration"
+    SignedValidatorRegistrationV2:
+      $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistrationV2"
     Electra.SignedBlindedBeaconBlock:
       $ref: "./beacon-apis/types/electra/block.yaml#/Electra/SignedBlindedBeaconBlock"
     Electra.SignedBuilderBid:
