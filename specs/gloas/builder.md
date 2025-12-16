@@ -17,26 +17,100 @@
 
 This document documents the builder behaviour with the Builder-API.
 
-### `ValidatorRegistrationV1` are deprecated
+## Custom types
 
-With Gloas, `ValidatorRegistrations` are deprecated. Pre-Gloas, Validators used `ValidatorRegistrationV1` to signal their 
-preferred `fee_recipient` and `gas_limit` to the builder. 
+| Name           | SSZ equivalent | Description            |
+| -------------- | -------------- | ---------------------- |
+| `BuilderIndex` | `uint64`       | Builder registry index |
 
-Now, A proposer can indicate the `fee_recipient` to which they want the builder to pay as a header while requesting the 
-`SignedExecutionPayloadBid`.
+## Containers
 
-### Constructing a `SignedExecutionPayloadBid`
+### New Containers
+
+#### `ValidatorRegistrationV2`
+
+```python
+class ValidatorRegistrationV2(Container):
+    builder_pubkey: BLSPubkey ## is this needed? 
+    fee_recipient: ExecutionAddress
+    gas_limit: uint64
+    timestamp: uint64
+    pubkey: BLSPubkey
+    can_accept_trusted_payment: bool
+    proposal_epoch: Epoch
+```
+
+#### `SignedValidatorRegistrationV2`
+
+```python
+class SignedValidatorRegistrationV2(Container):
+    message: ValidatorRegistrationV2
+    signature: BLSSignature
+```
+
+### `verify_registration_signature`
+
+```python
+def verify_registration_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV2) -> bool:
+    pubkey = signed_registration.message.pubkey
+    domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
+    signing_root = compute_signing_root(signed_registration.message, domain)
+    return bls.Verify(pubkey, signing_root, signed_registration.signature)
+```
+
+## Validator Registration V2
+
+The second version of ValidatorRegistrations adds the following new fields:
+* `builder_pubkey`: The pubkey of the builder to which this registration is being sent.
+* `can_accept_trusted_payment`: This is a boolean which indicates that the validator is willing accept a trusted
+  execution layer payment from the builder to which it is sending the registrations.
+* `proposal_epoch`: The epoch at which this validator is proposing.
+
+### `process_registration`
+
+```python
+def process_registration(state: BeaconState,
+                         registration: SignedValidatorRegistrationV2,
+                         registrations: Dict[BLSPubkey, ValidatorRegistrationV2],
+                         current_timestamp: uint64):
+    signature = registration.signature
+    registration = registration.message
+    pubkey = registration.pubkey
+    builder_pubkey = registration.builder_pubkey
+
+    # Verify BLS public key corresponds to a registered validator
+    validator_pubkeys = [v.pubkey for v in state.validators]
+    assert pubkey in validator_pubkeys
+
+    index = ValidatorIndex(validator_pubkeys.index(pubkey))
+    validator = state.validators[index]
+
+    # [New in Gloas]
+    builder_pubkeys = [b.pubkey for v in state.builders]
+    assert builder_pubkey in builder_pubkeys 
+
+    # Verify validator registration elibility
+    assert is_eligible_for_registration(state, validator)
+
+    # Verify timestamp is not too far in the future
+    assert registration.timestamp <= current_timestamp + MAX_REGISTRATION_LOOKAHEAD
+
+    # Verify timestamp is not less than the timestamp of the previous registration (if it exists)
+    if registration.pubkey in registrations:
+        prev_registration = registrations[registration.pubkey]
+        assert registration.timestamp >= prev_registration.timestamp
+
+    # Verify registration signature
+    assert verify_registration_signature(state, registration)
+```
+
+
+## Constructing a `SignedExecutionPayloadBid`
 
 The specification for a block builder to construct a `SignedExecutionPayloadBid` is documented in the 
 gloas-specs[https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md].
 
-### Constructing a `SignedExecutionPayloadEnvelope`
+## Constructing a `SignedExecutionPayloadEnvelope`
 
 The specification for a block builder to construct a `SignedExecutionPayloadEnvelope` is documented in the 
 gloas-specs[https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md].
-
-### Sealing the Payload with `fee_recipient`
-
-The builder receives the `fee_recipient` as a header to the call to get the `SignedExecutionPayloadBid`. The builder
-is required to seal the block to be sent with the payment transaction to the `fee_recipient` with the amount specified in the
-`execution_payment` field in the `ExecutionPayloadBid`. 
