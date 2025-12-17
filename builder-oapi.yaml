@@ -53,6 +53,10 @@ paths:
     $ref: "./apis/builder/validators.yaml"
   /eth/v1/builder/header/{slot}/{parent_hash}/{pubkey}:
     $ref: "./apis/builder/header.yaml"
+  /eth/v1/builder/execution_payload_bid:
+    $ref: "./apis/builder/execution_payload_bid.yaml"
+  /eth/v1/builder/beacon_block:
+    $ref: "./apis/builder/beacon_block.yaml"
   /eth/v1/builder/blinded_blocks:
     $ref: "./apis/builder/blinded_blocks.yaml"
   /eth/v2/builder/blinded_blocks:
@@ -72,7 +76,7 @@ components:
       $ref: "./beacon-apis/types/http.yaml#/ErrorMessage"
     ConsensusVersion:
       $ref: "./beacon-apis/beacon-node-oapi.yaml#/components/schemas/ConsensusVersion"
-      enum: [bellatrix, capella, deneb, electra, fulu]
+      enum: [bellatrix, capella, deneb, electra, fulu, gloas]
       example: "bellatrix"
     Bellatrix.ExecutionPayload:
       $ref: "./beacon-apis/types/bellatrix/execution_payload.yaml#/Bellatrix/ExecutionPayload"
