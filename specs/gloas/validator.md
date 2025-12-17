@@ -4,7 +4,10 @@
 
 - [Gloas - Honest Validator](#gloas---honest-validator)
   - [Introduction](#introduction)
-    - [Block proposal](#block-proposal)
+  - [Validator Registrations](#validator-registrations)
+    - [Constructing the `ValidatorRegistrationV2`](#constructing-the-validatorregistrationv2)
+    - [Validator Registration dissemination](#validator-registration-dissemination)
+  - [Block proposal](#block-proposal)
       - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
         - [ExecutionPayloadBid](#executionpayloadbid)
 
