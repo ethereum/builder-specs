@@ -1,18 +1,18 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-**Table of Contents** *generated with
-[DocToc](https://github.com/thlorenz/doctoc)*
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Gloas - Honest Validator](#gloas---honest-validator)
   - [Introduction](#introduction)
+  - [Helper](#helper)
+    - [`get_proposer_slots_in_upcoming_epoch`](#get_proposer_slots_in_upcoming_epoch)
   - [Validator Registrations](#validator-registrations)
     - [Constructing the `ValidatorRegistrationV2`](#constructing-the-validatorregistrationv2)
     - [Validator Registration dissemination](#validator-registration-dissemination)
+  - [Validating a `SignedExecutionPayloadBid`](#validating-a-signedexecutionpayloadbid)
   - [Block proposal](#block-proposal)
-    - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
-      - [ExecutionPayloadBid](#executionpayloadbid)
+      - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
+        - [ExecutionPayloadBid](#executionpayloadbid)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -97,11 +97,36 @@ def create_validator_registrations(state: BeaconState, validator_index: Validato
   return registrations
 ```
 
+## Validating a `SignedExecutionPayloadBid`
+
+When the proposer receives a `SignedExecutionPayloadBid` from a builder, it can
+validate the bid using `validate_bid`. It can discard the bid if the conditions
+are not satisfied.
+
+```python
+def validate_bid(
+    state: BeaconState, signed_bid: SignedExecutionPayloadBid, fee_recipient: ExecutionAddress
+) -> bool:
+    builder = state.builders[signed_bid.builder_index]
+
+    assert signed_bid.slot == state.slot
+    assert signed_bid.fee_recipient == fee_recipient
+    assert signed_bid.parent_block_hash == state.latest_block_hash
+    assert signed_bid.parent_block_root == hash_tree_root(state.latest_block_header)
+    assert signed_bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
+    assert is_builder(state, builder.pubkey)
+
+    if signed_bid.value > 0:
+        assert can_builder_cover_bid(state, signed_bid.builder_index, signed_bid.value)
+
+    return verify_execution_payload_bid_signature(state, signed_bid)
+```
+
 ## Block proposal
 
-#### Constructing the `BeaconBlockBody`
+### Constructing the `BeaconBlockBody`
 
-##### ExecutionPayloadBid
+#### Recieving ExecutionPayloadBid
 
 To obtain an execution payload, a block proposer building a block on top of a
 beacon `state` in a given `slot` must take the following actions:

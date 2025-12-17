@@ -1,20 +1,21 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-**Table of Contents** *generated with
-[DocToc](https://github.com/thlorenz/doctoc)*
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Gloas - Builder Specification](#gloas---builder-specification)
   - [Introduction](#introduction)
   - [Custom types](#custom-types)
+  - [Predicates](#predicates)
+    - [`is_active_builder`](#is_active_builder)
+  - [Helper Functions](#helper-functions)
+      - [`compute_epoch_at_slot`](#compute_epoch_at_slot)
   - [Containers](#containers)
     - [New Containers](#new-containers)
       - [`ValidatorRegistrationV2`](#validatorregistrationv2)
       - [`SignedValidatorRegistrationV2`](#signedvalidatorregistrationv2)
     - [`verify_registration_signature`](#verify_registration_signature)
   - [Validator Registration V2](#validator-registration-v2)
-    - [`process_registration`](#process_registration)
+    - [`process_registration_v2`](#process_registration_v2)
   - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
   - [Constructing a `SignedExecutionPayloadEnvelope`](#constructing-a-signedexecutionpayloadenvelope)
 
@@ -111,6 +112,9 @@ The following fields are removed:
   builder in the epoch prior to one where
 
 ### `process_registration_v2`
+
+A `validator_registration_v2` is considered valid if the following function
+completes without raising any assertions:
 
 ```python
 def process_registration_v2(state: BeaconState,
