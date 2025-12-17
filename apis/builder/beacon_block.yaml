@@ -1,0 +1,50 @@
+post:
+  operationId: "submitSignedBeaconBlock"
+  summary: Submit a signed beacon block with the execution payload bid.
+  description: |
+    Submits a `SignedBeaconBlock` to the builder, binding the proposer to the block. 
+
+    A success response (200) indicates that the signed beacon block was
+    valid. If the signed beacon block was invalid, then the builder
+    must return an error response (400) with a description of the validation
+    failure.
+  tags:
+    - Builder
+  parameters:
+    - in: header
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
+      required: false
+      name: Eth-Consensus-Version
+      description: "The active consensus version to which the block being submitted belongs. Required if request is SSZ encoded."
+  requestBody:
+    description: A `SignedBeaconBlock`.
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [data]
+          properties:
+            data:
+              $ref: "../../beacon-apis/types/gloas/block.yaml#/Gloas/SignedBeaconBlock"
+              description: "The signed beacon block."
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `SignedBeaconBlock` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+  responses:
+    "202":
+      description: Success response.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          example:
+            code: 400
+            message: "Invalid signed beacon block: missing signature"
+    "415":
+      $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
