@@ -51,6 +51,8 @@ tags:
 paths:
   /eth/v1/builder/validators:
     $ref: "./apis/builder/validators.yaml"
+  /eth/v2/builder/validators:
+    $ref: "./apis/builder/validators_2.yaml"
   /eth/v1/builder/header/{slot}/{parent_hash}/{pubkey}:
     $ref: "./apis/builder/header.yaml"
   /eth/v1/builder/execution_payload_bid/{slot}/{parent_hash}/{parent_root}/{proposer_index}:

@@ -23,6 +23,30 @@ This document explains how a beacon-chain validator can participate in the exter
 Validators request an `ExecutionPayloadBid` from the external builder network to put it in their `SignedBeaconBlock`. 
 The external builder network broadcasts the `SignedExecutionPayloadEnvelope` corresponding to the bid to the PTC commitee. 
 
+## Helper
+
+### `get_proposer_slots_in_upcoming_epoch`
+
+```python
+def get_proposer_slots_in_upcoming_epoch(
+    state: BeaconState, 
+    validator_index: ValidatorIndex
+) -> List[Slot]:
+    """
+    Return all slots where validator_index is the proposer within the lookahead window in the next epoch.
+    """
+    proposer_slots = []
+    current_epoch_start_slot = compute_start_slot_at_epoch(get_current_epoch(state))
+    next_epoch_proposer_lookahead = state.proposer_lookahead[SLOTS_PER_EPOCH:]
+    
+    for i, proposer_index in enumerate(next_epoch_proposer_lookahead):
+        if proposer_index == validator_index:
+            slot = current_epoch_start_slot + SLOTS_PER_EPOCH + i
+            proposer_slots.append(slot)
+    
+    return proposer_slots
+```
+
 ## Validator Registrations 
 
 ### Constructing the `ValidatorRegistrationV2`
@@ -31,32 +55,38 @@ To do this, the validator client assembles a [`ValidatorRegistrationV2`][validat
 information:
 
 * `fee_recipient`: an execution layer address where fees for the validator should go.
-* `builder_pubkey`: the pubkey of the builder to which this registration is being sent to.
+* `builder_index`: the index of the builder to which this registration is being sent to.
 * `gas_limit`: the value a validator prefers for the execution block gas limit.
-* `timestamp`: a recent timestamp later than any previously constructed `ValidatorRegistrationV1`.
-  Builders use this timestamp as a form of anti-DoS and to sequence registrations.
-* `pubkey`: the validator's public key. Used to identify the beacon chain validator and verify the wrapping signature.
-* `can_accept_trusted_payment`: whether the proposer is willing to accept a trusted payment from the builder with pubkey 
-  `builder_pubkey`.
-* `proposal_epoch`: This is set to `get_current_epoch(state) + 1`.
+* `validator_index`: the validator's index. Used to identify the beacon chain validator and verify the wrapping signature.
+* `execution_payment_accepted`: whether the proposer is willing to accept a trusted payment from the builder with index 
+  `builder_index`.
+* `proposal_slot`: This is set to the slot in which the validator will be proposing. This can be looked up in the `proposal_lookahead`.
 
 
 ### Validator Registration dissemination
 
 This specification suggests validators re-submit registrations only if they will be proposing in the upcoming epoch(E+1). 
-This is to avoid sending a lot of `ValidatorRegistrations` every epoch. This can potentially help reduce the load 
-Validators are expected to perform this check at every epoch boundary. Validators can send their registrations even though
-they won't be proposing in the upcoming epoch.
+This is such that we don't send too many validator registrations all at once to builders. 
+Validators run `create_validator_registrations` at every epoch boundary to create validator registrations for all the slots
+they will be proposing in the upcoming epoch.
 
 ```python
-def is_next_epoch_proposer(state: BeaconState, validator_index: ValidatorIndex) -> bool:
-    """
-    Check if ``validator_index`` is scheduled to propose in the next epoch.
-    """
-    next_epoch_proposers = state.proposer_lookahead[SLOTS_PER_EPOCH:]
-    return validator_index in next_epoch_proposers
-```
+def create_validator_registrations(state: BeaconState, validator_index: ValidatorIndex, gas_limit: uint64, builder_index: BuilderIndex, execution_payment_accepted: bool) -> List[ValidatorRegistrationV2]:
+    slots = get_proposer_slots_in_lookahead(state, validator_index)
+    registrations: List[ValidatorRegistrationsV2] = []
 
+    for slot in slots:
+      registrations.append(ValidatorRegistrationV2(
+        fee_recipient=fee_recipient,
+        builder_index=builder_index,
+        gas_limit=gas_limit,
+        validator_index=validator_index
+        execution_payment_accepted=execution_payment_accepted,
+        proposal_slot=slot
+      ))
+
+  return registrations
+```
 ## Block proposal
 
 #### Constructing the `BeaconBlockBody`
