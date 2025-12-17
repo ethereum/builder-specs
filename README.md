@@ -45,16 +45,23 @@ multiplexers. Please see their respective repositories for more information:
 
 The API specification is checked for lint errors before merging pull requests.
 
-To run the linter locally, install it with:
+Install `uv` via curl (recommended over a pip-install as it can
+self-update and manage Python versions):
+
+```console
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Install `redocly` to lint the OpenAPI specs:
 
 ```console
 npm install -g @redocly/cli
 ```
 
-and then run it:
+and then run:
 
 ```console
-redocly lint builder-oapi.yaml
+make lint
 ```
 
 ### Render API Specification
