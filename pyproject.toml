@@ -1,0 +1,13 @@
+[project]
+name = "builder-specs"
+version = "0.1.0"
+description = "Ethereum Builder-API specifications"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "codespell>=2.4.1",
+    "mdformat>=1.0.0",
+]
+
+[tool.codespell]
+skip = "beacon-apis,dist"

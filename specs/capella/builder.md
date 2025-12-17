@@ -3,6 +3,7 @@
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Introduction](#introduction)
@@ -15,7 +16,8 @@
 
 ## Introduction
 
-This is the modification of the builder specification accompanying the Capella upgrade.
+This is the modification of the builder specification accompanying the Capella
+upgrade.
 
 ## Containers
 
@@ -25,11 +27,13 @@ This is the modification of the builder specification accompanying the Capella u
 
 Note: `BuilderBid` and `SignedBuilderBid` types are updated indirectly.
 
-See [ExecutionPayloadHeader](https://github.com/ethereum/consensus-specs/blob/dev/specs/capella/beacon-chain.md#executionpayloadheader).
+See
+[ExecutionPayloadHeader](https://github.com/ethereum/consensus-specs/blob/dev/specs/capella/beacon-chain.md#executionpayloadheader).
 
 ##### `BlindedBeaconBlockBody`
 
-Note: `BlindedBeaconBlock` and `SignedBlindedBeaconBlock` types are updated indirectly.
+Note: `BlindedBeaconBlock` and `SignedBlindedBeaconBlock` types are updated
+indirectly.
 
 ```python
 class BlindedBeaconBlockBody(Container):

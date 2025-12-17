@@ -3,6 +3,7 @@
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Introduction](#introduction)
@@ -26,7 +27,8 @@
 
 ## Introduction
 
-This is the modification of the builder specification accompanying the Deneb upgrade.
+This is the modification of the builder specification accompanying the Deneb
+upgrade.
 
 ## Containers
 
@@ -65,11 +67,14 @@ class BuilderBid(Container):
 
 #### `ExecutionPayloadHeader`
 
-See [`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/dev/specs/deneb/beacon-chain.md#executionpayloadheader) in Deneb consensus specs.
+See
+[`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/dev/specs/deneb/beacon-chain.md#executionpayloadheader)
+in Deneb consensus specs.
 
 ##### `BlindedBeaconBlockBody`
 
-Note: `BlindedBeaconBlock` and `SignedBlindedBeaconBlock` types are updated indirectly.
+Note: `BlindedBeaconBlock` and `SignedBlindedBeaconBlock` types are updated
+indirectly.
 
 ```python
 class BlindedBeaconBlockBody(Container):
@@ -89,13 +94,16 @@ class BlindedBeaconBlockBody(Container):
 
 ## Building
 
-Builders provide bids as they have in prior forks, with a notable restriction to block scoring.
+Builders provide bids as they have in prior forks, with a notable restriction to
+block scoring.
 
 ### Block scoring
 
-Builders **MUST** not include the `amount`s from the consensus block's withdrawals when computing the `value` for their `BuilderBid`.
+Builders **MUST** not include the `amount`s from the consensus block's
+withdrawals when computing the `value` for their `BuilderBid`.
 
-See [the section below on relay verification](#block-scoring-1) for the logic a builder's bid must satisfy.
+See [the section below on relay verification](#block-scoring-1) for the logic a
+builder's bid must satisfy.
 
 ## Relaying
 
@@ -103,9 +111,11 @@ Relays have a few additional duties to support the features in this upgrade.
 
 ### Block scoring
 
-Relays **MUST** ensure the `value` in the `BuilderBid` corresponds to the payment delivered by the builder to the proposer, excluding any withdrawals.
+Relays **MUST** ensure the `value` in the `BuilderBid` corresponds to the
+payment delivered by the builder to the proposer, excluding any withdrawals.
 
-Consider the following validation logic following definitions in the `consensus-specs`:
+Consider the following validation logic following definitions in the
+`consensus-specs`:
 
 ```python
 def verify_bid_value(execution_payload: ExecutionPayload, fee_recipient: ExecutionAddress, bid_value: uint256, balance_difference: uint256):
@@ -114,27 +124,34 @@ def verify_bid_value(execution_payload: ExecutionPayload, fee_recipient: Executi
     assert proposer_payment == bid_value
 ```
 
-`verify_bid_value` should execute completely, noting that assertion failures are errors.
-The `execution_payload`, `fee_recipient`, and `bid_value` are all provided by the builder in their payload submission.
-The `balance_difference` is computed by the relay during simulation of the `execution_payload` where
+`verify_bid_value` should execute completely, noting that assertion failures are
+errors. The `execution_payload`, `fee_recipient`, and `bid_value` are all
+provided by the builder in their payload submission. The `balance_difference` is
+computed by the relay during simulation of the `execution_payload` where
 `balance_difference = post_state_balance - pre_state_balance`.
-`pre_state_balance` is the ether amount at the `fee_recipient`’s address in the execution state before applying
-the `execution_payload` and the `post_state_balance` is the same data after applying the `execution_payload`.
+`pre_state_balance` is the ether amount at the `fee_recipient`’s address in the
+execution state before applying the `execution_payload` and the
+`post_state_balance` is the same data after applying the `execution_payload`.
 
-Any block submissions where `verify_bid_value` fails should be considered invalid and **MUST** not be served to proposers requesting bids.
+Any block submissions where `verify_bid_value` fails should be considered
+invalid and **MUST** not be served to proposers requesting bids.
 
 ### Bidding
 
-After a relay has verified the execution payload (including any blobs) is correctly constructed, the relay **MUST** additionally return any `KZGCommitments` for those blobs
-in the `SignedBuilderBid`.
+After a relay has verified the execution payload (including any blobs) is
+correctly constructed, the relay **MUST** additionally return any
+`KZGCommitments` for those blobs in the `SignedBuilderBid`.
 
 ### Revealing the `ExecutionPayload`
 
 #### Blinded block processing
 
-Relays verify signed blinded beacon blocks as before, with the additional requirement
-that they must construct `BlobSidecar` objects with the KZG commitment inclusion
-proof before gossiping the blobs alongside the unblinded block.
+Relays verify signed blinded beacon blocks as before, with the additional
+requirement that they must construct `BlobSidecar` objects with the KZG
+commitment inclusion proof before gossiping the blobs alongside the unblinded
+block.
 
-* NOTE: the [standard `beacon-apis` implemented by consensus clients](https://github.com/ethereum/beacon-APIs) will handle the construction of the `BlobSidecar`
-object following the block broadcast endpoints defined there.
+- NOTE: the
+  [standard `beacon-apis` implemented by consensus clients](https://github.com/ethereum/beacon-APIs)
+  will handle the construction of the `BlobSidecar` object following the block
+  broadcast endpoints defined there.

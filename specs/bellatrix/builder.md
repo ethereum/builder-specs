@@ -3,6 +3,7 @@
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Constants](#constants)
@@ -41,15 +42,13 @@
 
 ### Domain types
 
-| Name | Value |
-| - | - |
-| `DOMAIN_APPLICATION_BUILDER` | `DomainType('0x00000001')` |
+| Name | Value | | - | - | | `DOMAIN_APPLICATION_BUILDER` |
+`DomainType('0x00000001')` |
 
 ### Time parameters
 
-| Name | Value | Unit | Duration |
-| - | - | - | - |
-| `MAX_REGISTRATION_LOOKAHEAD` | `uint64(10)` | seconds | 10 seconds |
+| Name | Value | Unit | Duration | | - | - | - | - | |
+`MAX_REGISTRATION_LOOKAHEAD` | `uint64(10)` | seconds | 10 seconds |
 
 ## Containers
 
@@ -59,9 +58,9 @@ signed, see [Signing](#signing).
 
 ### Independently Versioned
 
-Some objects can be updated independently of the `consensus-specs`, because
-they originate solely from this specification. The objects are postfixed with
-`VX` to denote their revision.
+Some objects can be updated independently of the `consensus-specs`, because they
+originate solely from this specification. The objects are postfixed with `VX` to
+denote their revision.
 
 #### `ValidatorRegistrationV1`
 
@@ -146,29 +145,32 @@ class SignedBlindedBeaconBlock(Container):
 All signature operations should follow the [standard BLS operations][bls]
 interface defined in `consensus-specs`.
 
-To assist in signing, we use a function from the [consensus specs][consensus-specs]:
-[`compute_domain`][compute-domain]
+To assist in signing, we use a function from the
+[consensus specs][consensus-specs]: [`compute_domain`][compute-domain]
 
 There are two types of data to sign over in the Builder API:
-* In-protocol messages, e.g. [`BlindedBeaconBlock`](#blindedbeaconblock), which
+
+- In-protocol messages, e.g. [`BlindedBeaconBlock`](#blindedbeaconblock), which
   should compute the signing root using [`compute_signing_root`][compute-root]
   and use the domain specified for beacon block proposals.
-* Builder API messages, e.g. validator registration and signed builder bid, which should compute the
-  signing root using [`compute_signing_root`][compute-root] with domain given by
+- Builder API messages, e.g. validator registration and signed builder bid,
+  which should compute the signing root using
+  [`compute_signing_root`][compute-root] with domain given by
   `compute_domain(DOMAIN_APPLICATION_BUILDER, fork_version=None, genesis_validators_root=None)`.
-As `compute_signing_root` takes `SSZObject` as input, client software should
-convert in-protocol messages to their SSZ representation to compute the signing
-root and Builder API messages to the SSZ representations defined
-[above](#containers).
+  As `compute_signing_root` takes `SSZObject` as input, client software should
+  convert in-protocol messages to their SSZ representation to compute the
+  signing root and Builder API messages to the SSZ representations defined
+  [above](#containers).
 
 ## Validator registration processing
 
 Validators must submit registrations before they can work with builders.
 
-To assist in registration processing, we use the following functions from the [consensus specs][consensus-specs]:
+To assist in registration processing, we use the following functions from the
+[consensus specs][consensus-specs]:
 
-* [`get_current_epoch`][get-current-epoch]
-* [`is_active_validator`][is-active-validator]
+- [`get_current_epoch`][get-current-epoch]
+- [`is_active_validator`][is-active-validator]
 
 ### `is_pending_validator`
 
@@ -203,7 +205,8 @@ def verify_registration_signature(state: BeaconState, signed_registration: Signe
 
 ### `process_registration`
 
-A `registration` is considered valid if the following function completes without raising any assertions:
+A `registration` is considered valid if the following function completes without
+raising any assertions:
 
 ```python
 def process_registration(state: BeaconState,
@@ -237,24 +240,32 @@ def process_registration(state: BeaconState,
 
 ## Building
 
-The builder builds execution payloads for registered validators and submits them to an auction that happens each slot.
-When a validator goes to propose, they select the winning `SignedBuilderBid` offered in that slot by constructing a `SignedBlindedBeaconBlock`.
-The builder only reveals the full execution payload once they receive a valid `SignedBlindedBeaconBlock`.
-The validator accepts a bid and commits to a specific `ExecutionPayload` with a `SignedBlindedBeaconBlock`.
+The builder builds execution payloads for registered validators and submits them
+to an auction that happens each slot. When a validator goes to propose, they
+select the winning `SignedBuilderBid` offered in that slot by constructing a
+`SignedBlindedBeaconBlock`. The builder only reveals the full execution payload
+once they receive a valid `SignedBlindedBeaconBlock`. The validator accepts a
+bid and commits to a specific `ExecutionPayload` with a
+`SignedBlindedBeaconBlock`.
 
 ### Bidding
 
-To assist in bidding, we use the following functions from the [consensus specs][consensus-specs]:
+To assist in bidding, we use the following functions from the
+[consensus specs][consensus-specs]:
 
-* [`get_beacon_proposer_index`][get-beacon-proposer-index]
-* [`hash_tree_root`][hash-tree-root]
+- [`get_beacon_proposer_index`][get-beacon-proposer-index]
+- [`hash_tree_root`][hash-tree-root]
 
-Execution payloads are built for a specific `slot`, `parent_hash`, and `pubkey` tuple corresponding to a unique beacon block serving as the parent.
+Execution payloads are built for a specific `slot`, `parent_hash`, and `pubkey`
+tuple corresponding to a unique beacon block serving as the parent.
 
-The builder validates requests for bids according to `is_eligible_for_bid(state, registrations, slot, parent_hash, pubkey)` where:
+The builder validates requests for bids according to
+`is_eligible_for_bid(state, registrations, slot, parent_hash, pubkey)` where:
 
-* `state` is the builder's consensus state transitioned to `slot`, including the application of any blocks before `slot`.
-* `registrations` is the registry of validators [successfully registered](#process-registration) with the builder.
+- `state` is the builder's consensus state transitioned to `slot`, including the
+  application of any blocks before `slot`.
+- `registrations` is the registry of validators
+  [successfully registered](#process-registration) with the builder.
 
 ```python
 def is_eligible_for_bid(state: BeaconState,
@@ -281,8 +292,11 @@ def is_eligible_for_bid(state: BeaconState,
 
 #### Constructing the `ExecutionPayloadHeader`
 
-The builder MUST provide a bid for the valid execution payload that is able to pay the `fee_recipient` in the validator registration for the registered `pubkey` the most.
-The builder MUST build an execution payload whose `gas_limit` is equal to the `gas_limit` of the latest registration for `pubkey`, or as close as is possible under the consensus rules.
+The builder MUST provide a bid for the valid execution payload that is able to
+pay the `fee_recipient` in the validator registration for the registered
+`pubkey` the most. The builder MUST build an execution payload whose `gas_limit`
+is equal to the `gas_limit` of the latest registration for `pubkey`, or as close
+as is possible under the consensus rules.
 
 #### Constructing the `BuilderBid`
 
@@ -309,7 +323,9 @@ def get_bid(execution_payload: ExecutionPayload, value: uint256, pubkey: BLSPubk
 
 #### Packaging into a `SignedBuilderBid`
 
-The builder packages `bid` into a `SignedBuilderBid`, denoted `signed_bid`, with `signed_bid=SignedBuilderBid(bid=bid, signature=signature)` where `signature` is obtained from:
+The builder packages `bid` into a `SignedBuilderBid`, denoted `signed_bid`, with
+`signed_bid=SignedBuilderBid(bid=bid, signature=signature)` where `signature` is
+obtained from:
 
 ```python
 def get_bid_signature(state: BeaconState, bid: BuilderBid, privkey: int) -> BLSSignature:
@@ -322,18 +338,21 @@ def get_bid_signature(state: BeaconState, bid: BuilderBid, privkey: int) -> BLSS
 
 #### Blinded block processing
 
-To assist in blinded block processing, we use the following functions from the [consensus specs][consensus-specs]:
+To assist in blinded block processing, we use the following functions from the
+[consensus specs][consensus-specs]:
 
-* [`get_beacon_proposer_index`][get-beacon-proposer-index]
-* [`get_current_epoch`][get-current-epoch]
-* [`compute_epoch_at_slot`][compute-epoch-at-slot]
-* [`get_domain`][get-domain]
+- [`get_beacon_proposer_index`][get-beacon-proposer-index]
+- [`get_current_epoch`][get-current-epoch]
+- [`compute_epoch_at_slot`][compute-epoch-at-slot]
+- [`get_domain`][get-domain]
 
-A proposer selects a bid by constructing a valid `SignedBlindedBeaconBlock`.
-The proposer MUST accept at most one bid for a given `slot`.
-Otherwise, the builder can produce a [`ProposerSlashing`][proposer-slashing].
+A proposer selects a bid by constructing a valid `SignedBlindedBeaconBlock`. The
+proposer MUST accept at most one bid for a given `slot`. Otherwise, the builder
+can produce a [`ProposerSlashing`][proposer-slashing].
 
-The builder must ensure the `SignedBlindedBeaconBlock` is valid according to the rules of consensus and also that the signature is correct for the expected proposer using `verify_blinded_block_signature`:
+The builder must ensure the `SignedBlindedBeaconBlock` is valid according to the
+rules of consensus and also that the signature is correct for the expected
+proposer using `verify_blinded_block_signature`:
 
 ##### `verify_blinded_block_signature`
 
@@ -351,14 +370,14 @@ Builder API endpoints are defined in `builder-oapi.yaml` in the root of the
 repository. A rendered version can be viewed at
 https://ethereum.github.io/builder-specs/.
 
-[consensus-specs]: https://github.com/ethereum/consensus-specs
 [bls]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#bls-signatures
-[compute-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_signing_root
 [compute-domain]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_domain
-[get-current-epoch]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_current_epoch
-[is-active-validator]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#is_active_validator
-[hash-tree-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#hash_tree_root
-[get-domain]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_domain
 [compute-epoch-at-slot]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_epoch_at_slot
+[compute-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_signing_root
+[consensus-specs]: https://github.com/ethereum/consensus-specs
 [get-beacon-proposer-index]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_beacon_proposer_index
+[get-current-epoch]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_current_epoch
+[get-domain]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_domain
+[hash-tree-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#hash_tree_root
+[is-active-validator]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#is_active_validator
 [proposer-slashing]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#proposerslashing
