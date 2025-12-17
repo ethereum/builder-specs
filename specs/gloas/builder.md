@@ -1,6 +1,9 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+**Table of Contents** *generated with
+[DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Gloas - Builder Specification](#gloas---builder-specification)
   - [Introduction](#introduction)
@@ -25,9 +28,8 @@ This document documents the builder behaviour with the Builder-API.
 
 ## Custom types
 
-| Name           | SSZ equivalent | Description            |
-| -------------- | -------------- | ---------------------- |
-| `BuilderIndex` | `uint64`       | Builder registry index |
+| Name | SSZ equivalent | Description | | -------------- | -------------- |
+---------------------- | | `BuilderIndex` | `uint64` | Builder registry index |
 
 ## Predicates
 
@@ -91,16 +93,22 @@ def verify_registration_signature(state: BeaconState, signed_registration: Signe
 ## Validator Registration V2
 
 The second version of ValidatorRegistrations adds the following new fields:
-* `builder_index`: The index of the builder to which this registration is being sent.
-* `validator_index`: The index of the validator selected to propose a block at slot `proposal_slot`
-* `execution_payment_accepted`: This is a boolean which indicates that the validator is willing accept a trusted
-  execution layer payment from the builder to which it is sending the registrations.
-* `proposal_slot`: The slot at which this validator is proposing.
+
+- `builder_index`: The index of the builder to which this registration is being
+  sent.
+- `validator_index`: The index of the validator selected to propose a block at
+  slot `proposal_slot`
+- `execution_payment_accepted`: This is a boolean which indicates that the
+  validator is willing accept a trusted execution layer payment from the builder
+  to which it is sending the registrations.
+- `proposal_slot`: The slot at which this validator is proposing.
 
 The following fields are removed:
-* `pubkey`: This is the pubkey of the validator which has now been replaced with `validator_index`.
-* `timestamp`: A new validator registration will be sent by the validator to the builder in 
-  the epoch prior to one where 
+
+- `pubkey`: This is the pubkey of the validator which has now been replaced with
+  `validator_index`.
+- `timestamp`: A new validator registration will be sent by the validator to the
+  builder in the epoch prior to one where
 
 ### `process_registration_v2`
 
@@ -138,10 +146,12 @@ def process_registration_v2(state: BeaconState,
 
 ## Constructing a `SignedExecutionPayloadBid`
 
-The specification for a block builder to construct a `SignedExecutionPayloadBid` is documented in the 
+The specification for a block builder to construct a `SignedExecutionPayloadBid`
+is documented in the
 gloas-specs[https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md].
 
 ## Constructing a `SignedExecutionPayloadEnvelope`
 
-The specification for a block builder to construct a `SignedExecutionPayloadEnvelope` is documented in the 
+The specification for a block builder to construct a
+`SignedExecutionPayloadEnvelope` is documented in the
 gloas-specs[https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md].
