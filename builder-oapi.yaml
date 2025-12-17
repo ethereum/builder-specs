@@ -13600,7 +13600,7 @@ components:
           - deneb
           - electra
           - fulu
-        example: electra
+        example: fulu
       required: true
   examples:
     SignedValidatorRegistrations:
