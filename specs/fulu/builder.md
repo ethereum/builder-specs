@@ -3,6 +3,7 @@
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Introduction](#introduction)
@@ -16,7 +17,8 @@
 
 ## Introduction
 
-This is the modification of the builder specification accompanying the Fulu upgrade.
+This is the modification of the builder specification accompanying the Fulu
+upgrade.
 
 ## Containers
 
@@ -34,7 +36,9 @@ class BlobsBundle(Container):
 
 ### `ExecutionPayloadHeader`
 
-See [`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/dev/specs/deneb/beacon-chain.md#executionpayloadheader) in Deneb consensus specs.
+See
+[`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/dev/specs/deneb/beacon-chain.md#executionpayloadheader)
+in Deneb consensus specs.
 
 #### `ExecutionPayloadAndBlobsBundle`
 

@@ -2,9 +2,11 @@
 
 ## Introduction
 
-This is the modification of the builder specification accompanying the Electra upgrade.
+This is the modification of the builder specification accompanying the Electra
+upgrade.
 
-The behavior defined by the specification is consistent with previous forks except for the changes to the types given below.
+The behavior defined by the specification is consistent with previous forks
+except for the changes to the types given below.
 
 ## Containers
 
@@ -25,7 +27,8 @@ class BuilderBid(Container):
 
 #### `BlindedBeaconBlockBody`
 
-Note: `BlindedBeaconBlock` and `SignedBlindedBeaconBlock` types are updated indirectly.
+Note: `BlindedBeaconBlock` and `SignedBlindedBeaconBlock` types are updated
+indirectly.
 
 ```python
 class BlindedBeaconBlockBody(Container):
@@ -43,5 +46,3 @@ class BlindedBeaconBlockBody(Container):
     blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]
     execution_requests: ExecutionRequests # [New in Electra]
 ```
-
-[execution-payload-and-blobs-bundle-deneb]: ../deneb/builder.md#executionpayloadandblobsbundle

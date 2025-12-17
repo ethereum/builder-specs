@@ -1,22 +1,23 @@
 # Ethereum Builder API Specification
 
-![CI][ci]
+![CI]
 
 The Builder API is an interface for consensus layer clients to source blocks
 built by external entities.
 
-In this repository is the [API specification][oas-spec] along with specifications for actors in this ecosystem broken out by fork.
+In this repository is the [API specification][oas-spec] along with
+specifications for actors in this ecosystem broken out by fork.
 
 ### Why?
 
-Block building is a specialized activity that requires high fixed costs to be
-an efficient validator. This creates an advantage for staking pools as they can
+Block building is a specialized activity that requires high fixed costs to be an
+efficient validator. This creates an advantage for staking pools as they can
 effectively distribute the cost across many validators.
 
 [Proposer-builder separation][pbs] (PBS) fixes this by splitting the roles of a
 validator into block proposing and block building. However, PBS requires
-modifications to the Beacon chain and will therefore not be possible at the
-time of the merge.
+modifications to the Beacon chain and will therefore not be possible at the time
+of the merge.
 
 The Builder API is a temporary solution that requires higher trust assumptions
 than PBS, but can be fully implemented without modification to the base
@@ -36,19 +37,22 @@ This design is based on the original proposal for trusted external builders:
 Users will typically connect their CL clients to builders with builder
 multiplexers. Please see their respective repositories for more information:
 
-* [`mev-boost`][mev-boost]
-* [`mev-rs`][mev-rs]
-* [`commit-boost`][commit-boost]
+- [`mev-boost`][mev-boost]
+- [`mev-rs`][mev-rs]
+- [`commit-boost`][commit-boost]
 
 ## Contributing
 
 The API specification is checked for lint errors before merging pull requests.
 
 To run the linter locally, install it with:
+
 ```console
 npm install -g @redocly/cli
 ```
+
 and then run it:
+
 ```console
 redocly lint builder-oapi.yaml
 ```
@@ -59,6 +63,7 @@ To render spec in browser, you will simply need an HTTP server to load the
 `index.html` file in root of the repo.
 
 For example:
+
 ```console
 python -m http.server 8080
 ```
@@ -70,8 +75,8 @@ The spec will render at [http://localhost:8080](http://localhost:8080).
 Local changes will be observable if "dev" is selected in the "Select a
 definition" drop-down in the web UI.
 
-It may be necessary to tick the "Disable Cache" box in their browser's
-developer tools to see changes after modifying the source.
+It may be necessary to tick the "Disable Cache" box in their browser's developer
+tools to see changes after modifying the source.
 
 ## Releasing
 
@@ -81,18 +86,18 @@ developer tools to see changes after modifying the source.
    - CI will create a github release and upload bundled spec file
 2. Add release entrypoint in `index.html`
 
-In `SwaggerUIBundle` configuration (inside `index.html` file), add another
-entry in `urls` field. Entry should be in following format (replace `<tag>`
-with real tag name from step 1.):
+In `SwaggerUIBundle` configuration (inside `index.html` file), add another entry
+in `urls` field. Entry should be in following format (replace `<tag>` with real
+tag name from step 1.):
 
 ```javascript
 { url: "./releases/<tag>/builder-oapi.json", name: "<tag>" },
 ```
 
 [ci]: https://github.com/ethereum/builder-specs/workflows/CI/badge.svg
+[commit-boost]: https://github.com/Commit-Boost/commit-boost-client
+[mev-boost]: https://github.com/flashbots/mev-boost
+[mev-boost-ethr]: https://ethresear.ch/t/mev-boost-merge-ready-flashbots-architecture/11177
+[mev-rs]: https://github.com/ralexstokes/mev-rs
 [oas-spec]: https://ethereum.github.io/builder-specs/
 [pbs]: https://ethresear.ch/t/proposer-block-builder-separation-friendly-fee-market-designs/9725
-[mev-boost-ethr]: https://ethresear.ch/t/mev-boost-merge-ready-flashbots-architecture/11177
-[mev-boost]: https://github.com/flashbots/mev-boost
-[mev-rs]: https://github.com/ralexstokes/mev-rs
-[commit-boost]: https://github.com/Commit-Boost/commit-boost-client
