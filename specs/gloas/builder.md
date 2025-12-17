@@ -4,10 +4,16 @@
 
 - [Gloas - Builder Specification](#gloas---builder-specification)
   - [Introduction](#introduction)
-    - [`ValidatorRegistrationV1` are deprecated](#validatorregistrationv1-are-deprecated)
-    - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
-    - [Constructing a `SignedExecutionPayloadEnvelope`](#constructing-a-signedexecutionpayloadenvelope)
-    - [Sealing the Payload with `fee_recipient`](#sealing-the-payload-with-fee_recipient)
+  - [Custom types](#custom-types)
+  - [Containers](#containers)
+    - [New Containers](#new-containers)
+      - [`ValidatorRegistrationV2`](#validatorregistrationv2)
+      - [`SignedValidatorRegistrationV2`](#signedvalidatorregistrationv2)
+    - [`verify_registration_signature`](#verify_registration_signature)
+  - [Validator Registration V2](#validator-registration-v2)
+    - [`process_registration`](#process_registration)
+  - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
+  - [Constructing a `SignedExecutionPayloadEnvelope`](#constructing-a-signedexecutionpayloadenvelope)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
