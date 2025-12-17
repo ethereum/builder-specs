@@ -29,6 +29,30 @@ This document documents the builder behaviour with the Builder-API.
 | -------------- | -------------- | ---------------------- |
 | `BuilderIndex` | `uint64`       | Builder registry index |
 
+## Predicates
+
+### `is_active_builder`
+
+```python
+def is_active_builder(builder: Builder) -> bool:
+    """
+    Check if ``builder`` is active.
+    """
+    return builder.exit_epoch == FAR_FUTURE_EPOCH
+```
+
+## Helper Functions
+
+#### `compute_epoch_at_slot`
+
+```python
+def compute_epoch_at_slot(slot: Slot) -> Epoch:
+    """
+    Return the epoch number at ``slot``.
+    """
+    return Epoch(slot // SLOTS_PER_EPOCH)
+```
+
 ## Containers
 
 ### New Containers
@@ -37,13 +61,12 @@ This document documents the builder behaviour with the Builder-API.
 
 ```python
 class ValidatorRegistrationV2(Container):
-    builder_pubkey: BLSPubkey ## is this needed? 
+    builder_index: BuilderIndex 
+    validator_index: ValidatorIndex
     fee_recipient: ExecutionAddress
+    proposal_slot: Slot
     gas_limit: uint64
-    timestamp: uint64
-    pubkey: BLSPubkey
-    can_accept_trusted_payment: bool
-    proposal_epoch: Epoch
+    execution_payment_accepted: boolean
 ```
 
 #### `SignedValidatorRegistrationV2`
@@ -58,7 +81,8 @@ class SignedValidatorRegistrationV2(Container):
 
 ```python
 def verify_registration_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV2) -> bool:
-    pubkey = signed_registration.message.pubkey
+    validator = state.validators[signed_registration.message.validator_index]
+    pubkey = validator.pubkey
     domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
     signing_root = compute_signing_root(signed_registration.message, domain)
     return bls.Verify(pubkey, signing_root, signed_registration.signature)
@@ -67,49 +91,50 @@ def verify_registration_signature(state: BeaconState, signed_registration: Signe
 ## Validator Registration V2
 
 The second version of ValidatorRegistrations adds the following new fields:
-* `builder_pubkey`: The pubkey of the builder to which this registration is being sent.
-* `can_accept_trusted_payment`: This is a boolean which indicates that the validator is willing accept a trusted
+* `builder_index`: The index of the builder to which this registration is being sent.
+* `validator_index`: The index of the validator selected to propose a block at slot `proposal_slot`
+* `execution_payment_accepted`: This is a boolean which indicates that the validator is willing accept a trusted
   execution layer payment from the builder to which it is sending the registrations.
-* `proposal_epoch`: The epoch at which this validator is proposing.
+* `proposal_slot`: The slot at which this validator is proposing.
 
-### `process_registration`
+The following fields are removed:
+* `pubkey`: This is the pubkey of the validator which has now been replaced with `validator_index`.
+* `timestamp`: A new validator registration will be sent by the validator to the builder in 
+  the epoch prior to one where 
+
+### `process_registration_v2`
 
 ```python
-def process_registration(state: BeaconState,
+def process_registration_v2(state: BeaconState,
                          registration: SignedValidatorRegistrationV2,
                          registrations: Dict[BLSPubkey, ValidatorRegistrationV2],
                          current_timestamp: uint64):
     signature = registration.signature
     registration = registration.message
-    pubkey = registration.pubkey
-    builder_pubkey = registration.builder_pubkey
+    validator_index = registration.validator_index
+    builder_index = registration.builder_index
+    proposal_slot = registration.proposal_slot
 
-    # Verify BLS public key corresponds to a registered validator
-    validator_pubkeys = [v.pubkey for v in state.validators]
-    assert pubkey in validator_pubkeys
+    assert validator_index < len(state.validators)
+    assert builder_index < len(state.builders)
 
-    index = ValidatorIndex(validator_pubkeys.index(pubkey))
-    validator = state.validators[index]
+    validator = state.validators[validator_index]
+    builder = state.builders[builder_index]
 
-    # [New in Gloas]
-    builder_pubkeys = [b.pubkey for v in state.builders]
-    assert builder_pubkey in builder_pubkeys 
+    assert is_active_validator(validator, compute_epoch_at_slot(proposal_slot))
+    assert is_active_builder(builder)
 
     # Verify validator registration elibility
     assert is_eligible_for_registration(state, validator)
 
-    # Verify timestamp is not too far in the future
-    assert registration.timestamp <= current_timestamp + MAX_REGISTRATION_LOOKAHEAD
-
-    # Verify timestamp is not less than the timestamp of the previous registration (if it exists)
+    # Verify that the old registration's slot is earlier than the new registration's slot
     if registration.pubkey in registrations:
-        prev_registration = registrations[registration.pubkey]
-        assert registration.timestamp >= prev_registration.timestamp
+        prev_registration = registrations[validator_index]
+        assert registration.proposal_slot >= prev_registration.proposal_slot
 
     # Verify registration signature
     assert verify_registration_signature(state, registration)
 ```
-
 
 ## Constructing a `SignedExecutionPayloadBid`
 
