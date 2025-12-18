@@ -1,7 +1,5 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Gloas - Builder Specification](#gloas---builder-specification)
@@ -10,12 +8,14 @@
   - [Predicates](#predicates)
     - [`is_active_builder`](#is_active_builder)
   - [Helper Functions](#helper-functions)
-    - [`compute_epoch_at_slot`](#compute_epoch_at_slot)
+      - [`compute_epoch_at_slot`](#compute_epoch_at_slot)
   - [Containers](#containers)
     - [New Containers](#new-containers)
+      - [`BuilderPreferences`](#builderpreferences)
       - [`ValidatorRegistrationV2`](#validatorregistrationv2)
       - [`SignedValidatorRegistrationV2`](#signedvalidatorregistrationv2)
     - [`verify_registration_signature`](#verify_registration_signature)
+  - [Builder Preferences](#builder-preferences)
   - [Validator Registration V2](#validator-registration-v2)
     - [`process_registration_v2`](#process_registration_v2)
   - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
