@@ -1,7 +1,5 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Gloas - Honest Validator](#gloas---honest-validator)
@@ -14,7 +12,7 @@
   - [Validating a `SignedExecutionPayloadBid`](#validating-a-signedexecutionpayloadbid)
   - [Block proposal](#block-proposal)
     - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
-      - [ExecutionPayloadBid](#executionpayloadbid)
+      - [Receiving ExecutionPayloadBid](#receiving-executionpayloadbid)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
