@@ -126,7 +126,7 @@ The following fields are removed:
 - `pubkey`: This is the pubkey of the validator which has now been replaced with
   `validator_index`.
 - `timestamp`: A new validator registration will be sent by the validator to the
-  builder in the epoch prior to one where
+  builder in the epoch prior to one where they will be proposing.
 
 ### `process_registration_v2`
 
