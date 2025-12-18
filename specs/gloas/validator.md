@@ -1,5 +1,7 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Gloas - Honest Validator](#gloas---honest-validator)
@@ -11,8 +13,8 @@
     - [Validator Registration dissemination](#validator-registration-dissemination)
   - [Validating a `SignedExecutionPayloadBid`](#validating-a-signedexecutionpayloadbid)
   - [Block proposal](#block-proposal)
-      - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
-        - [ExecutionPayloadBid](#executionpayloadbid)
+    - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
+      - [ExecutionPayloadBid](#executionpayloadbid)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -43,9 +45,9 @@ def get_proposer_slots_in_upcoming_epoch(
     current_epoch_start_slot = compute_start_slot_at_epoch(get_current_epoch(state))
     next_epoch_proposer_lookahead = state.proposer_lookahead[SLOTS_PER_EPOCH:]
     
-    for i, proposer_index in enumerate(next_epoch_proposer_lookahead):
+    for offset, proposer_index in enumerate(next_epoch_proposer_lookahead):
         if proposer_index == validator_index:
-            slot = current_epoch_start_slot + SLOTS_PER_EPOCH + i
+            slot = current_epoch_start_slot + SLOTS_PER_EPOCH + offset
             proposer_slots.append(slot)
     
     return proposer_slots
@@ -80,9 +82,14 @@ many validator registrations all at once to builders. Validators run
 registrations for all the slots they will be proposing in the upcoming epoch.
 
 ```python
-def create_validator_registrations(state: BeaconState, validator_index: ValidatorIndex, gas_limit: uint64, builder_index: BuilderIndex, execution_payment_accepted: bool) -> List[ValidatorRegistrationV2]:
+def create_validator_registrations_for_builder(state: BeaconState, validator_index: ValidatorIndex, gas_limit: uint64, builder_index: BuilderIndex, builder_preferences: BuilderPreferences) -> List[ValidatorRegistrationV2]:
     slots = get_proposer_slots_in_lookahead(state, validator_index)
     registrations: List[ValidatorRegistrationsV2] = []
+
+    assert is_builder(state, builder_index)
+    
+    builder = state.builders[builder_index]
+    assert builder.exit_epoch == FAR_FUTURE_EPOCH
 
     for slot in slots:
       registrations.append(ValidatorRegistrationV2(
@@ -90,7 +97,7 @@ def create_validator_registrations(state: BeaconState, validator_index: Validato
         builder_index=builder_index,
         gas_limit=gas_limit,
         validator_index=validator_index
-        execution_payment_accepted=execution_payment_accepted,
+        builder_preferences=builder_preferences,
         proposal_slot=slot
       ))
 
@@ -126,7 +133,7 @@ def validate_bid(
 
 ### Constructing the `BeaconBlockBody`
 
-#### Recieving ExecutionPayloadBid
+#### Receiving ExecutionPayloadBid
 
 To obtain an execution payload, a block proposer building a block on top of a
 beacon `state` in a given `slot` must take the following actions:

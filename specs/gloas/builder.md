@@ -1,5 +1,7 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Gloas - Builder Specification](#gloas---builder-specification)
@@ -8,7 +10,7 @@
   - [Predicates](#predicates)
     - [`is_active_builder`](#is_active_builder)
   - [Helper Functions](#helper-functions)
-      - [`compute_epoch_at_slot`](#compute_epoch_at_slot)
+    - [`compute_epoch_at_slot`](#compute_epoch_at_slot)
   - [Containers](#containers)
     - [New Containers](#new-containers)
       - [`ValidatorRegistrationV2`](#validatorregistrationv2)
@@ -60,6 +62,13 @@ def compute_epoch_at_slot(slot: Slot) -> Epoch:
 
 ### New Containers
 
+#### `BuilderPreferences`
+
+```python
+class BuilderPreferences(Container):
+    execution_payment_accepted: boolean
+```
+
 #### `ValidatorRegistrationV2`
 
 ```python
@@ -69,7 +78,7 @@ class ValidatorRegistrationV2(Container):
     fee_recipient: ExecutionAddress
     proposal_slot: Slot
     gas_limit: uint64
-    execution_payment_accepted: boolean
+    builder_preferences: BuilderPreferences
 ```
 
 #### `SignedValidatorRegistrationV2`
@@ -91,6 +100,15 @@ def verify_registration_signature(state: BeaconState, signed_registration: Signe
     return bls.Verify(pubkey, signing_root, signed_registration.signature)
 ```
 
+## Builder Preferences
+
+Using validator registrations, a proposer can express the preferences it has for
+a builder. Currently, the only preference that is supported is:
+
+- `execution_payment_accepted`: This is a boolean which indicates that the
+  proposer is willing to accept a trusted execution layer payment from the
+  builder.
+
 ## Validator Registration V2
 
 The second version of ValidatorRegistrations adds the following new fields:
@@ -99,9 +117,8 @@ The second version of ValidatorRegistrations adds the following new fields:
   sent.
 - `validator_index`: The index of the validator selected to propose a block at
   slot `proposal_slot`
-- `execution_payment_accepted`: This is a boolean which indicates that the
-  validator is willing accept a trusted execution layer payment from the builder
-  to which it is sending the registrations.
+- `builder_preferences`: This is a struct which contains the per builder
+  preferences the proposer has.
 - `proposal_slot`: The slot at which this validator is proposing.
 
 The following fields are removed:
