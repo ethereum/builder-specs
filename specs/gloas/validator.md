@@ -84,10 +84,7 @@ def create_validator_registrations_for_builder(state: BeaconState, validator_ind
     slots = get_proposer_slots_in_lookahead(state, validator_index)
     registrations: List[ValidatorRegistrationsV2] = []
 
-    assert is_builder(state, builder_index)
-    
-    builder = state.builders[builder_index]
-    assert builder.exit_epoch == FAR_FUTURE_EPOCH
+    assert is_active_builder(state, builder_index)
 
     for slot in slots:
       registrations.append(ValidatorRegistrationV2(
