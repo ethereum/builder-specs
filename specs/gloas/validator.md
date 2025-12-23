@@ -1,5 +1,7 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Gloas - Honest Validator](#gloas---honest-validator)
@@ -110,13 +112,13 @@ def validate_bid(
     state: BeaconState, signed_bid: SignedExecutionPayloadBid, fee_recipient: ExecutionAddress
 ) -> bool:
     builder = state.builders[signed_bid.builder_index]
-
+    
+    assert is_active_builder(state, builder)
     assert signed_bid.slot == state.slot
     assert signed_bid.fee_recipient == fee_recipient
     assert signed_bid.parent_block_hash == state.latest_block_hash
     assert signed_bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert signed_bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
-    assert is_builder(state, builder.pubkey)
 
     if signed_bid.value > 0:
         assert can_builder_cover_bid(state, signed_bid.builder_index, signed_bid.value)

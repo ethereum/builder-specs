@@ -1,5 +1,7 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Gloas - Builder Specification](#gloas---builder-specification)
@@ -8,7 +10,7 @@
   - [Predicates](#predicates)
     - [`is_active_builder`](#is_active_builder)
   - [Helper Functions](#helper-functions)
-      - [`compute_epoch_at_slot`](#compute_epoch_at_slot)
+    - [`compute_epoch_at_slot`](#compute_epoch_at_slot)
   - [Containers](#containers)
     - [New Containers](#new-containers)
       - [`BuilderPreferences`](#builderpreferences)
@@ -39,11 +41,17 @@ This document documents the builder behaviour with the Builder-API.
 ### `is_active_builder`
 
 ```python
-def is_active_builder(builder: Builder) -> bool:
+def is_active_builder(state: BeaconState, builder_index: BuilderIndex) -> bool:
     """
-    Check if ``builder`` is active.
+    Check if the builder at ``builder_index`` is active for the given ``state``.
     """
-    return builder.exit_epoch == FAR_FUTURE_EPOCH
+    builder = state.builders[builder_index]
+    return (
+        # Placement in builder list is finalized
+        builder.deposit_epoch < state.finalized_checkpoint.epoch
+        # Has not initiated exit
+        and builder.withdrawable_epoch == FAR_FUTURE_EPOCH
+    )
 ```
 
 ## Helper Functions
@@ -144,19 +152,15 @@ def process_registration_v2(state: BeaconState,
     builder_index = registration.builder_index
     proposal_slot = registration.proposal_slot
 
-    assert validator_index < len(state.validators)
-    assert builder_index < len(state.builders)
-
     validator = state.validators[validator_index]
     builder = state.builders[builder_index]
 
-    assert is_active_validator(validator, compute_epoch_at_slot(proposal_slot))
-    assert is_active_builder(builder)
+    assert is_active_builder(state, builder)
 
     # Verify validator registration elibility
     assert is_eligible_for_registration(state, validator)
 
-    # Verify that the old registration's slot is earlier than the new registration's slot
+    # Verify that the old registration's proposal slot is earlier than the new registration's proposal slot
     if registration.pubkey in registrations:
         prev_registration = registrations[validator_index]
         assert registration.proposal_slot >= prev_registration.proposal_slot
@@ -172,6 +176,12 @@ is documented in the
 gloas-specs[https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md].
 
 ## Constructing a `SignedExecutionPayloadEnvelope`
+
+If the builder's `SignedExecutionPayloadBid` has been accepted by the proposer
+and it has been included in it's `SignedBeaconBlock`, then the builder has to
+construct a `SignedExecutionPayloadEnvelope` corresponding to the
+`SignedExecutionPayloadBid` and it has to broadcast it to the PTC committee via
+the `execution_payload_envelope` gossip topic.
 
 The specification for a block builder to construct a
 `SignedExecutionPayloadEnvelope` is documented in the
