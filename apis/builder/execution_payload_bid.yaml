@@ -29,7 +29,7 @@ get:
     - name: parent_root
       in: path
       required: true
-      description: Root of the execution layer block the proposer will build on.
+      description: Root of the beacon block the proposer will build on.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/Root"
     - name: proposer_index
