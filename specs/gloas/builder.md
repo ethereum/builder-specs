@@ -108,6 +108,48 @@ def verify_registration_signature(state: BeaconState, signed_registration: Signe
     return bls.Verify(pubkey, signing_root, signed_registration.signature)
 ```
 
+## Bidding
+
+In Gloas, Execution payloads are built for a specific `slot`, `parent_hash`,
+`pubkey` along with the `parent_root` tuple corresponding to a unique beacon
+block serving as the parent.
+
+This is because in Gloas with EIP-7732, the execution payload and beacon blocks
+are decoupled. The `parent_hash` could refer to a beacon block which is an
+ancestor of the parent beacon block corresponding to the current beacon block
+for which we are building the execution payload.
+
+We update `is_eligible_for_bid` below:
+
+```python
+def is_eligible_for_bid(state: BeaconState,
+                        registrations: Dict[BLSPubkey, ValidatorRegistrationV2],
+                        slot: Slot,
+                        parent_hash: Hash32,
+                        # [New in Gloas]
+                        parent_root: Root,
+                        pubkey: BLSPubkey):
+    # Verify slot
+    if slot != state.slot:
+        return False
+
+    # Verify BLS public key corresponds to a registered validator
+    if pubkey not in registrations:
+        return False
+
+    # Verify BLS public key corresponds to the proposer for the slot
+    proposer_index = get_beacon_proposer_index(state)
+    if pubkey != state.validators[proposer_index].pubkey:
+        return False
+
+    # Verify parent hash
+    # [Modified in Gloas:EIP7732]
+    assert parent_hash == state.latest_block_hash
+
+    # Verify parent root
+    assert parent_root == hash_tree_root(state.latest_block_header)
+```
+
 ## Builder Preferences
 
 Using validator registrations, a proposer can express the preferences it has for
