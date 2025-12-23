@@ -61,16 +61,6 @@ get:
         type: integer
         format: int64
         example: 10000
-    - name: X-Fee-Recipient
-      in: header
-      required: true
-      description: |
-        Required header containing the fee recipient address to which the proposer wants to receive
-        the payment for the bid.
-      schema: 
-        type: string
-        format: address
-        example: "0x0000000000000000000000000000000000000000"
   responses:
     "200":
       description: Success response.
