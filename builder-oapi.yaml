@@ -110,6 +110,11 @@ components:
       $ref: "./types/fulu/blobs_bundle.yaml#/Fulu/BlobsBundle"
     Fulu.ExecutionPayloadAndBlobsBundle:
       $ref: "./types/fulu/execution_payload_and_blobs_bundle.yaml#/Fulu/ExecutionPayloadAndBlobsBundle"
+    Gloas.BidRequestAuth:
+      $ref: "./types/gloas/bid_request_auth.yaml#/Gloas/BidRequestAuth"
+    Gloas.SignedBidRequestAuth:
+      $ref: "./types/gloas/bid_request_auth.yaml#/Gloas/SignedBidRequestAuth"
+
 
   responses:
     InternalError:

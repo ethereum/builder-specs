@@ -29,42 +29,12 @@
 
 ## Introduction
 
-This document documents the builder behaviour with the Builder-API.
+This document documents the builder behaviour with the Builder-API post ePBS.
 
 ## Custom types
 
 | Name | SSZ equivalent | Description | | -------------- | -------------- |
 ---------------------- | | `BuilderIndex` | `uint64` | Builder registry index |
-
-## Predicates
-
-### `is_active_builder`
-
-```python
-def is_active_builder(state: BeaconState, builder_index: BuilderIndex) -> bool:
-    """
-    Check if the builder at ``builder_index`` is active for the given ``state``.
-    """
-    builder = state.builders[builder_index]
-    return (
-        # Placement in builder list is finalized
-        builder.deposit_epoch < state.finalized_checkpoint.epoch
-        # Has not initiated exit
-        and builder.withdrawable_epoch == FAR_FUTURE_EPOCH
-    )
-```
-
-## Helper Functions
-
-#### `compute_epoch_at_slot`
-
-```python
-def compute_epoch_at_slot(slot: Slot) -> Epoch:
-    """
-    Return the epoch number at ``slot``.
-    """
-    return Epoch(slot // SLOTS_PER_EPOCH)
-```
 
 ## Containers
 
@@ -81,8 +51,8 @@ class BuilderPreferences(Container):
 
 ```python
 class ValidatorRegistrationV2(Container):
-    builder_index: BuilderIndex 
     validator_index: ValidatorIndex
+    builder_index: BuilderIndex
     fee_recipient: ExecutionAddress
     proposal_slot: Slot
     gas_limit: uint64
@@ -147,6 +117,7 @@ def is_eligible_for_bid(state: BeaconState,
     assert parent_hash == state.latest_block_hash
 
     # Verify parent root
+    # [Modified in Gloas:EIP7732]
     assert parent_root == hash_tree_root(state.latest_block_header)
 ```
 
@@ -163,8 +134,8 @@ a builder. Currently, the only preference that is supported is:
 
 The second version of ValidatorRegistrations adds the following new fields:
 
-- `builder_index`: The index of the builder to which this registration is being
-  sent.
+- `builder_index`: The index of the builder to which the validator is sending
+  the registration.
 - `validator_index`: The index of the validator selected to propose a block at
   slot `proposal_slot`
 - `builder_preferences`: This is a struct which contains the per builder
