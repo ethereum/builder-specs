@@ -1,0 +1,38 @@
+Gloas:
+  BuilderPreferences:
+    type: object
+    description: "Per-builder preferences that a validator can express."
+    required: [execution_payment_accepted]
+    properties:
+      execution_payment_accepted:
+        type: boolean
+        description: "Indicates that the proposer is willing to accept a trusted execution layer payment from the builder."
+  ValidatorRegistrationV2:
+    type: object
+    description: "The `ValidatorRegistrationV2` object for Gloas fork, replacing pubkey and timestamp with validator_index, proposal_slot, and builder_preferences."
+    required: [validator_index, fee_recipient, proposal_slot, gas_limit, builder_preferences]
+    properties:
+      validator_index:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
+        description: "Validator index. Used to identify the beacon chain validator and verify the signature."
+      fee_recipient:
+        $ref: "../../beacon-apis/types/primitive.yaml#/ExecutionAddress"
+        description: "Address to receive fees from the block."
+      proposal_slot:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
+        description: "The slot at which this validator is proposing."
+      gas_limit:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
+        description: "Preferred gas limit of validator."
+      builder_preferences:
+        $ref: "#/Gloas/BuilderPreferences"
+        description: "Per-builder preferences."
+  SignedValidatorRegistrationV2:
+    type: object
+    description: "The `SignedValidatorRegistrationV2` object for Gloas fork."
+    required: [message, signature]
+    properties:
+      message:
+        $ref: "#/Gloas/ValidatorRegistrationV2"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
