@@ -101,8 +101,6 @@ To do this, the validator client assembles a
 \[`ValidatorRegistrationV2`\][validator-registration-v2] with the following
 information:
 
-- `builder_index`: The index of the builder to which the validator is submitting
-  the registration.
 - `fee_recipient`: An execution layer address where fees for the validator
   should go.
 - `gas_limit`: The value a validator prefers for the execution block gas limit.
@@ -122,17 +120,14 @@ many validator registrations all at once to builders. Validators run
 registrations for all the slots they will be proposing in the upcoming epoch.
 
 ```python
-def create_validator_registrations_for_builder(state: BeaconState, validator_index: ValidatorIndex, gas_limit: uint64, builder_index: BuilderIndex, builder_preferences: BuilderPreferences) -> List[ValidatorRegistrationV2]:
+def create_validator_registrations(state: BeaconState, validator_index: ValidatorIndex, gas_limit: uint64, builder_preferences: BuilderPreferences) -> List[ValidatorRegistrationV2]:
     slots = get_proposer_slots_in_lookahead(state, validator_index)
     registrations: List[ValidatorRegistrationsV2] = []
-
-    assert is_active_builder(state, builder_index)
 
     for slot in slots:
       registrations.append(ValidatorRegistrationV2(
         fee_recipient=fee_recipient,
         gas_limit=gas_limit,
-        builder_index=builder_index,
         validator_index=validator_index
         builder_preferences=builder_preferences,
         proposal_slot=slot
@@ -176,9 +171,10 @@ To obtain an execution payload, a block proposer building a block on top of a
 beacon `state` in a given `slot` must take the following actions:
 
 1. Call upstream builder software to get an `ExecutionPayloadBid`. The validator
-   is required to send the `SignedBidRequestAuth` in the request body in order to
-   authenticate the request to the builder. If a builder has multiple builder indices associated with 
-   them, the validator will have to call the upstream builder software each time for each builder index. 
+   is required to send the `SignedBidRequestAuth` in the request body in order
+   to authenticate the request to the builder. If a builder has multiple builder
+   indices associated with them, the validator will have to call the upstream
+   builder software each time for each builder index.
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
    \[Gloas
    specs\][https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal]

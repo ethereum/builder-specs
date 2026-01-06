@@ -52,7 +52,6 @@ class BuilderPreferences(Container):
 ```python
 class ValidatorRegistrationV2(Container):
     validator_index: ValidatorIndex
-    builder_index: BuilderIndex
     fee_recipient: ExecutionAddress
     proposal_slot: Slot
     gas_limit: uint64
@@ -134,8 +133,6 @@ a builder. Currently, the only preference that is supported is:
 
 The second version of ValidatorRegistrations adds the following new fields:
 
-- `builder_index`: The index of the builder to which the validator is sending
-  the registration.
 - `validator_index`: The index of the validator selected to propose a block at
   slot `proposal_slot`
 - `builder_preferences`: This is a struct which contains the per builder
@@ -162,13 +159,9 @@ def process_registration_v2(state: BeaconState,
     signature = registration.signature
     registration = registration.message
     validator_index = registration.validator_index
-    builder_index = registration.builder_index
     proposal_slot = registration.proposal_slot
 
     validator = state.validators[validator_index]
-    builder = state.builders[builder_index]
-
-    assert is_active_builder(state, builder)
 
     # Verify validator registration elibility
     assert is_eligible_for_registration(state, validator)
