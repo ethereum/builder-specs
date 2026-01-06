@@ -100,8 +100,6 @@ components:
       $ref: "./types/deneb/execution_payload_and_blobs_bundle.yaml#/Deneb/ExecutionPayloadAndBlobsBundle"
     SignedValidatorRegistration:
       $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistration"
-    SignedValidatorRegistrationV2:
-      $ref: "./beacon-apis/types/registration.yaml#/SignedValidatorRegistrationV2"
     Electra.SignedBlindedBeaconBlock:
       $ref: "./beacon-apis/types/electra/block.yaml#/Electra/SignedBlindedBeaconBlock"
     Electra.SignedBuilderBid:
@@ -114,8 +112,13 @@ components:
       $ref: "./types/gloas/bid_request_auth.yaml#/Gloas/BidRequestAuth"
     Gloas.SignedBidRequestAuth:
       $ref: "./types/gloas/bid_request_auth.yaml#/Gloas/SignedBidRequestAuth"
-
-
+    Gloas.BuilderPreferences:
+      $ref: "./types/gloas/registration.yaml#/Gloas/BuilderPreferences"
+    Gloas.ValidatorRegistrationV2:
+      $ref: "./types/gloas/registration.yaml#/Gloas/ValidatorRegistrationV2"
+    Gloas.SignedValidatorRegistrationV2:
+      $ref: "./types/gloas/registration.yaml#/Gloas/SignedValidatorRegistrationV2"
+  
   responses:
     InternalError:
       $ref: "./types/http.yaml#/InternalError"

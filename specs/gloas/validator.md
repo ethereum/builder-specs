@@ -121,7 +121,7 @@ registrations for all the slots they will be proposing in the upcoming epoch.
 
 ```python
 def create_validator_registrations(state: BeaconState, validator_index: ValidatorIndex, gas_limit: uint64, builder_preferences: BuilderPreferences) -> List[ValidatorRegistrationV2]:
-    slots = get_proposer_slots_in_lookahead(state, validator_index)
+    slots = get_proposer_slots_in_upcoming_epoch(state, validator_index)
     registrations: List[ValidatorRegistrationsV2] = []
 
     for slot in slots:
