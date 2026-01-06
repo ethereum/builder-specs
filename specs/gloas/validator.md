@@ -23,11 +23,36 @@
 ## Introduction
 
 This document explains how a beacon-chain validator can participate in the
-external block building market post ePBS.
+external block building market with the Builder-API post ePBS.
 
 Validators request an `ExecutionPayloadBid` from the external builder network to
 put it in their `SignedBeaconBlock`. The external builder network broadcasts the
 `SignedExecutionPayloadEnvelope` corresponding to the bid to the PTC committee.
+
+## Containers
+
+### New Containers
+
+#### `BidRequestAuth`
+
+`BidRequestAuth` is used to authenticate requests to get the bid from a builder.
+This is useful so that other builders don't DDOS the builder to get their latest
+bid.
+
+```python
+class BidRequestAuth(Container):
+  builder_index: BuilderIndex
+  validator_index: ValidatorIndex
+  proposer_slot: Slot
+```
+
+#### `SignedBidRequestAuth`
+
+```python
+class SignedBidRequestAuth(Container):
+  message: BidRequestAuth
+  signature: BLSSignature
+```
 
 ## Helper
 
@@ -53,6 +78,21 @@ def get_proposer_slots_in_upcoming_epoch(
     return proposer_slots
 ```
 
+## Bid Authentication
+
+### Constructing the `BidRequestAuth`
+
+To construct the `BidRequestAuth`, we need to fill the following information:
+
+- `builder_index`: This builder index for which the validator is sending a
+  request to get the bid.
+- `validator_index`: The proposer's validator index.
+- `proposal_slot`: The slot at which the proposer is building a block.
+
+The validator constructs the `SignedBidRequestAuth` by signing the
+`BidRequestAuth`. It sends the `SignedBidRequestAuth` as a header along with the
+request to get the bid.
+
 ## Validator Registrations
 
 ### Constructing the `ValidatorRegistrationV2`
@@ -61,17 +101,17 @@ To do this, the validator client assembles a
 \[`ValidatorRegistrationV2`\][validator-registration-v2] with the following
 information:
 
-- `fee_recipient`: an execution layer address where fees for the validator
+- `builder_index`: The index of the builder to which the validator is submitting
+  the registration.
+- `fee_recipient`: An execution layer address where fees for the validator
   should go.
-- `builder_index`: the index of the builder to which this registration is being
-  sent to.
-- `gas_limit`: the value a validator prefers for the execution block gas limit.
-- `validator_index`: the validator's index. Used to identify the beacon chain
+- `gas_limit`: The value a validator prefers for the execution block gas limit.
+- `validator_index`: The validator's index. Used to identify the beacon chain
   validator and verify the wrapping signature.
-- `execution_payment_accepted`: whether the proposer is willing to accept a
+- `execution_payment_accepted`: Whether the proposer is willing to accept a
   trusted payment from the builder with index `builder_index`.
 - `proposal_slot`: This is set to the slot in which the validator will be
-  proposing. This can be looked up in the `proposal_lookahead`.
+  proposing. This can be looked up in `state.proposal_lookahead`.
 
 ### Validator Registration dissemination
 
@@ -91,8 +131,8 @@ def create_validator_registrations_for_builder(state: BeaconState, validator_ind
     for slot in slots:
       registrations.append(ValidatorRegistrationV2(
         fee_recipient=fee_recipient,
-        builder_index=builder_index,
         gas_limit=gas_limit,
+        builder_index=builder_index,
         validator_index=validator_index
         builder_preferences=builder_preferences,
         proposal_slot=slot
@@ -135,11 +175,14 @@ def validate_bid(
 To obtain an execution payload, a block proposer building a block on top of a
 beacon `state` in a given `slot` must take the following actions:
 
-1. Call upstream builder software to get an `ExecutionPayloadBid`.
+1. Call upstream builder software to get an `ExecutionPayloadBid`. The validator
+   is required to send the `SignedBidRequestAuth` in the request body in order to
+   authenticate the request to the builder. If a builder has multiple builder indices associated with 
+   them, the validator will have to call the upstream builder software each time for each builder index. 
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
    \[Gloas
    specs\][https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal]
-   but with the `ExecutionPayloadBid` from the prior step.
+   but with the best `ExecutionPayloadBid` from the prior step.
 3. The proposer returns the `SignedBeaconBlock` back to the upstream block
    building software.
 4. The upstream block building software constructs the

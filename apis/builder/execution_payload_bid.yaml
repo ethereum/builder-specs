@@ -1,14 +1,23 @@
-get:
+post:
   operationId: "getExecutionPayloadBid"
   summary: Get an execution payload bid.
   description: |
     Requests a builder node to produce a valid execution payload bid, which
-    can be integrated into a blinded beacon block and signed.
+    can be integrated into a blinded beacon block and signed. 
+
+    The proposer sends a POST request to the builder with the following information:
+    - The slot for which the block should be proposed.
+    - The hash of the execution layer block the proposer will build on.
+    - The root of the beacon block the proposer will build on.
+    - The index of the proposer.
+    - A signed bid request auth to authenticate the request to a specific builder index.
+
+    The builder responds with a 200 response containing an execution payload bid if it can provide one.
 
     If the builder is unable to produce a valid execution payload bid, then
     the builder MUST return a 204 response. If the request is invalid, then the
     builder MUST return an error response (400) with a description of the
-    validation failure.
+    validation failure. If the SignedBidRequestAuth is invalid, the builder MUST return a 400 response.
 
     This API is applicable from Glamsterdam fork onwards.
   tags:
@@ -55,12 +64,21 @@ get:
       description: |
         Optional header containing the proposer's timeout for the request in milliseconds. 
         Builders should use this header to adjust the amount of time by which they delay getBid 
-        requests to maximise block rewards. Otherwise, getBid requests will timeout and the proposer 
+        requests to maximise block rewards. Otherwise, getExecutionPayloadBid requests will timeout and the proposer 
         will not receive the header in time.
       schema:
         type: integer
         format: int64
         example: 10000
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../types/gloas/bid_request_auth.yaml#/Gloas/SignedBidRequestAuth"
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `SignedBidRequestAuth` bytes."
   responses:
     "200":
       description: Success response.
@@ -85,7 +103,7 @@ get:
           schema:
             description: "SSZ serialized `ExecutionPayloadBid` bytes. Use Accept header to choose this response type"
     "204":
-      description: No header is available.
+      description: No bid is available.
     "400":
       description: Error response.
       content:
@@ -93,10 +111,14 @@ get:
           schema:
             $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
           examples:
-            InvalidRequest:
+            InvalidHash:
               value:
                 code: 400
                 message: "Unknown hash: missing parent hash"
+            InvalidAuth:
+              value:
+                code: 400
+                message: "Invalid SignedBidRequestAuth: signature verification failed"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "500":
