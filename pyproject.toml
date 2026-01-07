@@ -5,6 +5,7 @@ description = "Ethereum Builder-API specifications"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "blacken-docs>=1.16.0",
     "codespell>=2.4.1",
     "mdformat>=1.0.0",
 ]

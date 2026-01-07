@@ -34,7 +34,7 @@ class BlobsBundle(Container):
     blobs: List[Blob, MAX_BLOB_COMMITMENTS_PER_BLOCK]
 ```
 
-### `ExecutionPayloadHeader`
+#### `ExecutionPayloadHeader`
 
 See
 [`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/dev/specs/deneb/beacon-chain.md#executionpayloadheader)

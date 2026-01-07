@@ -156,7 +156,9 @@ A `bid` is considered valid if the following function completes without raising
 any assertions:
 
 ```python
-def process_bid(state: BeaconState, bid: SignedBuilderBid, fee_recipient: ExecutionAddress):
+def process_bid(
+    state: BeaconState, bid: SignedBuilderBid, fee_recipient: ExecutionAddress
+):
     # Verify execution payload header
     header = bid.message.header
     assert header.parent_hash == state.latest_execution_payload_header.block_hash

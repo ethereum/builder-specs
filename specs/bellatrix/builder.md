@@ -190,13 +190,17 @@ def is_eligible_for_registration(state: BeaconState, validator: Validator) -> bo
     Check if ``validator`` is active or pending.
     """
     epoch = get_current_epoch(state)
-    return is_active_validator(validator, epoch) or is_pending_validator(validator, epoch)
+    return is_active_validator(validator, epoch) or is_pending_validator(
+        validator, epoch
+    )
 ```
 
 ### `verify_registration_signature`
 
 ```python
-def verify_registration_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV1) -> bool:
+def verify_registration_signature(
+    state: BeaconState, signed_registration: SignedValidatorRegistrationV1
+) -> bool:
     pubkey = signed_registration.message.pubkey
     domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
     signing_root = compute_signing_root(signed_registration.message, domain)
@@ -209,10 +213,12 @@ A `registration` is considered valid if the following function completes without
 raising any assertions:
 
 ```python
-def process_registration(state: BeaconState,
-                         registration: SignedValidatorRegistrationV1,
-                         registrations: Dict[BLSPubkey, ValidatorRegistrationV1],
-                         current_timestamp: uint64):
+def process_registration(
+    state: BeaconState,
+    registration: SignedValidatorRegistrationV1,
+    registrations: Dict[BLSPubkey, ValidatorRegistrationV1],
+    current_timestamp: uint64,
+):
     signature = registration.signature
     registration = registration.message
 
@@ -268,11 +274,13 @@ The builder validates requests for bids according to
   [successfully registered](#process-registration) with the builder.
 
 ```python
-def is_eligible_for_bid(state: BeaconState,
-                        registrations: Dict[BLSPubkey, ValidatorRegistrationV1],
-                        slot: Slot,
-                        parent_hash: Hash32,
-                        pubkey: BLSPubkey) -> bool:
+def is_eligible_for_bid(
+    state: BeaconState,
+    registrations: Dict[BLSPubkey, ValidatorRegistrationV1],
+    slot: Slot,
+    parent_hash: Hash32,
+    pubkey: BLSPubkey,
+) -> bool:
     # Verify slot
     if slot != state.slot:
         return False
@@ -301,7 +309,9 @@ as is possible under the consensus rules.
 #### Constructing the `BuilderBid`
 
 ```python
-def get_bid(execution_payload: ExecutionPayload, value: uint256, pubkey: BLSPubkey) -> BuilderBid:
+def get_bid(
+    execution_payload: ExecutionPayload, value: uint256, pubkey: BLSPubkey
+) -> BuilderBid:
     header = ExecutionPayloadHeader(
         parent_hash=payload.parent_hash,
         fee_recipient=payload.fee_recipient,
@@ -328,7 +338,9 @@ The builder packages `bid` into a `SignedBuilderBid`, denoted `signed_bid`, with
 obtained from:
 
 ```python
-def get_bid_signature(state: BeaconState, bid: BuilderBid, privkey: int) -> BLSSignature:
+def get_bid_signature(
+    state: BeaconState, bid: BuilderBid, privkey: int
+) -> BLSSignature:
     domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
     signing_root = compute_signing_root(bid, domain)
     return bls.Sign(privkey, signing_root)
@@ -357,10 +369,14 @@ proposer using `verify_blinded_block_signature`:
 ##### `verify_blinded_block_signature`
 
 ```python
-def verify_blinded_block_signature(state: BeaconState, signed_block: SignedBlindedBeaconBlock) -> bool:
+def verify_blinded_block_signature(
+    state: BeaconState, signed_block: SignedBlindedBeaconBlock
+) -> bool:
     proposer = state.validators[get_beacon_proposer_index(state)]
     epoch = get_current_epoch(state)
-    signing_root = compute_signing_root(signed_block.message, get_domain(state, DOMAIN_BEACON_PROPOSER, epoch))
+    signing_root = compute_signing_root(
+        signed_block.message, get_domain(state, DOMAIN_BEACON_PROPOSER, epoch)
+    )
     return bls.Verify(proposer.pubkey, signing_root, signed_block.signature)
 ```
 
