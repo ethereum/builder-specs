@@ -118,8 +118,8 @@ information:
 - `gas_limit`: The value a validator prefers for the execution block gas limit.
 - `validator_index`: The validator's index. Used to identify the beacon chain
   validator and verify the wrapping signature.
-- `execution_payment_accepted`: Whether the proposer is willing to accept a
-  trusted payment from the builder with index `builder_index`.
+- `max_trusted_bid`: The amount(in Gwei) the proposer is willing to accept as a
+  trusted execution layer payment from the builder.
 - `proposal_slot`: This is set to the slot in which the validator will be
   proposing. This can be looked up in `state.proposal_lookahead`.
 
@@ -179,8 +179,7 @@ def validate_bid(
     assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
 
-    if not reg.message.builder_preferences.execution_payment_accepted:
-      assert bid.execution_payment == 0
+    assert bid.execution_payment <= reg.message.builder_preferences.max_trusted_bid
 
     if bid.value > 0:
         assert can_builder_cover_bid(state, bid.builder_index, signed_bid.value)
