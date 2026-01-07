@@ -2,8 +2,6 @@ UV_RUN    = uv run
 
 MARKDOWN_FILES := $(shell find $(CURDIR) -name '*.md' -not -path "*/beacon-apis/*" -not -path "*/node_modules/*")
 MARKDOWN_FILES_FOR_DOCTOC := $(shell find $(CURDIR) -name '*.md' -not -path "*/beacon-apis/*" -not -path "*/node_modules/*" -not -name "README.md")
-YAML_FILES := $(shell find $(CURDIR)/apis $(CURDIR)/types -name '*.yaml' -o -name '*.yml')
-PYTHON_FILES := $(shell find $(CURDIR)/specs -name '*.md')
 
 _sync: pyproject.toml
 	@command -v uv >/dev/null 2>&1 || { \
