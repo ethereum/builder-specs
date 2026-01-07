@@ -39,7 +39,7 @@ describes how builders interact with validators through
 
 ```python
 class BuilderPreferences(Container):
-    execution_payment_accepted: boolean
+    max_trusted_bid: uint64
 ```
 
 #### `ValidatorRegistrationV2`
@@ -119,9 +119,13 @@ def is_eligible_for_bid(state: BeaconState,
 Using validator registrations, a proposer can express the preferences it has for
 a builder. Currently, the only preference that is supported is:
 
-- `execution_payment_accepted`: This is a boolean which indicates that the
-  proposer is willing to accept a trusted execution layer payment from the
-  builder.
+- `max_trusted_bid`: Specifies the maximum value (in Gwei) that a proposer is
+  willing to accept as a trusted execution layer payment from the builder. A
+  value of `0` indicates that the proposer does not accept any trusted payments
+  from the builder, requiring all payments to be cryptographically verifiable
+  on-chain. A value of `UINT64_MAX` indicates that the proposer will accept any
+  trusted payment amount from the builder. Proposers may adjust this parameter
+  based on their level of trust in the builder's reliability and reputation.
 
 ## Validator Registration V2
 
