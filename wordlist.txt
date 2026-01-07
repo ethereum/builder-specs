@@ -28,6 +28,11 @@ validator's
 vc
 wei
 EIP
+ePBS
 Fulu
 fulu
+Gloas
+gloas
+PTC
 submitBlindedBlockV
+ValidatorRegistrationsV

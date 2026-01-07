@@ -6,8 +6,14 @@
 
 - [Gloas - Honest Validator](#gloas---honest-validator)
   - [Introduction](#introduction)
+  - [Containers](#containers)
+    - [New Containers](#new-containers)
+      - [`BidRequestAuth`](#bidrequestauth)
+      - [`SignedBidRequestAuth`](#signedbidrequestauth)
   - [Helper](#helper)
     - [`get_proposer_slots_in_upcoming_epoch`](#get_proposer_slots_in_upcoming_epoch)
+  - [Bid Authentication](#bid-authentication)
+    - [Constructing the `BidRequestAuth`](#constructing-the-bidrequestauth)
   - [Validator Registrations](#validator-registrations)
     - [Constructing the `ValidatorRegistrationV2`](#constructing-the-validatorregistrationv2)
     - [Validator Registration dissemination](#validator-registration-dissemination)
@@ -25,9 +31,11 @@
 This document explains how a beacon-chain validator can participate in the
 external block building market with the Builder-API post ePBS.
 
-Validators request an `ExecutionPayloadBid` from the external builder network to
-put it in their `SignedBeaconBlock`. The external builder network broadcasts the
-`SignedExecutionPayloadEnvelope` corresponding to the bid to the PTC committee.
+Validators request a [`SignedExecutionPayloadBid`][signed-execution-payload-bid]
+from the external builder network to put it in their `SignedBeaconBlock`. The
+external builder network broadcasts the
+[`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
+corresponding to the bid to the PTC committee.
 
 ## Containers
 
@@ -57,6 +65,9 @@ class SignedBidRequestAuth(Container):
 ## Helper
 
 ### `get_proposer_slots_in_upcoming_epoch`
+
+*Note*: `compute_start_slot_at_epoch` and `get_current_epoch` are defined in the
+[Gloas consensus specs][gloas-consensus-specs].
 
 ```python
 def get_proposer_slots_in_upcoming_epoch(
@@ -90,15 +101,16 @@ To construct the `BidRequestAuth`, we need to fill the following information:
 - `proposal_slot`: The slot at which the proposer is building a block.
 
 The validator constructs the `SignedBidRequestAuth` by signing the
-`BidRequestAuth`. It sends the `SignedBidRequestAuth` as a header along with the
-request to get the bid.
+`BidRequestAuth`. It sends the `SignedBidRequestAuth` in the request body along
+with the request to get the bid in the
+[`getExecutionPayloadBid`][get-execution-payload-bid-api] API call.
 
 ## Validator Registrations
 
 ### Constructing the `ValidatorRegistrationV2`
 
 To do this, the validator client assembles a
-\[`ValidatorRegistrationV2`\][validator-registration-v2] with the following
+[`ValidatorRegistrationV2`][validator-registration-v2] with the following
 information:
 
 - `fee_recipient`: An execution layer address where fees for the validator
@@ -122,25 +134,33 @@ registrations for all the slots they will be proposing in the upcoming epoch.
 ```python
 def create_validator_registrations(state: BeaconState, validator_index: ValidatorIndex, gas_limit: uint64, builder_preferences: BuilderPreferences) -> List[ValidatorRegistrationV2]:
     slots = get_proposer_slots_in_upcoming_epoch(state, validator_index)
-    registrations: List[ValidatorRegistrationsV2] = []
+    registrations: List[ValidatorRegistrationV2] = []
 
     for slot in slots:
-      registrations.append(ValidatorRegistrationV2(
-        fee_recipient=fee_recipient,
-        gas_limit=gas_limit,
-        validator_index=validator_index
-        builder_preferences=builder_preferences,
-        proposal_slot=slot
-      ))
+        registrations.append(ValidatorRegistrationV2(
+            fee_recipient=fee_recipient,
+            gas_limit=gas_limit,
+            validator_index=validator_index,
+            builder_preferences=builder_preferences,
+            proposal_slot=slot
+        ))
 
-  return registrations
+    return registrations
 ```
 
 ## Validating a `SignedExecutionPayloadBid`
 
-When the proposer receives a `SignedExecutionPayloadBid` from a builder, it can
-validate the bid using `validate_bid`. It can discard the bid if the conditions
-are not satisfied.
+When the proposer receives a
+[`SignedExecutionPayloadBid`][signed-execution-payload-bid] from a builder, it
+can validate the bid using `validate_bid`. It can discard the bid if the
+conditions are not satisfied.
+
+*Note*: `hash_tree_root`, `get_randao_mix`, and `get_current_epoch` are defined
+in the [Gloas consensus specs][gloas-consensus-specs]. The predicates
+[`is_active_builder`][is-active-builder],
+[`can_builder_cover_bid`][can-builder-cover-bid], and
+[`verify_execution_payload_bid_signature`][verify-execution-payload-bid-signature]
+are also defined in the consensus specs.
 
 ```python
 def validate_bid(
@@ -170,18 +190,33 @@ def validate_bid(
 To obtain an execution payload, a block proposer building a block on top of a
 beacon `state` in a given `slot` must take the following actions:
 
-1. Call upstream builder software to get an `ExecutionPayloadBid`. The validator
-   is required to send the `SignedBidRequestAuth` in the request body in order
-   to authenticate the request to the builder. If a builder has multiple builder
-   indices associated with them, the validator will have to call the upstream
-   builder software each time for each builder index.
+1. Call upstream builder software to get a
+   [`SignedExecutionPayloadBid`][signed-execution-payload-bid] using the
+   [`getExecutionPayloadBid`][get-execution-payload-bid-api] API call. The
+   validator is required to send the `SignedBidRequestAuth` in the request body
+   in order to authenticate the request to the builder. If a builder has
+   multiple builder indices associated with them, the validator will have to
+   call the upstream builder software each time for each builder index.
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
-   \[Gloas
-   specs\][https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal]
-   but with the best `ExecutionPayloadBid` from the prior step.
+   [Gloas validator specs][gloas-validator-specs] but with the best
+   [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior
+   step.
 3. The proposer returns the `SignedBeaconBlock` back to the upstream block
-   building software.
+   building software via
+   [`submitSignedBeaconBlock`][submit-signed-beacon-block] API call.
 4. The upstream block building software constructs the
-   `SignedExecutionPayloadEnvelope` from the
-   `SignedBlindedExecutionPayloadEnvelope` and broadcasts it to the PTC
-   committee.
+   [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
+   corresponding to the
+   [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and broadcasts it
+   to the PTC committee.
+
+[can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#can_builder_cover_bid
+[get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
+[gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
+[gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal
+[is-active-builder]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#is_active_builder
+[submit-signed-beacon-block]: ./../../apis/builder/beacon_block.yaml
+[signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
+[signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[validator-registration-v2]: ./builder.md#validatorregistrationv2
+[verify-execution-payload-bid-signature]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#verify_execution_payload_bid_signature
