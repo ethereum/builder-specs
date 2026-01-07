@@ -59,8 +59,10 @@ Note: `SignedBuilderBid` is updated indirectly.
 
 ```python
 class BuilderBid(Container):
-    header: ExecutionPayloadHeader # [Modified in Deneb]
-    blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]  # [New in Deneb]
+    header: ExecutionPayloadHeader  # [Modified in Deneb]
+    blob_kzg_commitments: List[
+        KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK
+    ]  # [New in Deneb]
     value: uint256
     pubkey: BLSPubkey
 ```
@@ -88,8 +90,12 @@ class BlindedBeaconBlockBody(Container):
     voluntary_exits: List[SignedVoluntaryExit, MAX_VOLUNTARY_EXITS]
     sync_aggregate: SyncAggregate
     execution_payload_header: ExecutionPayloadHeader  # [Modified in Deneb]
-    bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]
-    blob_kzg_commitments: List[KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK]  # [New in Deneb]
+    bls_to_execution_changes: List[
+        SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES
+    ]
+    blob_kzg_commitments: List[
+        KZGCommitment, MAX_BLOB_COMMITMENTS_PER_BLOCK
+    ]  # [New in Deneb]
 ```
 
 ## Building
@@ -118,8 +124,15 @@ Consider the following validation logic following definitions in the
 `consensus-specs`:
 
 ```python
-def verify_bid_value(execution_payload: ExecutionPayload, fee_recipient: ExecutionAddress, bid_value: uint256, balance_difference: uint256):
-    excluded_amount = sum([w.amount for w in execution_payload.withdrawals if w.address == fee_recipient])
+def verify_bid_value(
+    execution_payload: ExecutionPayload,
+    fee_recipient: ExecutionAddress,
+    bid_value: uint256,
+    balance_difference: uint256,
+):
+    excluded_amount = sum(
+        [w.amount for w in execution_payload.withdrawals if w.address == fee_recipient]
+    )
     proposer_payment = balance_difference - excluded_amount
     assert proposer_payment == bid_value
 ```

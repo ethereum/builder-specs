@@ -10,7 +10,7 @@
 - [Containers](#containers)
   - [Extended containers](#extended-containers)
     - [`BlobsBundle`](#blobsbundle)
-    - [`ExecutionPayloadHeader`](#executionpayloadheader)
+  - [`ExecutionPayloadHeader`](#executionpayloadheader)
     - [`ExecutionPayloadAndBlobsBundle`](#executionpayloadandblobsbundle)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->

@@ -46,6 +46,8 @@ class BlindedBeaconBlockBody(Container):
     deposits: List[Deposit, MAX_DEPOSITS]
     voluntary_exits: List[SignedVoluntaryExit, MAX_VOLUNTARY_EXITS]
     sync_aggregate: SyncAggregate
-    execution_payload_header: ExecutionPayloadHeader # [Modified in Capella]
-    bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]  # [New in Capella]
+    execution_payload_header: ExecutionPayloadHeader  # [Modified in Capella]
+    bls_to_execution_changes: List[
+        SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES
+    ]  # [New in Capella]
 ```

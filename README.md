@@ -45,8 +45,8 @@ multiplexers. Please see their respective repositories for more information:
 
 The API specification is checked for lint errors before merging pull requests.
 
-Install `uv` via curl (recommended over a pip-install as it can
-self-update and manage Python versions):
+Install `uv` via curl (recommended over a pip-install as it can self-update and
+manage Python versions):
 
 ```console
 curl -LsSf https://astral.sh/uv/install.sh | sh
