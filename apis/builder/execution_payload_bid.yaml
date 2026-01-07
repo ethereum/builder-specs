@@ -98,10 +98,10 @@ post:
                 enum: [ gloas ]
                 example: "gloas"
               data:
-                $ref: "../../beacon-apis/types/gloas/execution_payload_bid.yaml#/Gloas/ExecutionPayloadBid"
+                $ref: "../../beacon-apis/types/gloas/execution_payload_bid.yaml#/Gloas/SignedExecutionPayloadBid"
         application/octet-stream:
           schema:
-            description: "SSZ serialized `ExecutionPayloadBid` bytes. Use Accept header to choose this response type"
+            description: "SSZ serialized `SignedExecutionPayloadBid` bytes. Use Accept header to choose this response type"
     "204":
       description: No bid is available.
     "400":

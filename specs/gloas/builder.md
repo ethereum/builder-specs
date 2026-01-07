@@ -161,7 +161,7 @@ def process_registration_v2(state: BeaconState,
     assert is_eligible_for_registration(state, validator)
 
     # Verify that the old registration's proposal slot is earlier than the new registration's proposal slot
-    if validator_index in registrations:
+    if validator_index in registrations.keys():
         prev_registration = registrations[validator_index]
         assert registration.proposal_slot >= prev_registration.proposal_slot
 
