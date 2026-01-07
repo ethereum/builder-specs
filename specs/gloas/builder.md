@@ -27,7 +27,7 @@
 
 This document documents the builder behaviour with the Builder-API post ePBS. It
 describes how builders interact with validators through
-[`ValidatorRegistrationV2`][validator-registration-v2] and construct
+\[`ValidatorRegistrationV2`\][validator-registration-v2] and construct
 [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] objects.
 
@@ -81,10 +81,10 @@ In Gloas, Execution payloads are built for a specific `slot`, `parent_hash`,
 `validator_index` along with the `parent_root` tuple corresponding to a unique
 beacon block serving as the parent.
 
-This is because in Gloas with [EIP-7732][eip-7732], the execution payload and
-beacon blocks are decoupled. The `parent_hash` could refer to a beacon block
-which is an ancestor of the parent beacon block corresponding to the current
-beacon block for which we are building the execution payload.
+This is because in Gloas with [EIP-7732], the execution payload and beacon
+blocks are decoupled. The `parent_hash` could refer to a beacon block which is
+an ancestor of the parent beacon block corresponding to the current beacon block
+for which we are building the execution payload.
 
 We update `is_eligible_for_bid` below. *Note*: `hash_tree_root` is defined in
 the [Gloas consensus specs][gloas-consensus-specs].
@@ -99,14 +99,11 @@ def is_eligible_for_bid(state: BeaconState,
                         # [New in Gloas]
                         validator_index: ValidatorIndex):
     # Verify slot
-    if slot != state.slot:
-        return False
+    assert slot == state.slot
 
-    if validator_index not in state.validators.keys():
-        return False
+    assert validator_index in state.validator.keys()
 
-    if validator_index not in registrations:
-        return False
+    assert validator_index in registrations.keys()
 
     # Verify parent hash
     # [Modified in Gloas:EIP7732]
@@ -148,10 +145,6 @@ The following fields are removed:
 A `validator_registration_v2` is considered valid if the following function
 completes without raising any assertions.
 
-*Note*: [`is_eligible_for_registration`][is-eligible-for-registration] and
-[`verify_registration_signature`][verify-registration-signature] are defined in
-the [Gloas consensus specs][gloas-consensus-specs].
-
 ```python
 def process_registration_v2(state: BeaconState,
                          registration: SignedValidatorRegistrationV2,
@@ -173,7 +166,7 @@ def process_registration_v2(state: BeaconState,
         assert registration.proposal_slot >= prev_registration.proposal_slot
 
     # Verify registration signature
-    assert verify_registration_signature(state, registration)
+    assert verify_registration_v2_signature(state, registration)
 ```
 
 ## Constructing a `SignedExecutionPayloadBid`
@@ -199,8 +192,5 @@ documented in the [Gloas consensus specs][gloas-builder-specs].
 [eip-7732]: https://eips.ethereum.org/EIPS/eip-7732
 [gloas-builder-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
-[is-eligible-for-registration]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#is_eligible_for_registration
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
-[validator-registration-v2]: #validatorregistrationv2
-[verify-registration-signature]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#verify_registration_signature
