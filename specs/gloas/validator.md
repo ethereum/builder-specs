@@ -164,22 +164,39 @@ are also defined in the consensus specs.
 
 ```python
 def validate_bid(
-    state: BeaconState, signed_bid: SignedExecutionPayloadBid, fee_recipient: ExecutionAddress
+    state: BeaconState, reg: SignedValidatorRegistrationV2, bid: SignedExecutionPayloadBid, bid_request_auth: SignedBidRequestAuth, fee_recipient: ExecutionAddress
 ) -> bool:
-    builder = state.builders[signed_bid.builder_index]
+    bid = bid.message
+
+    assert bid.builder_index == bid_request_auth.message.builder_index
+
+    builder = state.builders[bid.builder_index]
     
     assert is_active_builder(state, builder)
-    assert signed_bid.slot == state.slot
-    assert signed_bid.fee_recipient == fee_recipient
-    assert signed_bid.parent_block_hash == state.latest_block_hash
-    assert signed_bid.parent_block_root == hash_tree_root(state.latest_block_header)
-    assert signed_bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
+    assert bid.slot == state.slot
+    assert bid.fee_recipient == fee_recipient
+    assert bid.parent_block_hash == state.latest_block_hash
+    assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
+    assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
 
-    if signed_bid.value > 0:
-        assert can_builder_cover_bid(state, signed_bid.builder_index, signed_bid.value)
+    if not reg.message.builder_preferences.execution_payment_accepted:
+      assert bid.execution_payment == 0
 
-    return verify_execution_payload_bid_signature(state, signed_bid)
+    if bid.value > 0:
+        assert can_builder_cover_bid(state, bid.builder_index, signed_bid.value)
+
+    return verify_execution_payload_bid_signature(state, bid)
 ```
+
+Note that, the fee recipient specified in `bid.fee_recipient` does not
+necessarily correspond to the fee recipient of the execution payload. Even if a
+builder pays the validator via execution layer payments, we require that the
+bid's fee recipient matches the validators expected fee recipient and not the
+builder's fee recipient.
+
+To express per-builder preferences we need validators to remember which
+registration they have sent to the builder, so that they can validate whether
+the bid conforms to the preferences expressed by the validators.
 
 ## Block proposal
 
@@ -202,8 +219,8 @@ beacon `state` in a given `slot` must take the following actions:
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior
    step.
 3. The proposer returns the `SignedBeaconBlock` back to the upstream block
-   building software via
-   [`submitSignedBeaconBlock`][submit-signed-beacon-block] API call.
+   building software via [`submitSignedBeaconBlock`][submit-signed-beacon-block]
+   API call.
 4. The upstream block building software constructs the
    [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
    corresponding to the
@@ -215,8 +232,8 @@ beacon `state` in a given `slot` must take the following actions:
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
 [gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal
 [is-active-builder]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#is_active_builder
-[submit-signed-beacon-block]: ./../../apis/builder/beacon_block.yaml
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[submit-signed-beacon-block]: ./../../apis/builder/beacon_block.yaml
 [validator-registration-v2]: ./builder.md#validatorregistrationv2
 [verify-execution-payload-bid-signature]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#verify_execution_payload_bid_signature
