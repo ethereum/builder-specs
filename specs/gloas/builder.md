@@ -6,17 +6,13 @@
 
 - [Gloas - Builder Specification](#gloas---builder-specification)
   - [Introduction](#introduction)
-  - [Custom types](#custom-types)
-  - [Predicates](#predicates)
-    - [`is_active_builder`](#is_active_builder)
-  - [Helper Functions](#helper-functions)
-    - [`compute_epoch_at_slot`](#compute_epoch_at_slot)
   - [Containers](#containers)
     - [New Containers](#new-containers)
       - [`BuilderPreferences`](#builderpreferences)
       - [`ValidatorRegistrationV2`](#validatorregistrationv2)
       - [`SignedValidatorRegistrationV2`](#signedvalidatorregistrationv2)
-    - [`verify_registration_signature`](#verify_registration_signature)
+    - [`verify_registration_v2_signature`](#verify_registration_v2_signature)
+  - [Bidding](#bidding)
   - [Builder Preferences](#builder-preferences)
   - [Validator Registration V2](#validator-registration-v2)
     - [`process_registration_v2`](#process_registration_v2)
@@ -29,12 +25,11 @@
 
 ## Introduction
 
-This document documents the builder behaviour with the Builder-API post ePBS.
-
-## Custom types
-
-| Name | SSZ equivalent | Description | | -------------- | -------------- |
----------------------- | | `BuilderIndex` | `uint64` | Builder registry index |
+This document documents the builder behaviour with the Builder-API post ePBS. It
+describes how builders interact with validators through
+[`ValidatorRegistrationV2`][validator-registration-v2] and construct
+[`SignedExecutionPayloadBid`][signed-execution-payload-bid] and
+[`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] objects.
 
 ## Containers
 
@@ -66,10 +61,13 @@ class SignedValidatorRegistrationV2(Container):
     signature: BLSSignature
 ```
 
-### `verify_registration_signature`
+### `verify_registration_v2_signature`
+
+*Note*: `compute_domain` and `compute_signing_root` are defined in the
+[Gloas consensus specs][gloas-consensus-specs].
 
 ```python
-def verify_registration_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV2) -> bool:
+def verify_registration_v2_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV2) -> bool:
     validator = state.validators[signed_registration.message.validator_index]
     pubkey = validator.pubkey
     domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
@@ -80,35 +78,34 @@ def verify_registration_signature(state: BeaconState, signed_registration: Signe
 ## Bidding
 
 In Gloas, Execution payloads are built for a specific `slot`, `parent_hash`,
-`pubkey` along with the `parent_root` tuple corresponding to a unique beacon
-block serving as the parent.
+`validator_index` along with the `parent_root` tuple corresponding to a unique
+beacon block serving as the parent.
 
-This is because in Gloas with EIP-7732, the execution payload and beacon blocks
-are decoupled. The `parent_hash` could refer to a beacon block which is an
-ancestor of the parent beacon block corresponding to the current beacon block
-for which we are building the execution payload.
+This is because in Gloas with [EIP-7732][eip-7732], the execution payload and
+beacon blocks are decoupled. The `parent_hash` could refer to a beacon block
+which is an ancestor of the parent beacon block corresponding to the current
+beacon block for which we are building the execution payload.
 
-We update `is_eligible_for_bid` below:
+We update `is_eligible_for_bid` below. *Note*: `hash_tree_root` is defined in
+the [Gloas consensus specs][gloas-consensus-specs].
 
 ```python
 def is_eligible_for_bid(state: BeaconState,
-                        registrations: Dict[BLSPubkey, ValidatorRegistrationV2],
+                        registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
                         slot: Slot,
                         parent_hash: Hash32,
                         # [New in Gloas]
                         parent_root: Root,
-                        pubkey: BLSPubkey):
+                        # [New in Gloas]
+                        validator_index: ValidatorIndex):
     # Verify slot
     if slot != state.slot:
         return False
 
-    # Verify BLS public key corresponds to a registered validator
-    if pubkey not in registrations:
+    if validator_index not in state.validators.keys():
         return False
 
-    # Verify BLS public key corresponds to the proposer for the slot
-    proposer_index = get_beacon_proposer_index(state)
-    if pubkey != state.validators[proposer_index].pubkey:
+    if validator_index not in registrations:
         return False
 
     # Verify parent hash
@@ -149,12 +146,16 @@ The following fields are removed:
 ### `process_registration_v2`
 
 A `validator_registration_v2` is considered valid if the following function
-completes without raising any assertions:
+completes without raising any assertions.
+
+*Note*: [`is_eligible_for_registration`][is-eligible-for-registration] and
+[`verify_registration_signature`][verify-registration-signature] are defined in
+the [Gloas consensus specs][gloas-consensus-specs].
 
 ```python
 def process_registration_v2(state: BeaconState,
                          registration: SignedValidatorRegistrationV2,
-                         registrations: Dict[BLSPubkey, ValidatorRegistrationV2],
+                         registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
                          current_timestamp: uint64):
     signature = registration.signature
     registration = registration.message
@@ -163,11 +164,11 @@ def process_registration_v2(state: BeaconState,
 
     validator = state.validators[validator_index]
 
-    # Verify validator registration elibility
+    # Verify validator registration eligibility
     assert is_eligible_for_registration(state, validator)
 
     # Verify that the old registration's proposal slot is earlier than the new registration's proposal slot
-    if registration.pubkey in registrations:
+    if validator_index in registrations:
         prev_registration = registrations[validator_index]
         assert registration.proposal_slot >= prev_registration.proposal_slot
 
@@ -177,18 +178,29 @@ def process_registration_v2(state: BeaconState,
 
 ## Constructing a `SignedExecutionPayloadBid`
 
-The specification for a block builder to construct a `SignedExecutionPayloadBid`
-is documented in the
-gloas-specs[https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md].
+The specification for a block builder to construct a
+[`SignedExecutionPayloadBid`][signed-execution-payload-bid] is documented in the
+[Gloas consensus specs][gloas-builder-specs].
 
 ## Constructing a `SignedExecutionPayloadEnvelope`
 
-If the builder's `SignedExecutionPayloadBid` has been accepted by the proposer
-and it has been included in it's `SignedBeaconBlock`, then the builder has to
-construct a `SignedExecutionPayloadEnvelope` corresponding to the
-`SignedExecutionPayloadBid` and it has to broadcast it to the PTC committee via
-the `execution_payload_envelope` gossip topic.
+If the builder's [`SignedExecutionPayloadBid`][signed-execution-payload-bid] has
+been accepted by the proposer and it has been included in it's
+`SignedBeaconBlock`, then the builder has to construct a
+[`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
+corresponding to the [`SignedExecutionPayloadBid`][signed-execution-payload-bid]
+and it has to broadcast it to the PTC committee via the
+`execution_payload_envelope` gossip topic.
 
 The specification for a block builder to construct a
-`SignedExecutionPayloadEnvelope` is documented in the
-gloas-specs[https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md].
+[`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] is
+documented in the [Gloas consensus specs][gloas-builder-specs].
+
+[eip-7732]: https://eips.ethereum.org/EIPS/eip-7732
+[gloas-builder-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md
+[gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
+[is-eligible-for-registration]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#is_eligible_for_registration
+[signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
+[signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[validator-registration-v2]: #validatorregistrationv2
+[verify-registration-signature]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#verify_registration_signature
