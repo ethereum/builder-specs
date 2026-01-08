@@ -4,6 +4,7 @@
 
 - [Gloas - Honest Validator](#gloas---honest-validator)
   - [Introduction](#introduction)
+  - [Constants](#constants)
   - [Containers](#containers)
     - [New Containers](#new-containers)
       - [`BidRequestAuth`](#bidrequestauth)
@@ -35,6 +36,11 @@ external builder network broadcasts the
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
 corresponding to the bid to the PTC committee.
 
+## Constants
+
+| Name | Value | | -------------------------------- | -------------------| |
+`MAX_BUILDER_INDICES` | `uint64('2**64-1')`|
+
 ## Containers
 
 ### New Containers
@@ -47,9 +53,7 @@ latest bid.
 
 ```python
 class BidRequestAuth(Container):
-    builder_index: BuilderIndex
-    validator_index: ValidatorIndex
-    proposer_slot: Slot
+    builder_indices: List[BuilderIndex, MAX_BUILDER_INDICES]
 ```
 
 #### `SignedBidRequestAuth`
@@ -176,7 +180,7 @@ def validate_bid(
 ) -> bool:
     bid = bid.message
 
-    assert bid.builder_index == bid_request_auth.message.builder_index
+    assert bid.builder_index in bid_request_auth.message.builder_indices
 
     builder = state.builders[bid.builder_index]
 
@@ -190,7 +194,7 @@ def validate_bid(
     assert bid.execution_payment <= reg.message.builder_preferences.max_trusted_bid
 
     if bid.value > 0:
-        assert can_builder_cover_bid(state, bid.builder_index, signed_bid.value)
+        assert can_builder_cover_bid(state, bid.builder_index, bid.value)
 
     return verify_execution_payload_bid_signature(state, bid)
 ```
