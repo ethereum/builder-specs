@@ -4,6 +4,7 @@
 
 - [Gloas - Builder Specification](#gloas---builder-specification)
   - [Introduction](#introduction)
+  - [Constants](#constants)
   - [Containers](#containers)
     - [New Containers](#new-containers)
       - [`BuilderPreferences`](#builderpreferences)
@@ -28,6 +29,11 @@ describes how builders interact with validators through
 \[`ValidatorRegistrationV2`\][validator-registration-v2] and construct
 [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] objects.
+
+## Constants
+
+| Name | Value | | ---------------------------- | -------------------| |
+`MAX_TRUSTED_BID` | `uint64('2**64-1')`|
 
 ## Containers
 
@@ -125,9 +131,10 @@ a builder. Currently, the only preference that is supported is:
   willing to accept as a trusted execution layer payment from the builder. A
   value of `0` indicates that the proposer does not accept any trusted payments
   from the builder, requiring all payments to be cryptographically verifiable
-  on-chain. A value of `UINT64_MAX` indicates that the proposer will accept any
-  trusted payment amount from the builder. Proposers may adjust this parameter
-  based on their level of trust in the builder's reliability and reputation.
+  on-chain. A value of `MAX_TRUSTED_BID` indicates that the proposer will accept
+  any trusted payment amount from the builder. Proposers may adjust this
+  parameter based on their level of trust in the builder's reliability and
+  reputation.
 
 ## Validator Registration V2
 

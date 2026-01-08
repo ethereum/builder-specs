@@ -1,17 +1,12 @@
 Gloas:
   BidRequestAuth:
     type: object
-    required: [builder_index, validator_index, proposal_slot]
+    required: [builder_indices]
     properties:
-      builder_index:
-        $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
-        description: "The index of the builder to which the validator is sending the request."
-      validator_index:
-        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
-        description: "The index of the validator that is sending the request."
-      proposal_slot:
-        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
-        description: "The slot at which the proposer is building a block."
+      builder_indices:
+        type: array
+        items:
+          $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
   SignedBidRequestAuth:
     type: object
     required: [message, signature]
