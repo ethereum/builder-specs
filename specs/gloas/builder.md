@@ -2,8 +2,6 @@
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 - [Gloas - Builder Specification](#gloas---builder-specification)
   - [Introduction](#introduction)
   - [Containers](#containers)
@@ -67,7 +65,9 @@ class SignedValidatorRegistrationV2(Container):
 [Gloas consensus specs][gloas-consensus-specs].
 
 ```python
-def verify_registration_v2_signature(state: BeaconState, signed_registration: SignedValidatorRegistrationV2) -> bool:
+def verify_registration_v2_signature(
+    state: BeaconState, signed_registration: SignedValidatorRegistrationV2
+) -> bool:
     validator = state.validators[signed_registration.message.validator_index]
     pubkey = validator.pubkey
     domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
@@ -90,14 +90,16 @@ We update `is_eligible_for_bid` below. *Note*: `hash_tree_root` is defined in
 the [Gloas consensus specs][gloas-consensus-specs].
 
 ```python
-def is_eligible_for_bid(state: BeaconState,
-                        registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
-                        slot: Slot,
-                        parent_hash: Hash32,
-                        # [New in Gloas]
-                        parent_root: Root,
-                        # [New in Gloas]
-                        validator_index: ValidatorIndex):
+def is_eligible_for_bid(
+    state: BeaconState,
+    registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
+    slot: Slot,
+    parent_hash: Hash32,
+    # [New in Gloas]
+    parent_root: Root,
+    # [New in Gloas]
+    validator_index: ValidatorIndex,
+):
     # Verify slot
     assert slot == state.slot
 
@@ -150,10 +152,12 @@ A `validator_registration_v2` is considered valid if the following function
 completes without raising any assertions.
 
 ```python
-def process_registration_v2(state: BeaconState,
-                         registration: SignedValidatorRegistrationV2,
-                         registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
-                         current_timestamp: uint64):
+def process_registration_v2(
+    state: BeaconState,
+    registration: SignedValidatorRegistrationV2,
+    registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
+    current_timestamp: uint64,
+):
     signature = registration.signature
     registration = registration.message
     validator_index = registration.validator_index
@@ -182,7 +186,7 @@ The specification for a block builder to construct a
 ## Constructing a `SignedExecutionPayloadEnvelope`
 
 If the builder's [`SignedExecutionPayloadBid`][signed-execution-payload-bid] has
-been accepted by the proposer and it has been included in it's
+been accepted by the proposer and it has been included in the
 `SignedBeaconBlock`, then the builder has to construct a
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
 corresponding to the [`SignedExecutionPayloadBid`][signed-execution-payload-bid]

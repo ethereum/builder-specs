@@ -2,8 +2,6 @@
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 - [Gloas - Honest Validator](#gloas---honest-validator)
   - [Introduction](#introduction)
   - [Containers](#containers)
@@ -44,22 +42,22 @@ corresponding to the bid to the PTC committee.
 #### `BidRequestAuth`
 
 `BidRequestAuth` is used to authenticate requests to get the bid from a builder.
-This is useful so that other builders don't DDOS the builder to get their latest
-bid.
+This is useful so that other builders do not DDOS the builder to get their
+latest bid.
 
 ```python
 class BidRequestAuth(Container):
-  builder_index: BuilderIndex
-  validator_index: ValidatorIndex
-  proposer_slot: Slot
+    builder_index: BuilderIndex
+    validator_index: ValidatorIndex
+    proposer_slot: Slot
 ```
 
 #### `SignedBidRequestAuth`
 
 ```python
 class SignedBidRequestAuth(Container):
-  message: BidRequestAuth
-  signature: BLSSignature
+    message: BidRequestAuth
+    signature: BLSSignature
 ```
 
 ## Helper
@@ -71,8 +69,7 @@ class SignedBidRequestAuth(Container):
 
 ```python
 def get_proposer_slots_in_upcoming_epoch(
-    state: BeaconState, 
-    validator_index: ValidatorIndex
+    state: BeaconState, validator_index: ValidatorIndex
 ) -> List[Slot]:
     """
     Return all slots where validator_index is the proposer within the lookahead window in the next epoch.
@@ -80,12 +77,12 @@ def get_proposer_slots_in_upcoming_epoch(
     proposer_slots = []
     current_epoch_start_slot = compute_start_slot_at_epoch(get_current_epoch(state))
     next_epoch_proposer_lookahead = state.proposer_lookahead[SLOTS_PER_EPOCH:]
-    
+
     for offset, proposer_index in enumerate(next_epoch_proposer_lookahead):
         if proposer_index == validator_index:
             slot = current_epoch_start_slot + SLOTS_PER_EPOCH + offset
             proposer_slots.append(slot)
-    
+
     return proposer_slots
 ```
 
@@ -126,24 +123,31 @@ information:
 ### Validator Registration dissemination
 
 This specification suggests validators re-submit registrations only if they will
-be proposing in the upcoming epoch(E+1). This is such that we don't send too
+be proposing in the upcoming epoch(E+1). This is such that we do not send too
 many validator registrations all at once to builders. Validators run
 `create_validator_registrations` at every epoch boundary to create validator
 registrations for all the slots they will be proposing in the upcoming epoch.
 
 ```python
-def create_validator_registrations(state: BeaconState, validator_index: ValidatorIndex, gas_limit: uint64, builder_preferences: BuilderPreferences) -> List[ValidatorRegistrationV2]:
+def create_validator_registrations(
+    state: BeaconState,
+    validator_index: ValidatorIndex,
+    gas_limit: uint64,
+    builder_preferences: BuilderPreferences,
+) -> List[ValidatorRegistrationV2]:
     slots = get_proposer_slots_in_upcoming_epoch(state, validator_index)
     registrations: List[ValidatorRegistrationV2] = []
 
     for slot in slots:
-        registrations.append(ValidatorRegistrationV2(
-            fee_recipient=fee_recipient,
-            gas_limit=gas_limit,
-            validator_index=validator_index,
-            builder_preferences=builder_preferences,
-            proposal_slot=slot
-        ))
+        registrations.append(
+            ValidatorRegistrationV2(
+                fee_recipient=fee_recipient,
+                gas_limit=gas_limit,
+                validator_index=validator_index,
+                builder_preferences=builder_preferences,
+                proposal_slot=slot,
+            )
+        )
 
     return registrations
 ```
@@ -164,14 +168,18 @@ are also defined in the consensus specs.
 
 ```python
 def validate_bid(
-    state: BeaconState, reg: SignedValidatorRegistrationV2, bid: SignedExecutionPayloadBid, bid_request_auth: SignedBidRequestAuth, fee_recipient: ExecutionAddress
+    state: BeaconState,
+    reg: SignedValidatorRegistrationV2,
+    bid: SignedExecutionPayloadBid,
+    bid_request_auth: SignedBidRequestAuth,
+    fee_recipient: ExecutionAddress,
 ) -> bool:
     bid = bid.message
 
     assert bid.builder_index == bid_request_auth.message.builder_index
 
     builder = state.builders[bid.builder_index]
-    
+
     assert is_active_builder(state, builder)
     assert bid.slot == state.slot
     assert bid.fee_recipient == fee_recipient
