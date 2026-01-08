@@ -33,6 +33,7 @@ Fulu
 fulu
 Gloas
 gloas
+Gwei
 PTC
 submitBlindedBlockV
 ValidatorRegistrationsV
