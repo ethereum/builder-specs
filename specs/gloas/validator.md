@@ -39,7 +39,7 @@ corresponding to the bid to the PTC committee.
 ## Constants
 
 | Name | Value | | -------------------------------- | -------------------| |
-`MAX_BUILDER_INDICES` | `uint64('2**64-1')`|
+`MAX_BUILDER_INDICES` | `2**64 - 1`|
 
 ## Containers
 
@@ -96,10 +96,9 @@ def get_proposer_slots_in_upcoming_epoch(
 
 To construct the `BidRequestAuth`, we need to fill the following information:
 
-- `builder_index`: This builder index for which the validator is sending a
-  request to get the bid.
-- `validator_index`: The proposer's validator index.
-- `proposal_slot`: The slot at which the proposer is building a block.
+- `builder_indices`: These are the builder indices corresponding to the builder
+  from whom we are fetching the bid. These indices will be known by the
+  validators when they whitelist the builder.
 
 The validator constructs the `SignedBidRequestAuth` by signing the
 `BidRequestAuth`. It sends the `SignedBidRequestAuth` in the request body along
@@ -138,6 +137,7 @@ def create_validator_registrations(
     validator_index: ValidatorIndex,
     gas_limit: uint64,
     builder_preferences: BuilderPreferences,
+    fee_recipient: ExecutionAddress,
 ) -> List[ValidatorRegistrationV2]:
     slots = get_proposer_slots_in_upcoming_epoch(state, validator_index)
     registrations: List[ValidatorRegistrationV2] = []
@@ -174,11 +174,11 @@ are also defined in the consensus specs.
 def validate_bid(
     state: BeaconState,
     reg: SignedValidatorRegistrationV2,
-    bid: SignedExecutionPayloadBid,
+    signed_bid: SignedExecutionPayloadBid,
     bid_request_auth: SignedBidRequestAuth,
     fee_recipient: ExecutionAddress,
 ) -> bool:
-    bid = bid.message
+    bid = signed_bid.message
 
     assert bid.builder_index in bid_request_auth.message.builder_indices
 
@@ -196,7 +196,7 @@ def validate_bid(
     if bid.value > 0:
         assert can_builder_cover_bid(state, bid.builder_index, bid.value)
 
-    return verify_execution_payload_bid_signature(state, bid)
+    return verify_execution_payload_bid_signature(state, signed_bid)
 ```
 
 Note that, the fee recipient specified in `bid.fee_recipient` does not
@@ -215,16 +215,14 @@ the bid conforms to the preferences expressed by the validators.
 
 #### Receiving ExecutionPayloadBid
 
-To obtain an execution payload, a block proposer building a block on top of a
-beacon `state` in a given `slot` must take the following actions:
+To obtain execution payloads for a given `slot`, a block proposer building a
+block on top of a beacon `state` must take the following actions:
 
 1. Call upstream builder software to get a
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] using the
    [`getExecutionPayloadBid`][get-execution-payload-bid-api] API call. The
    validator is required to send the `SignedBidRequestAuth` in the request body
-   in order to authenticate the request to the builder. If a builder has
-   multiple builder indices associated with them, the validator will have to
-   call the upstream builder software each time for each builder index.
+   in order to authenticate the request to the builder.
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
    [Gloas validator specs][gloas-validator-specs] but with the best
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior
