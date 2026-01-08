@@ -26,14 +26,14 @@
 
 This document documents the builder behaviour with the Builder-API post ePBS. It
 describes how builders interact with validators through
-\[`ValidatorRegistrationV2`\][validator-registration-v2] and construct
+[`ValidatorRegistrationV2`][validator-registration-v2] and construct
 [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] objects.
 
 ## Constants
 
 | Name | Value | | ---------------------------- | -------------------| |
-`MAX_TRUSTED_BID` | `uint64('2**64-1')`|
+`MAX_TRUSTED_BID` | `2**64 - 1`|
 
 ## Containers
 
@@ -109,7 +109,7 @@ def is_eligible_for_bid(
     # Verify slot
     assert slot == state.slot
 
-    assert validator_index in state.validator.keys()
+    assert validator_index in state.validators.keys()
 
     assert validator_index in registrations.keys()
 
@@ -161,12 +161,12 @@ completes without raising any assertions.
 ```python
 def process_registration_v2(
     state: BeaconState,
-    registration: SignedValidatorRegistrationV2,
+    signed_registration: SignedValidatorRegistrationV2,
     registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
     current_timestamp: uint64,
 ):
-    signature = registration.signature
-    registration = registration.message
+    signature = signed_registration.signature
+    registration = signed_registration.message
     validator_index = registration.validator_index
     proposal_slot = registration.proposal_slot
 
@@ -181,7 +181,7 @@ def process_registration_v2(
         assert registration.proposal_slot >= prev_registration.proposal_slot
 
     # Verify registration signature
-    assert verify_registration_v2_signature(state, registration)
+    assert verify_registration_v2_signature(state, signed_registration)
 ```
 
 ## Constructing a `SignedExecutionPayloadBid`
@@ -193,7 +193,7 @@ The specification for a block builder to construct a
 ## Constructing a `SignedExecutionPayloadEnvelope`
 
 If the builder's [`SignedExecutionPayloadBid`][signed-execution-payload-bid] has
-been accepted by the proposer and it has been included in the
+been accepted by the proposer and it has been included in its
 `SignedBeaconBlock`, then the builder has to construct a
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
 corresponding to the [`SignedExecutionPayloadBid`][signed-execution-payload-bid]
@@ -209,3 +209,4 @@ documented in the [Gloas consensus specs][gloas-builder-specs].
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[validator-registration-v2]: #validatorregistrationv2
