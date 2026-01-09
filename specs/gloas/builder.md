@@ -33,7 +33,7 @@ describes how builders interact with validators through
 ## Constants
 
 | Name | Value | | ---------------------------- | -------------------| |
-`MAX_TRUSTED_BID` | `2**64 - 1`|
+`MAX_TRUSTED_BID` | `2**64 - 1` |
 
 ## Containers
 
@@ -163,7 +163,6 @@ def process_registration_v2(
     state: BeaconState,
     signed_registration: SignedValidatorRegistrationV2,
     registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
-    current_timestamp: uint64,
 ):
     signature = signed_registration.signature
     registration = signed_registration.message

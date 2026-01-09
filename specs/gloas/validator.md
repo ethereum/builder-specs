@@ -39,7 +39,7 @@ corresponding to the bid to the PTC committee.
 ## Constants
 
 | Name | Value | | -------------------------------- | -------------------| |
-`MAX_BUILDER_INDICES` | `2**64 - 1`|
+`MAX_SALT_BYTES` | `4096` |
 
 ## Containers
 
@@ -53,7 +53,7 @@ latest bid.
 
 ```python
 class BidRequestAuth(Container):
-    builder_indices: List[BuilderIndex, MAX_BUILDER_INDICES]
+    salt: ByteList[MAX_SALT_BYTES]
 ```
 
 #### `SignedBidRequestAuth`
@@ -96,9 +96,9 @@ def get_proposer_slots_in_upcoming_epoch(
 
 To construct the `BidRequestAuth`, we need to fill the following information:
 
-- `builder_indices`: These are the builder indices corresponding to the builder
-  from whom we are fetching the bid. These indices will be known by the
-  validators when they whitelist the builder.
+- `salt`: This is a 4kB salt which has to be specific to each whitelisted
+  builder. The spec requires the proposer to set it to the URL provided by the
+  whitelisted builder.
 
 The validator constructs the `SignedBidRequestAuth` by signing the
 `BidRequestAuth`. It sends the `SignedBidRequestAuth` in the request body along
@@ -175,12 +175,9 @@ def validate_bid(
     state: BeaconState,
     reg: SignedValidatorRegistrationV2,
     signed_bid: SignedExecutionPayloadBid,
-    bid_request_auth: SignedBidRequestAuth,
     fee_recipient: ExecutionAddress,
 ) -> bool:
     bid = signed_bid.message
-
-    assert bid.builder_index in bid_request_auth.message.builder_indices
 
     builder = state.builders[bid.builder_index]
 
