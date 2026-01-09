@@ -38,8 +38,9 @@ corresponding to the bid to the PTC committee.
 
 ## Constants
 
-| Name | Value | | -------------------------------- | -------------------| |
-`MAX_SALT_BYTES` | `4096` |
+| Name                                      | Value              |
+| ----------------------------------------- | ------------------ |
+| `MAX_SALT_BYTES`                          | `4096`             |
 
 ## Containers
 
