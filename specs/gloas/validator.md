@@ -122,7 +122,7 @@ information:
 - `max_trusted_bid`: The amount(in Gwei) the proposer is willing to accept as a
   trusted execution layer payment from the builder.
 - `proposal_slot`: This is set to the slot in which the validator will be
-  proposing. This can be looked up in `state.proposal_lookahead`.
+  proposing. This can be looked up in `state.proposer_lookahead`.
 
 ### Validator Registration dissemination
 
@@ -180,14 +180,13 @@ def validate_bid(
 ) -> bool:
     bid = signed_bid.message
 
-    builder = state.builders[bid.builder_index]
-
-    assert is_active_builder(state, builder)
+    assert is_active_builder(state, bid.builder_index)
     assert bid.slot == state.slot
     assert bid.fee_recipient == fee_recipient
     assert bid.parent_block_hash == state.latest_block_hash
     assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
+    assert bid.gas_limit <= reg.message.gas_limit
 
     assert bid.execution_payment <= reg.message.builder_preferences.max_trusted_bid
 
