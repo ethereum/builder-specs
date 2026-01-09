@@ -1,12 +1,12 @@
 Gloas:
   BidRequestAuth:
     type: object
-    required: [builder_indices]
+    required: [salt]
     properties:
-      builder_indices:
-        type: array
-        items:
-          $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
+      salt:
+        type: string
+        maxLength: 4096
+        description: "A builder-specific salt (max 4096 bytes) used to authenticate bid requests. Must be set to the URL provided by the whitelisted builder."
   SignedBidRequestAuth:
     type: object
     required: [message, signature]
