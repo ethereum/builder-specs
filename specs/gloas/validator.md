@@ -7,8 +7,10 @@
   - [Constants](#constants)
   - [Containers](#containers)
     - [New Containers](#new-containers)
-      - [`BidRequestAuth`](#bidrequestauth)
-      - [`SignedBidRequestAuth`](#signedbidrequestauth)
+    - [`BidRequestAuth`](#bidrequestauth)
+    - [`SignedBidRequestAuth`](#signedbidrequestauth)
+    - [`BlindedExecutionPayloadEnvelope`](#blindedexecutionpayloadenvelope)
+    - [`SignedBlindedExecutionPayloadEnvelope`](#signedblindedexecutionpayloadenvelope)
   - [Helper](#helper)
     - [`get_proposer_slots_in_upcoming_epoch`](#get_proposer_slots_in_upcoming_epoch)
   - [Bid Authentication](#bid-authentication)
@@ -20,6 +22,8 @@
   - [Block proposal](#block-proposal)
     - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
       - [Receiving ExecutionPayloadBid](#receiving-executionpayloadbid)
+      - [Receiving ExecutionPayloadBid from Unstaked Builder](#receiving-executionpayloadbid-from-unstaked-builder)
+    - [`construct_blinded_envelope`](#construct_blinded_envelope)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -38,15 +42,14 @@ corresponding to the bid to the PTC committee.
 
 ## Constants
 
-| Name                                      | Value              |
-| ----------------------------------------- | ------------------ |
-| `MAX_SALT_BYTES`                          | `4096`             |
+| Name | Value | | ----------------------------------------- |
+------------------ | | `MAX_SALT_BYTES` | `4096` |
 
 ## Containers
 
 ### New Containers
 
-#### `BidRequestAuth`
+### `BidRequestAuth`
 
 `BidRequestAuth` is used to authenticate requests to get the bid from a builder.
 This is useful so that other builders do not DDOS the builder to get their
@@ -57,11 +60,32 @@ class BidRequestAuth(Container):
     salt: ByteList[MAX_SALT_BYTES]
 ```
 
-#### `SignedBidRequestAuth`
+### `SignedBidRequestAuth`
 
 ```python
 class SignedBidRequestAuth(Container):
     message: BidRequestAuth
+    signature: BLSSignature
+```
+
+### `BlindedExecutionPayloadEnvelope`
+
+```python
+class BlindedExecutionPayloadEnvelope(Container):
+    payload_root: Root
+    execution_requests_root: Root
+    builder_index: BuilderIndex
+    beacon_block_root: Root
+    slot: Slot
+    blob_kzg_commitments_root: Root
+    state_root: Root
+```
+
+### `SignedBlindedExecutionPayloadEnvelope`
+
+```python
+class SignedBlindedExecutionPayloadEnvelope(Container):
+    message: BlindedExecutionPayloadEnvelope
     signature: BLSSignature
 ```
 
@@ -233,13 +257,90 @@ block on top of a beacon `state` must take the following actions:
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and broadcasts it
    to the PTC committee.
 
+#### Receiving ExecutionPayloadBid from Unstaked Builder
+
+For unstaked builders, the flow is different. To obtain execution payloads from
+an unstaked builder for a given `slot`, a block proposer building a block on top
+of a beacon `state` must take the following actions:
+
+1. Call the unstaked builder to get a [`SignedBuilderBid`][signed-builder-bid]
+   using the [`getBuilderBid`][get-builder-bid-api] API call. The bid contains:
+
+   - An `ExecutionPayloadHeader`
+   - Blob KZG commitments
+   - Execution requests
+   - A `SignedExecutionPayloadBid` with `builder_index` set to
+     `BUILDER_INDEX_SELF_BUILD`
+
+2. Assemble a `SignedBeaconBlock` according to the process outlined in the
+   [Gloas validator specs][gloas-validator-specs] using the
+   [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the builder
+   bid.
+
+3. Construct a `SignedBlindedExecutionPayloadEnvelope` by:
+
+   - Setting `beacon_block_root` to
+     `hash_tree_root(signed_beacon_block.message)`
+   - Setting `payload_root` to the root of the execution payload (from header)
+   - Setting `execution_requests_root` to the root of execution requests
+   - Setting `blob_kzg_commitments_root` to the root of blob commitments
+   - Setting `builder_index` to `BUILDER_INDEX_SELF_BUILD`
+   - Setting `slot` to the block's slot
+   - Setting `state_root` to the post-state root
+   - Signing with the proposer's key
+
+4. Submit both the `SignedBeaconBlock` and
+   `SignedBlindedExecutionPayloadEnvelope` to the unstaked builder via the
+   [`submitBlockAndEnvelope`][submit-block-and-envelope-api] API call.
+
+5. The unstaked builder constructs the full
+   [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] by
+   unblinding the envelope and broadcasts it to the PTC committee.
+
+### `construct_blinded_envelope`
+
+*Note*: `hash_tree_root` and `compute_domain` are defined in the
+[Gloas consensus specs][gloas-consensus-specs].
+
+```python
+def construct_blinded_envelope(
+    state: BeaconState,
+    signed_block: SignedBeaconBlock,
+    builder_bid: BuilderBid,
+    privkey: int,
+) -> SignedBlindedExecutionPayloadEnvelope:
+    block = signed_block.message
+
+    blinded_envelope = BlindedExecutionPayloadEnvelope(
+        payload_root=hash_tree_root(builder_bid.header),
+        execution_requests_root=hash_tree_root(builder_bid.execution_requests),
+        builder_index=BUILDER_INDEX_SELF_BUILD,
+        beacon_block_root=hash_tree_root(block),
+        slot=block.slot,
+        blob_kzg_commitments_root=hash_tree_root(builder_bid.blob_kzg_commitments),
+        state_root=state.hash_tree_root(),
+    )
+
+    domain = compute_domain(DOMAIN_BEACON_PROPOSER)
+    signing_root = compute_signing_root(blinded_envelope, domain)
+    signature = bls.Sign(privkey, signing_root)
+
+    return SignedBlindedExecutionPayloadEnvelope(
+        message=blinded_envelope,
+        signature=signature,
+    )
+```
+
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#can_builder_cover_bid
+[get-builder-bid-api]: ./../../apis/builder/builder_bid.yaml
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
 [gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal
 [is-active-builder]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#is_active_builder
+[signed-builder-bid]: ./unstaked_builder.md#signedbuilderBid
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[submit-block-and-envelope-api]: ./../../apis/builder/block_and_envelope.yaml
 [submit-signed-beacon-block]: ./../../apis/builder/beacon_block.yaml
 [validator-registration-v2]: ./builder.md#validatorregistrationv2
 [verify-execution-payload-bid-signature]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#verify_execution_payload_bid_signature

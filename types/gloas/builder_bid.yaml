@@ -1,0 +1,30 @@
+Gloas:
+  BuilderBid:
+    type: object
+    description: "The `BuilderBid` object for Gloas fork from unstaked builders. Contains execution payload header, blob commitments, execution requests, and a SignedExecutionPayloadBid."
+    required: [header, blob_kzg_commitments, execution_requests, bid]
+    properties:
+      header:
+        $ref: "../../beacon-apis/types/deneb/execution_payload.yaml#/Deneb/ExecutionPayloadHeader"
+        description: "The execution payload header for the proposed block."
+      blob_kzg_commitments:
+        type: array
+        items:
+          $ref: "../../beacon-apis/types/primitive.yaml#/KZGCommitment"
+        description: "KZG commitments for any blobs attached to the execution payload."
+      execution_requests:
+        $ref: "../../beacon-apis/types/electra/requests.yaml#/Electra/ExecutionRequests"
+        description: "Execution layer requests (deposits, withdrawals, consolidations)."
+      bid:
+        $ref: "../../beacon-apis/types/gloas/execution_payload_bid.yaml#/Gloas/SignedExecutionPayloadBid"
+        description: "The signed execution payload bid. builder_index MUST be set to BUILDER_INDEX_SELF_BUILD."
+  SignedBuilderBid:
+    type: object
+    description: "The `SignedBuilderBid` object for Gloas fork."
+    required: [message, signature]
+    properties:
+      message:
+        $ref: "#/Gloas/BuilderBid"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
+

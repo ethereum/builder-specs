@@ -1,4 +1,5 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Gloas - Builder Specification](#gloas---builder-specification)
@@ -31,9 +32,8 @@ describes how builders interact with validators through
 
 ## Constants
 
-| Name                                      | Value              |
-| ----------------------------------------- | ------------------ |
-| `MAX_TRUSTED_BID`                         | `2**64 - 1`        |
+| Name | Value | | ----------------------------------------- |
+------------------ | | `MAX_TRUSTED_BID` | `2**64 - 1` |
 
 ## Containers
 

@@ -1,0 +1,82 @@
+post:
+  operationId: "submitBlockAndEnvelope"
+  summary: Submit a signed beacon block and blinded execution payload envelope.
+  description: |
+    Submits a `SignedBeaconBlock` and a `SignedBlindedExecutionPayloadEnvelope` to an
+    unstaked builder, binding the proposer to the block.
+
+    The validator sends the following:
+    - A `SignedBeaconBlock` containing the `ExecutionPayloadBid` from the builder
+    - A `SignedBlindedExecutionPayloadEnvelope` with:
+      - `beacon_block_root`: The root of the signed beacon block
+      - `payload_root`: The root of the execution payload
+      - `execution_requests_root`: The root of the execution requests
+      - `blob_kzg_commitments_root`: The root of the blob KZG commitments
+      - `builder_index`: Set to `BUILDER_INDEX_SELF_BUILD`
+      - `slot`: The slot of the block
+      - `state_root`: The post-state root
+
+    A success response (202) indicates that the submission was valid. The builder will:
+    1. Validate the beacon block and blinded envelope
+    2. Construct the full `SignedExecutionPayloadEnvelope` by unblinding the payload
+    3. Broadcast the `SignedExecutionPayloadEnvelope` to the PTC committee
+
+    If the submission is invalid, then the builder MUST return an error response (400)
+    with a description of the validation failure.
+
+    This API is applicable from Glamsterdam fork onwards for unstaked builders.
+  tags:
+    - Builder
+  parameters:
+    - in: header
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
+      required: false
+      name: Eth-Consensus-Version
+      description: "The active consensus version to which the block being submitted belongs. Required if request is SSZ encoded."
+  requestBody:
+    description: A `SignedBeaconBlock` and `SignedBlindedExecutionPayloadEnvelope`.
+    required: true
+    content:
+      application/json:
+        schema:
+          title: BlockAndBlindedEnvelopeRequest
+          type: object
+          required: [signed_beacon_block, signed_blinded_envelope]
+          properties:
+            signed_beacon_block:
+              $ref: "../../beacon-apis/types/gloas/block.yaml#/Gloas/SignedBeaconBlock"
+              description: "The signed beacon block containing the ExecutionPayloadBid."
+            signed_blinded_envelope:
+              $ref: "../../types/gloas/blinded_envelope.yaml#/Gloas/SignedBlindedExecutionPayloadEnvelope"
+              description: "The signed blinded execution payload envelope."
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `BlockAndBlindedEnvelope` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+  responses:
+    "202":
+      description: Success response. The builder will construct and broadcast the SignedExecutionPayloadEnvelope to the PTC committee.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            InvalidBlock:
+              value:
+                code: 400
+                message: "Invalid block: missing signature"
+            InvalidEnvelope:
+              value:
+                code: 400
+                message: "Invalid envelope: beacon_block_root mismatch"
+            BidMismatch:
+              value:
+                code: 400
+                message: "Bid mismatch: ExecutionPayloadBid does not match provided bid"
+    "415":
+      $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
+
