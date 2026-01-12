@@ -1,0 +1,37 @@
+Gloas:
+  BlindedExecutionPayloadEnvelope:
+    type: object
+    description: "The `BlindedExecutionPayloadEnvelope` contains roots of execution payload components rather than full data. Used by validators to commit to an envelope without access to full payload."
+    required: [payload_root, execution_requests_root, builder_index, beacon_block_root, slot, blob_kzg_commitments_root, state_root]
+    properties:
+      payload_root:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Root"
+        description: "Root of the execution payload."
+      execution_requests_root:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Root"
+        description: "Root of the execution requests."
+      builder_index:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
+        description: "Index of the builder. For unstaked builders, this MUST be BUILDER_INDEX_SELF_BUILD."
+      beacon_block_root:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Root"
+        description: "Root of the beacon block this envelope corresponds to."
+      slot:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
+        description: "Slot of the block."
+      blob_kzg_commitments_root:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Root"
+        description: "Root of the blob KZG commitments."
+      state_root:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Root"
+        description: "Post-state root after applying the execution payload."
+  SignedBlindedExecutionPayloadEnvelope:
+    type: object
+    description: "The `SignedBlindedExecutionPayloadEnvelope` object containing a blinded envelope and proposer signature."
+    required: [message, signature]
+    properties:
+      message:
+        $ref: "#/Gloas/BlindedExecutionPayloadEnvelope"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
+
