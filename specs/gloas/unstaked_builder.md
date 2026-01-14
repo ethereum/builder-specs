@@ -108,7 +108,7 @@ commit to the envelope without having access to the full execution payload.
 ```python
 class BlindedExecutionPayloadEnvelope(Container):
     payload_root: Root
-    execution_requests_root: Root
+    execution_requests: ExecutionRequests
     builder_index: BuilderIndex
     beacon_block_root: Root
     slot: Slot

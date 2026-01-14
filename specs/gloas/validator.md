@@ -23,6 +23,7 @@
     - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
       - [Receiving ExecutionPayloadBid](#receiving-executionpayloadbid)
       - [Receiving ExecutionPayloadBid from Unstaked Builder](#receiving-executionpayloadbid-from-unstaked-builder)
+    - [`process_blinded_execution_payload`](#process_blinded_execution_payload)
     - [`construct_blinded_envelope`](#construct_blinded_envelope)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -73,7 +74,7 @@ class SignedBidRequestAuth(Container):
 ```python
 class BlindedExecutionPayloadEnvelope(Container):
     payload_root: Root
-    execution_requests_root: Root
+    execution_requests: ExecutionRequests
     builder_index: BuilderIndex
     beacon_block_root: Root
     slot: Slot
@@ -297,6 +298,82 @@ of a beacon `state` must take the following actions:
    [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] by
    unblinding the envelope and broadcasts it to the PTC committee.
 
+### `process_blinded_execution_payload`
+
+```python
+def process_blinded_execution_payload(
+    state: BeaconState,
+    header: ExecutionPayloadHeader,
+    builder_bid: BuilderBid,
+    blinded_envelope: SignedBlindedExecutionPayloadEnvelope,
+) -> None:
+    envelope = blinded_envelope.message
+
+    # Cache latest block header state root
+    previous_state_root = hash_tree_root(state)
+    if state.latest_block_header.state_root == Root():
+        state.latest_block_header.state_root = previous_state_root
+
+    # Verify consistency with the beacon block
+    assert envelope.beacon_block_root == hash_tree_root(state.latest_block_header)
+    assert envelope.slot == state.slot
+
+    # Verify consistency with the committed bid
+    committed_bid = state.latest_execution_payload_bid
+    assert envelope.builder_index == committed_bid.builder_index
+    assert committed_bid.blob_kzg_commitments_root == hash_tree_root(
+        builder_bid.blob_kzg_commitments
+    )
+    assert committed_bid.prev_randao == header.prev_randao
+
+    # Verify consistency with expected withdrawals
+    assert header.withdrawals_root == hash_tree_root(state.payload_expected_withdrawals)
+
+    # Verify the gas_limit
+    assert committed_bid.gas_limit == header.gas_limit
+    # Verify the block hash
+    assert committed_bid.block_hash == header.block_hash
+    # Verify consistency of the parent hash with respect to the previous execution payload
+    assert header.parent_hash == state.latest_block_hash
+    # Verify timestamp
+    assert header.timestamp == compute_time_at_slot(state, state.slot)
+    # Verify commitments are under limit
+    assert (
+        len(builder_bid.blob_kzg_commitments)
+        <= get_blob_parameters(get_current_epoch(state)).max_blobs_per_block
+    )
+    # Verify the execution payload is valid
+    versioned_hashes = [
+        kzg_commitment_to_versioned_hash(commitment)
+        for commitment in builder_bid.blob_kzg_commitments
+    ]
+
+    def for_ops(
+        operations: Sequence[Any], fn: Callable[[BeaconState, Any], None]
+    ) -> None:
+        for operation in operations:
+            fn(state, operation)
+
+    for_ops(builder_bid.execution_requests.deposits, process_deposit_request)
+    for_ops(builder_bid.execution_requests.withdrawals, process_withdrawal_request)
+    for_ops(builder_bid.execution_requests.consolidations, process_consolidation_request)
+
+    # Queue the builder payment
+    payment = state.builder_pending_payments[
+        SLOTS_PER_EPOCH + state.slot % SLOTS_PER_EPOCH
+    ]
+    amount = payment.withdrawal.amount
+    if amount > 0:
+        state.builder_pending_withdrawals.append(payment.withdrawal)
+    state.builder_pending_payments[SLOTS_PER_EPOCH + state.slot % SLOTS_PER_EPOCH] = (
+        BuilderPendingPayment()
+    )
+
+    # Cache the execution payload hash
+    state.execution_payload_availability[state.slot % SLOTS_PER_HISTORICAL_ROOT] = 0b1
+    state.latest_block_hash = header.block_hash
+```
+
 ### `construct_blinded_envelope`
 
 *Note*: `hash_tree_root` and `compute_domain` are defined in the
@@ -318,8 +395,13 @@ def construct_blinded_envelope(
         beacon_block_root=hash_tree_root(block),
         slot=block.slot,
         blob_kzg_commitments_root=hash_tree_root(builder_bid.blob_kzg_commitments),
-        state_root=state.hash_tree_root(),
     )
+
+    process_blinded_execution_payload_envelope(
+        state, builder_bid.header, builder_bid.requests, blinded_envelope
+    )
+
+    blinded_envelope.state_root = state.hash_tree_root()
 
     domain = compute_domain(DOMAIN_BEACON_PROPOSER)
     signing_root = compute_signing_root(blinded_envelope, domain)
@@ -330,6 +412,9 @@ def construct_blinded_envelope(
         signature=signature,
     )
 ```
+
+The BeaconState passed to `construct_blinded_envelope` is the resulting state
+after running `process_blinded_execution_payload`.
 
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#can_builder_cover_bid
 [get-builder-bid-api]: ./../../apis/builder/builder_bid.yaml

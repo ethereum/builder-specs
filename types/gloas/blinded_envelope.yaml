@@ -2,14 +2,14 @@ Gloas:
   BlindedExecutionPayloadEnvelope:
     type: object
     description: "The `BlindedExecutionPayloadEnvelope` contains roots of execution payload components rather than full data. Used by validators to commit to an envelope without access to full payload."
-    required: [payload_root, execution_requests_root, builder_index, beacon_block_root, slot, blob_kzg_commitments_root, state_root]
+    required: [payload_root, execution_requests, builder_index, beacon_block_root, slot, blob_kzg_commitments_root, state_root]
     properties:
       payload_root:
         $ref: "../../beacon-apis/types/primitive.yaml#/Root"
         description: "Root of the execution payload."
-      execution_requests_root:
-        $ref: "../../beacon-apis/types/primitive.yaml#/Root"
-        description: "Root of the execution requests."
+      execution_requests:
+        $ref: "../../beacon-apis/types/electra/requests.yaml#/Electra/ExecutionRequests"
+        description: "Execution layer requests (deposits, withdrawals, consolidations)."
       builder_index:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
         description: "Index of the builder. For unstaked builders, this MUST be BUILDER_INDEX_SELF_BUILD."
