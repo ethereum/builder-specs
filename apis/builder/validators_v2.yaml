@@ -14,19 +14,27 @@ post:
     - Builder
   requestBody:
     description: |
-      A signed declaration of a validator's block building preferences.
+      A signed declaration of a validator's block building preferences, along with signed request authentication.
     required: true
     content:
       application/json:
         schema:
-          type: array
-          items:
-            $ref: "../../builder-oapi.yaml#/components/schemas/Gloas.SignedValidatorRegistrationV2"
+          type: object
+          required:
+            - signed_request_auth
+            - registrations
+          properties:
+            signed_request_auth:
+              $ref: "../../builder-oapi.yaml#/components/schemas/Gloas.SignedRequestAuth"
+            registrations:
+              type: array
+              items:
+                $ref: "../../builder-oapi.yaml#/components/schemas/Gloas.SignedValidatorRegistrationV2"
         example:
-          $ref: "../../builder-oapi.yaml#/components/examples/SignedValidatorRegistrations/value"
+          $ref: "../../builder-oapi.yaml#/components/examples/Gloas.SignedValidatorRegistrationsV2"
       application/octet-stream:
         schema:
-          description: "SSZ serialized `List[SignedValidatorRegistrationV2, VALIDATOR_REGISTRY_LIMIT]` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+          description: "SSZ serialized `Container[SignedRequestAuth, List[SignedValidatorRegistrationV2, VALIDATOR_REGISTRY_LIMIT]]` bytes. Use content type header to indicate that SSZ data is contained in the request body."
   responses:
     "200":
       description: Success response.

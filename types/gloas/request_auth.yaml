@@ -1,17 +1,17 @@
 Gloas:
-  BidRequestAuth:
+  RequestAuth:
     type: object
     required: [salt]
     properties:
       salt:
         type: string
         maxLength: 4096
-        description: "A builder-specific salt (max 4096 bytes) used to authenticate bid requests. Must be set to the URL provided by the whitelisted builder."
-  SignedBidRequestAuth:
+        description: "A builder-specific salt (max 4096 bytes) used to authenticate requests to a builder. Must be set to the URL provided by the whitelisted builder."
+  SignedRequestAuth:
     type: object
     required: [message, signature]
     properties:
       message:
-        $ref: "#/Gloas/BidRequestAuth"
+        $ref: "#/Gloas/RequestAuth"
       signature:
         $ref: "../../beacon-apis/types/primitive.yaml#/Signature"

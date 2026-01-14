@@ -7,12 +7,12 @@
   - [Constants](#constants)
   - [Containers](#containers)
     - [New Containers](#new-containers)
-      - [`BidRequestAuth`](#bidrequestauth)
-      - [`SignedBidRequestAuth`](#signedbidrequestauth)
+      - [`RequestAuth`](#requestauth)
+      - [`SignedRequestAuth`](#signedrequestauth)
   - [Helper](#helper)
     - [`get_proposer_slots_in_upcoming_epoch`](#get_proposer_slots_in_upcoming_epoch)
   - [Bid Authentication](#bid-authentication)
-    - [Constructing the `BidRequestAuth`](#constructing-the-bidrequestauth)
+    - [Constructing the `RequestAuth`](#constructing-the-requestauth)
   - [Validator Registrations](#validator-registrations)
     - [Constructing the `ValidatorRegistrationV2`](#constructing-the-validatorregistrationv2)
     - [Validator Registration dissemination](#validator-registration-dissemination)
@@ -20,6 +20,7 @@
   - [Block proposal](#block-proposal)
     - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
       - [Receiving ExecutionPayloadBid](#receiving-executionpayloadbid)
+  - [Liveness failsafe](#liveness-failsafe)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -38,30 +39,28 @@ corresponding to the bid to the PTC committee.
 
 ## Constants
 
-| Name                                      | Value              |
-| ----------------------------------------- | ------------------ |
-| `MAX_SALT_BYTES`                          | `4096`             |
+| Name | Value | | ----------------------------------------- |
+------------------ | | `MAX_SALT_BYTES` | `4096` |
 
 ## Containers
 
 ### New Containers
 
-#### `BidRequestAuth`
+#### `RequestAuth`
 
-`BidRequestAuth` is used to authenticate requests to get the bid from a builder.
-This is useful so that other builders do not DDOS the builder to get their
-latest bid.
+`RequestAuth` is used to authenticate requests to a builder. This is useful so
+that other builders do not DDOS or run replay attacks on the builder.
 
 ```python
-class BidRequestAuth(Container):
+class RequestAuth(Container):
     salt: ByteList[MAX_SALT_BYTES]
 ```
 
-#### `SignedBidRequestAuth`
+#### `SignedRequestAuth`
 
 ```python
-class SignedBidRequestAuth(Container):
-    message: BidRequestAuth
+class SignedRequestAuth(Container):
+    message: RequestAuth
     signature: BLSSignature
 ```
 
@@ -93,18 +92,21 @@ def get_proposer_slots_in_upcoming_epoch(
 
 ## Bid Authentication
 
-### Constructing the `BidRequestAuth`
+### Constructing the `RequestAuth`
 
-To construct the `BidRequestAuth`, we need to fill the following information:
+To construct the `RequestAuth`, we need to fill the following information:
 
 - `salt`: This is a 4kB salt which has to be specific to each whitelisted
   builder. The spec requires the proposer to set it to the URL provided by the
   whitelisted builder.
 
-The validator constructs the `SignedBidRequestAuth` by signing the
-`BidRequestAuth`. It sends the `SignedBidRequestAuth` in the request body along
-with the request to get the bid in the
-[`getExecutionPayloadBid`][get-execution-payload-bid-api] API call.
+The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`.
+It sends the `SignedRequestAuth` in the request body along with the request to
+get the bid in the [`getExecutionPayloadBid`][get-execution-payload-bid-api] API
+call. It also sends the `SignedRequestAuth` in the
+[`registerValidatorV2`][register-validator-v2-api] to avoid replay attacks. A
+builder could send the registration to another builder and make them do
+unnecessary work.
 
 ## Validator Registrations
 
@@ -218,8 +220,8 @@ block on top of a beacon `state` must take the following actions:
 1. Call upstream builder software to get a
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] using the
    [`getExecutionPayloadBid`][get-execution-payload-bid-api] API call. The
-   validator is required to send the `SignedBidRequestAuth` in the request body
-   in order to authenticate the request to the builder.
+   validator is required to send the `SignedRequestAuth` in the request body in
+   order to authenticate the request to the builder.
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
    [Gloas validator specs][gloas-validator-specs] but with the best
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior
@@ -233,11 +235,17 @@ block on top of a beacon `state` must take the following actions:
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and broadcasts it
    to the PTC committee.
 
+## Liveness failsafe
+
+When the circuit breaker condition is triggered for nodes, they *MUST* fallback
+to p2p bidding and can also build blocks locally.
+
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#can_builder_cover_bid
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
 [gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal
 [is-active-builder]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#is_active_builder
+[register-validator-v2-api]: ./../../apis/builder/validators_v2.yaml
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
 [submit-signed-beacon-block]: ./../../apis/builder/beacon_block.yaml

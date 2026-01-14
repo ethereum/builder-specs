@@ -18,9 +18,9 @@ post:
     If the builder is unable to produce a valid execution payload bid, then
     the builder MUST return a 204 response. If the request is invalid, then the
     builder MUST return an error response (400) with a description of the
-    validation failure. If the SignedBidRequestAuth is invalid, the builder MUST return a 400 response.
+    validation failure. If the SignedRequestAuth is invalid, the builder MUST return a 400 response.
 
-    This API is applicable from Glamsterdam fork onwards.
+    This API is applicable from Gloas fork onwards.
   tags:
     - Builder
   parameters:
@@ -76,10 +76,10 @@ post:
     content:
       application/json:
         schema:
-          $ref: "../../types/gloas/bid_request_auth.yaml#/Gloas/SignedBidRequestAuth"
+          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
       application/octet-stream:
         schema:
-          description: "SSZ serialized `SignedBidRequestAuth` bytes."
+          description: "SSZ serialized `SignedRequestAuth` bytes."
   responses:
     "200":
       description: Success response.
@@ -119,7 +119,7 @@ post:
             InvalidAuth:
               value:
                 code: 400
-                message: "Invalid SignedBidRequestAuth: signature verification failed"
+                message: "Invalid SignedRequestAuth: signature verification failed"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "500":
