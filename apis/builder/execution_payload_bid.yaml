@@ -3,7 +3,7 @@ post:
   summary: Get an execution payload bid.
   description: |
     Requests a builder node to produce a valid execution payload bid, which
-    can be integrated into a blinded beacon block and signed. 
+    can be integrated into a beacon block and signed. 
 
     The proposer sends a POST request to the builder with the following information:
     - The slot for which the block should be proposed.
