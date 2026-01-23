@@ -40,7 +40,7 @@ corresponding to the bid to the PTC committee.
 ## Constants
 
 | Name | Value | | ----------------------------------------- |
------------------- | | `MAX_SALT_BYTES` | `4096` |
+------------------ | | `MAX_URL_BYTES` | `4096` |
 
 ## Containers
 
@@ -53,7 +53,7 @@ that other builders do not DDOS or run replay attacks on the builder.
 
 ```python
 class RequestAuth(Container):
-    salt: ByteList[MAX_SALT_BYTES]
+    url: ByteList[MAX_URL_BYTES]
 ```
 
 #### `SignedRequestAuth`
@@ -96,7 +96,7 @@ def get_proposer_slots_in_upcoming_epoch(
 
 To construct the `RequestAuth`, we need to fill the following information:
 
-- `salt`: This is a 4kB salt which has to be specific to each whitelisted
+- `url`: This is a 4kB salt which has to be specific to each whitelisted
   builder. The spec requires the proposer to set it to the URL provided by the
   whitelisted builder.
 

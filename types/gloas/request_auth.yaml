@@ -3,10 +3,10 @@ Gloas:
     type: object
     required: [salt]
     properties:
-      salt:
+      url:
         type: string
         maxLength: 4096
-        description: "A builder-specific salt (max 4096 bytes) used to authenticate requests to a builder. Must be set to the URL provided by the whitelisted builder."
+        description: "A builder-specific string (max 4096 bytes) used to authenticate requests to a builder. Must be set to the URL provided by the whitelisted builder."
   SignedRequestAuth:
     type: object
     required: [message, signature]
