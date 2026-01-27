@@ -9,8 +9,6 @@
     - [New Containers](#new-containers)
       - [`RequestAuth`](#requestauth)
       - [`SignedRequestAuth`](#signedrequestauth)
-  - [Helper](#helper)
-    - [`get_proposer_slots_in_upcoming_epoch`](#get_proposer_slots_in_upcoming_epoch)
   - [Bid Authentication](#bid-authentication)
     - [Constructing the `RequestAuth`](#constructing-the-requestauth)
   - [Validator Registrations](#validator-registrations)
@@ -64,39 +62,13 @@ class SignedRequestAuth(Container):
     signature: BLSSignature
 ```
 
-## Helper
-
-### `get_proposer_slots_in_upcoming_epoch`
-
-*Note*: `compute_start_slot_at_epoch` and `get_current_epoch` are defined in the
-[Gloas consensus specs][gloas-consensus-specs].
-
-```python
-def get_proposer_slots_in_upcoming_epoch(
-    state: BeaconState, validator_index: ValidatorIndex
-) -> List[Slot]:
-    """
-    Return all slots where validator_index is the proposer within the lookahead window in the next epoch.
-    """
-    proposer_slots = []
-    current_epoch_start_slot = compute_start_slot_at_epoch(get_current_epoch(state))
-    next_epoch_proposer_lookahead = state.proposer_lookahead[SLOTS_PER_EPOCH:]
-
-    for offset, proposer_index in enumerate(next_epoch_proposer_lookahead):
-        if proposer_index == validator_index:
-            slot = current_epoch_start_slot + SLOTS_PER_EPOCH + offset
-            proposer_slots.append(slot)
-
-    return proposer_slots
-```
-
 ## Bid Authentication
 
 ### Constructing the `RequestAuth`
 
 To construct the `RequestAuth`, we need to fill the following information:
 
-- `url`: This is a 4kB salt which has to be specific to each whitelisted
+- `salt`: This is a 4kB salt which has to be specific to each whitelisted
   builder. The spec requires the proposer to set it to the URL provided by the
   whitelisted builder.
 
@@ -142,7 +114,7 @@ def create_validator_registrations(
     builder_preferences: BuilderPreferences,
     fee_recipient: ExecutionAddress,
 ) -> List[ValidatorRegistrationV2]:
-    slots = get_proposer_slots_in_upcoming_epoch(state, validator_index)
+    slots = get_upcoming_proposal_slots(state, validator_index)
     registrations: List[ValidatorRegistrationV2] = []
 
     for slot in slots:
