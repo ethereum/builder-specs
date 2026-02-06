@@ -46,15 +46,6 @@ corresponding to the included bid to the PTC committee.
 corresponding to the bid to the PTC committee.
 >>>>>>> b522a99 (Update liveness failsafe section)
 
-<<<<<<< HEAD
-=======
-## Constants
-
-| Name | Value | | ---- | ----- | | `MAX_SALT_BYTES` | `4096` | |
-`MAX_URL_BYTES` | `4096` | | `MAX_WHITELISTED_BUILDERS` | `10000` | |
-`BUILDER_DEADLINE_MS` | `1000` | | `MAX_STRATEGY_DESC_BYTES` | `4096` |
-
->>>>>>> 2cf061b (update validator.md)
 ## Containers
 
 ### New Containers
