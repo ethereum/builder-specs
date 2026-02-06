@@ -4,7 +4,6 @@
 
 - [Gloas - Honest Validator](#gloas---honest-validator)
   - [Introduction](#introduction)
-  - [Constants](#constants)
   - [Containers](#containers)
     - [New Containers](#new-containers)
       - [`RequestAuth`](#requestauth)
@@ -35,11 +34,6 @@ external builder network broadcasts the
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
 corresponding to the bid to the PTC committee.
 
-## Constants
-
-| Name | Value | | ----------------------------------------- |
------------------- | | `MAX_URL_BYTES` | `4096` |
-
 ## Containers
 
 ### New Containers
@@ -51,7 +45,7 @@ that other builders do not DDOS or run replay attacks on the builder.
 
 ```python
 class RequestAuth(Container):
-    url: ByteList[MAX_URL_BYTES]
+    builder_index: BuilderIndex
 ```
 
 #### `SignedRequestAuth`
@@ -68,9 +62,7 @@ class SignedRequestAuth(Container):
 
 To construct the `RequestAuth`, we need to fill the following information:
 
-- `salt`: This is a 4kB salt which has to be specific to each whitelisted
-  builder. The spec requires the proposer to set it to the URL provided by the
-  whitelisted builder.
+- `builder_index`: This is the on-chain index associated with the builder.
 
 The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`.
 It sends the `SignedRequestAuth` in the request body along with the request to
@@ -210,9 +202,11 @@ block on top of a beacon `state` must take the following actions:
 ## Liveness failsafe
 
 When the circuit breaker condition is triggered for nodes, they *MUST* fallback
-to p2p bidding and can also build blocks locally.
+to receiving bids from the P2P [`execution_payload_bid`][execution-payload-bid]
+topic and can also build blocks locally.
 
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#can_builder_cover_bid
+[execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md?plain=1#L321
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
 [gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal
