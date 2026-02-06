@@ -10,8 +10,7 @@ post:
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
     - The index of the proposer.
-    - A signed bid request auth using a builder-specific salt to authenticate the request. Proposers are required
-    to set the salt to the URL provided by the whitelisted builder.
+    - A signed bid request auth using the builder's on-chain index to authenticate the request.
 
     The builder responds with a 200 response containing an execution payload bid if it can provide one.
 
