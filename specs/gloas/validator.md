@@ -11,8 +11,6 @@
     - [`BuilderConfig`](#builderconfig)
     - [`GlobalPreferences`](#globalpreferences)
     - [`BuilderWhitelist`](#builderwhitelist)
-  - [Helper](#helper)
-    - [`get_proposer_slots_in_upcoming_epoch`](#get_proposer_slots_in_upcoming_epoch)
   - [Bid Authentication](#bid-authentication)
     - [Constructing the `RequestAuth`](#constructing-the-requestauth)
   - [Proposer Preferences](#proposer-preferences)
@@ -48,6 +46,15 @@ corresponding to the included bid to the PTC committee.
 corresponding to the bid to the PTC committee.
 >>>>>>> b522a99 (Update liveness failsafe section)
 
+<<<<<<< HEAD
+=======
+## Constants
+
+| Name | Value | | ---- | ----- | | `MAX_SALT_BYTES` | `4096` | |
+`MAX_URL_BYTES` | `4096` | | `MAX_WHITELISTED_BUILDERS` | `10000` | |
+`BUILDER_DEADLINE_MS` | `1000` | | `MAX_STRATEGY_DESC_BYTES` | `4096` |
+
+>>>>>>> 2cf061b (update validator.md)
 ## Containers
 
 ### New Containers
@@ -93,10 +100,20 @@ builders. This includes:
 
 - `bid_selection_strategy`: Strategy with which the proposer selects the winning
   bids given a list of bids from whitelisted builders.
+- `local_block_boost`: A multiplier factor (in basis points, where 10000 = 100%)
+  applied to the locally built block value when comparing against bids from the
+  p2p topic or bids from other builders. This gives priority to the local block
+  in bid selection.
+- `p2p_bid_block_boost`: A multiplier factor (in basis points, where 10000 =
+  100%) applied to best bid received from the p2p topic when comparing against
+  the local block or bids from other builders. This gives priority to bids
+  received via p2p in bid selection.
 
 ```python
 class GlobalPreferences(Container):
     bid_selection_strategy: ByteList[MAX_STRATEGY_DESC_BYTES]
+    local_block_boost: uint64
+    p2p_bid_block_boost: uint64
 ```
 
 ### `BuilderWhitelist`
@@ -105,32 +122,6 @@ class GlobalPreferences(Container):
 class BuilderWhitelist(Container):
     builders: List[BuilderConfig, MAX_WHITELISTED_BUILDERS]
     global_preferences: GlobalPreferences
-```
-
-## Helper
-
-### `get_proposer_slots_in_upcoming_epoch`
-
-*Note*: `compute_start_slot_at_epoch` and `get_current_epoch` are defined in the
-[Gloas consensus specs][gloas-consensus-specs].
-
-```python
-def get_proposer_slots_in_upcoming_epoch(
-    state: BeaconState, validator_index: ValidatorIndex
-) -> List[Slot]:
-    """
-    Return all slots where validator_index is the proposer within the lookahead window in the next epoch.
-    """
-    proposer_slots = []
-    current_epoch_start_slot = compute_start_slot_at_epoch(get_current_epoch(state))
-    next_epoch_proposer_lookahead = state.proposer_lookahead[SLOTS_PER_EPOCH:]
-
-    for offset, proposer_index in enumerate(next_epoch_proposer_lookahead):
-        if proposer_index == validator_index:
-            slot = current_epoch_start_slot + SLOTS_PER_EPOCH + offset
-            proposer_slots.append(slot)
-
-    return proposer_slots
 ```
 
 ## Bid Authentication
@@ -323,8 +314,7 @@ The following are the fields in the Builder Config:
   corresponding builder.
 - `min_bid`: The minimum amount of acceptable bid from the builder.
 - `bid_boost`: A multiplier factor (in basis points, where 10000 = 100%) applied
-  to the builder's bid value when comparing against other bids or the local
-  block value.
+  to the builder's bid value when comparing against other builder bids.
 
 ### Deadline Enforcement
 
