@@ -1,12 +1,12 @@
 Gloas:
   RequestAuth:
     type: object
-    required: [salt]
+    required: [builder_index]
     properties:
-      url:
+      builder_index:
         type: string
-        maxLength: 4096
-        description: "A builder-specific string (max 4096 bytes) used to authenticate requests to a builder. Must be set to the URL provided by the whitelisted builder."
+        pattern: "^0x[a-fA-F0-9]{1,16}$"
+        description: "The on-chain index associated with the builder, represented as a hex string."
   SignedRequestAuth:
     type: object
     required: [message, signature]
