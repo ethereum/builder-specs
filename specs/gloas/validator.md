@@ -6,13 +6,12 @@
   - [Introduction](#introduction)
   - [Containers](#containers)
     - [New Containers](#new-containers)
-      - [`RequestAuth`](#requestauth)
-      - [`SignedRequestAuth`](#signedrequestauth)
-  - [Bid Authentication](#bid-authentication)
-    - [Constructing the `RequestAuth`](#constructing-the-requestauth)
+      - [`SignedBuilderAuth`](#signedbuilderauth)
   - [Validator Registrations](#validator-registrations)
     - [Constructing the `ValidatorRegistrationV2`](#constructing-the-validatorregistrationv2)
     - [Validator Registration dissemination](#validator-registration-dissemination)
+  - [Bid Authentication](#bid-authentication)
+    - [Receiving the `SignedBuilderAuth`](#receiving-the-signedbuilderauth)
   - [Validating a `SignedExecutionPayloadBid`](#validating-a-signedexecutionpayloadbid)
   - [Block proposal](#block-proposal)
     - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
@@ -34,49 +33,11 @@ external builder network broadcasts the
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
 corresponding to the bid to the PTC committee.
 
-## Containers
-
-### New Containers
-
-#### `RequestAuth`
-
-`RequestAuth` is used to authenticate requests to a builder. This is useful so
-that other builders do not DDOS or run replay attacks on the builder.
-
-```python
-class RequestAuth(Container):
-    builder_index: BuilderIndex
-```
-
-#### `SignedRequestAuth`
-
-```python
-class SignedRequestAuth(Container):
-    message: RequestAuth
-    signature: BLSSignature
-```
-
-## Bid Authentication
-
-### Constructing the `RequestAuth`
-
-To construct the `RequestAuth`, we need to fill the following information:
-
-- `builder_index`: This is the on-chain index associated with the builder.
-
-The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`.
-It sends the `SignedRequestAuth` in the request body along with the request to
-get the bid in the [`getExecutionPayloadBid`][get-execution-payload-bid-api] API
-call. It also sends the `SignedRequestAuth` in the
-[`registerValidatorV2`][register-validator-v2-api] to avoid replay attacks. A
-builder could send the registration to another builder and make them do
-unnecessary work.
-
 ## Validator Registrations
 
 ### Constructing the `ValidatorRegistrationV2`
 
-To do this, the validator client assembles a
+To register their preferences, the validator client assembles a
 [`ValidatorRegistrationV2`][validator-registration-v2] with the following
 information:
 
@@ -86,7 +47,8 @@ information:
 - `validator_index`: The validator's index. Used to identify the beacon chain
   validator and verify the wrapping signature.
 - `max_trusted_bid`: The amount(in Gwei) the proposer is willing to accept as a
-  trusted execution layer payment from the builder.
+- `builder_pubkey`: The BLS public key of the builder that this registration is
+  specifically for.
 - `proposal_slot`: This is set to the slot in which the validator will be
   proposing. This can be looked up in `state.proposer_lookahead`.
 
@@ -122,6 +84,20 @@ def create_validator_registrations(
 
     return registrations
 ```
+
+## Bid Authentication
+
+### Receiving a `SignedBuilderAuth`
+
+A [`SignedBuilderAuth`](builder.md#signedbuilderauth) is expected to be returned by a builder in response to
+receiving a valid `SignedValidatorRegistrationV2` using the
+[`registerValidatorV2`][register-validator-v2-api] API call
+
+The validator includes the `SignedBuilderAuth.signature` in the request path to
+get the bid in the [`getExecutionPayloadBid`][get-execution-payload-bid-api] API
+call. This builder-specific signature helps avoid replay attacks, where a
+builder could send the bid request to another builder to make them do
+unnecessary work.
 
 ## Validating a `SignedExecutionPayloadBid`
 
@@ -182,18 +158,21 @@ To obtain execution payloads for a given `slot`, a block proposer building a
 block on top of a beacon `state` must take the following actions:
 
 1. Call upstream builder software to get a
+   [`SignedBuilderAuth`][signed-builder-auth] using the
+   [`registerValidatorV2`][register-validator-v2-api] API call.
+2. Call upstream builder software to get a
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] using the
    [`getExecutionPayloadBid`][get-execution-payload-bid-api] API call. The
-   validator is required to send the `SignedRequestAuth` in the request body in
-   order to authenticate the request to the builder.
-2. Assemble a `SignedBeaconBlock` according to the process outlined in the
+   validator is required to send the `SignedBuilderAuth.signature` in the
+   request path in order to authenticate the request to the builder.
+3. Assemble a `SignedBeaconBlock` according to the process outlined in the
    [Gloas validator specs][gloas-validator-specs] but with the best
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior
    step.
-3. The proposer returns the `SignedBeaconBlock` back to the upstream block
+4. The proposer returns the `SignedBeaconBlock` back to the upstream block
    building software via [`submitSignedBeaconBlock`][submit-signed-beacon-block]
    API call.
-4. The upstream block building software constructs the
+5. The upstream block building software constructs the
    [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
    corresponding to the
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and broadcasts it
@@ -212,6 +191,7 @@ topic and can also build blocks locally.
 [gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal
 [is-active-builder]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#is_active_builder
 [register-validator-v2-api]: ./../../apis/builder/validators_v2.yaml
+[signed-builder-auth]: ./builder.md#signedbuilderauth
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
 [submit-signed-beacon-block]: ./../../apis/builder/beacon_block.yaml

@@ -9,8 +9,7 @@ post:
     - The slot for which the block should be proposed.
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
-    - The index of the proposer.
-    - A signed bid request auth using the builder's on-chain index to authenticate the request.
+    - The builder's signature of the signed validator registration to authenticate the request.
 
     The builder responds with a 200 response containing an execution payload bid if it can provide one.
 
@@ -41,12 +40,12 @@ post:
       description: Root of the beacon block the proposer will build on.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/Root"
-    - name: proposer_index
+    - name: builder_signature
       in: path
       required: true
-      description: Index of the proposer.
+      description: Signature of the signed validator registration to authenticate the request.
       schema:
-        $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
+        $ref: "../../builder-oapi.yaml#/components/schemas/Signature"
     - name: Date-Milliseconds
       in: header
       required: false
@@ -70,15 +69,6 @@ post:
         type: integer
         format: int64
         example: 10000
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
-      application/octet-stream:
-        schema:
-          description: "SSZ serialized `SignedRequestAuth` bytes."
   responses:
     "200":
       description: Success response.

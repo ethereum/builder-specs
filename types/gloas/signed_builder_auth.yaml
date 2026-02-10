@@ -1,0 +1,10 @@
+Gloas:
+  SignedBuilderAuth:
+    type: object
+    required: [message, signature]
+    properties:
+      message:
+        $ref: "./registration.yaml#/Gloas/SignedValidatorRegistrationV2"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
+        description: "Signature over the SignedValidatorRegistrationV2."

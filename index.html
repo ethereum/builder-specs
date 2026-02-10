@@ -70,9 +70,11 @@
         ],
         layout: "StandaloneLayout",
         requestInterceptor: function () {
-          if (this.url.startsWith("http")) {
-            this.url = "https://api.allorigins.win/raw?url=" + this.url; // will change the URL used.
+          if (this.url.startsWith("./builder-oapi.yaml") || this.url.startsWith("http://localhost")) {
+            return;
           }
+
+          this.url = "https://api.allorigins.win/raw?url=" + this.url; // will change the URL used.
           return this;
         }
       })

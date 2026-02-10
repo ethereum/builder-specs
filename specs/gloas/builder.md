@@ -11,6 +11,8 @@
       - [`ValidatorRegistrationV2`](#validatorregistrationv2)
       - [`SignedValidatorRegistrationV2`](#signedvalidatorregistrationv2)
     - [`verify_registration_v2_signature`](#verify_registration_v2_signature)
+    - [`SignedBuilderAuth`](#signedbuilderauth)
+    - [`get_builder_auth_signature`](#get_builder_auth_signature)
   - [Bidding](#bidding)
   - [Builder Preferences](#builder-preferences)
   - [Validator Registration V2](#validator-registration-v2)
@@ -43,6 +45,7 @@ describes how builders interact with validators through
 
 ```python
 class BuilderPreferences(Container):
+    builder_pubkey: BLSPubkey
     max_trusted_bid: uint64
 ```
 
@@ -81,6 +84,31 @@ def verify_registration_v2_signature(
     return bls.Verify(pubkey, signing_root, signed_registration.signature)
 ```
 
+### `SignedBuilderAuth`
+
+`SignedBuilderAuth` is used to authenticate bid requests to a builder. This is
+useful so that other builders do not DDOS or run replay attacks on the builder.
+
+```python
+class SignedBuilderAuth(Container):
+    # Registration from a validator
+    message: SignedValidatorRegistrationV2
+
+    # Builder signature over the message signing root
+    signature: BLSSignature
+```
+
+### `get_builder_auth_signature`
+
+```python
+def get_builder_auth_signature(
+    signed_registration: SignedValidatorRegistrationV2, privkey: int
+) -> bool:
+    domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
+    signing_root = compute_signing_root(signed_registration, domain)
+    return bls.Sign(privkey, signing_root)
+```
+
 ## Bidding
 
 In Gloas, Execution payloads are built for a specific `slot`, `parent_hash`,
@@ -98,7 +126,8 @@ the [Gloas consensus specs][gloas-consensus-specs].
 ```python
 def is_eligible_for_bid(
     state: BeaconState,
-    registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
+    # [Modified in Gloas]
+    registrations: Dict[ValidatorIndex, SignedBuilderAuth],
     slot: Slot,
     parent_hash: Hash32,
     # [New in Gloas]
@@ -125,7 +154,8 @@ def is_eligible_for_bid(
 ## Builder Preferences
 
 Using validator registrations, a proposer can express the preferences it has for
-a builder. Currently, the only preference that is supported is:
+a specific builder indicated by the `builder_pubkey`. Currently, the only
+preference that is supported is:
 
 - `max_trusted_bid`: Specifies the maximum value (in Gwei) that a proposer is
   willing to accept as a trusted execution layer payment from the builder. A
@@ -156,14 +186,16 @@ The following fields are removed:
 ### `process_registration_v2`
 
 A `validator_registration_v2` is considered valid if the following function
-completes without raising any assertions.
+returns a `SignedBuilderAuth` without raising any assertions.
 
 ```python
 def process_registration_v2(
     state: BeaconState,
     signed_registration: SignedValidatorRegistrationV2,
-    registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
-):
+    registrations: Dict[ValidatorIndex, SignedBuilderAuth],
+    pubkey: BLSPubkey,
+    privkey: int,
+) -> SignedBuilderAuth:
     signature = signed_registration.signature
     registration = signed_registration.message
     validator_index = registration.validator_index
@@ -171,16 +203,24 @@ def process_registration_v2(
 
     validator = state.validators[validator_index]
 
+    # Verify the registration is for the builder's expected pubkey
+    assert signed_registration.message.builder_preferences.builder_pubkey == pubkey
+
     # Verify validator registration eligibility
     assert is_eligible_for_registration(state, validator)
 
     # Verify that the old registration's proposal slot is earlier than the new registration's proposal slot
     if validator_index in registrations.keys():
-        prev_registration = registrations[validator_index]
+        prev_registration = registrations[validator_index].message
         assert registration.proposal_slot >= prev_registration.proposal_slot
 
     # Verify registration signature
     assert verify_registration_v2_signature(state, signed_registration)
+
+    # Sign over the signed_registration
+    signature = get_builder_auth_signature(signed_registration, privkey)
+
+    return SignedBuilderAuth(message=signed_registration, signature=signature)
 ```
 
 ## Constructing a `SignedExecutionPayloadBid`

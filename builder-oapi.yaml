@@ -55,7 +55,7 @@ paths:
     $ref: "./apis/builder/validators_v2.yaml"
   /eth/v1/builder/header/{slot}/{parent_hash}/{pubkey}:
     $ref: "./apis/builder/header.yaml"
-  /eth/v1/builder/execution_payload_bid/{slot}/{parent_hash}/{parent_root}/{proposer_index}:
+  /eth/v1/builder/execution_payload_bid/{slot}/{parent_hash}/{parent_root}/{builder_signature}:
     $ref: "./apis/builder/execution_payload_bid.yaml"
   /eth/v1/builder/beacon_block:
     $ref: "./apis/builder/beacon_block.yaml"
@@ -74,6 +74,8 @@ components:
       $ref: "./beacon-apis/types/primitive.yaml#/Root"
     Pubkey:
       $ref: "./beacon-apis/types/primitive.yaml#/Pubkey"
+    Signature:
+      $ref: "./beacon-apis/types/primitive.yaml#/Signature"
     ErrorMessage:
       $ref: "./beacon-apis/types/http.yaml#/ErrorMessage"
     ConsensusVersion:
@@ -108,10 +110,8 @@ components:
       $ref: "./types/fulu/blobs_bundle.yaml#/Fulu/BlobsBundle"
     Fulu.ExecutionPayloadAndBlobsBundle:
       $ref: "./types/fulu/execution_payload_and_blobs_bundle.yaml#/Fulu/ExecutionPayloadAndBlobsBundle"
-    Gloas.RequestAuth:
-      $ref: "./types/gloas/request_auth.yaml#/Gloas/RequestAuth"
-    Gloas.SignedRequestAuth:
-      $ref: "./types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
+    Gloas.SignedBuilderAuth:
+      $ref: "./types/gloas/signed_builder_auth.yaml#/Gloas/SignedBuilderAuth"
     Gloas.BuilderPreferences:
       $ref: "./types/gloas/registration.yaml#/Gloas/BuilderPreferences"
     Gloas.ValidatorRegistrationV2:
@@ -167,7 +167,9 @@ components:
       $ref: "./examples/fulu/signed_blinded_beacon_block.json"
     Fulu.SignedBuilderBid:
       $ref: "./examples/fulu/signed_builder_bid.json"
-    Gloas.SignedRequestAuth:
-      $ref: "./examples/gloas/signed_request_auth.json"
+    Gloas.SignedBuilderAuth:
+      $ref: "./examples/gloas/signed_builder_auth.json"
+    Gloas.SignedBuilderAuths:
+      $ref: "./examples/gloas/signed_builder_auths.json"
     Gloas.SignedValidatorRegistrationsV2:
       $ref: "./examples/gloas/signed_validator_registrations_v2.json"
