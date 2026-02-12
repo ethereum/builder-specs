@@ -79,9 +79,10 @@ class SignedRequestAuth(Container):
 ```python
 class BuilderConfig(Container):
     url: ByteList[MAX_URL_BYTES]
+    builder_pubkey: BLSPubkey
     max_trusted_bid: uint64
-    min_bid: uint64
     bid_boost: uint64
+    excluded_validators: List[BLSPubkey, MAX_EXCLUDED_VALIDATORS]
 ```
 
 ### `GlobalPreferences`
@@ -89,22 +90,21 @@ class BuilderConfig(Container):
 The GlobalPreferences container contains validator preferences across all
 builders. This includes:
 
+- `min_bid`: The minimum bid value (in Gwei) from any builder for the proposer
+  to consider using a builder bid. If no builder bid meets this threshold, the
+  proposer falls back to the locally built block. A value of `0` means no
+  minimum.
 - `bid_selection_strategy`: Strategy with which the proposer selects the winning
   bids given a list of bids from whitelisted builders.
 - `local_block_boost`: A multiplier factor (in basis points, where 10000 = 100%)
-  applied to the locally built block value when comparing against bids from the
-  p2p topic or bids from other builders. This gives priority to the local block
-  in bid selection.
-- `p2p_bid_block_boost`: A multiplier factor (in basis points, where 10000 =
-  100%) applied to best bid received from the p2p topic when comparing against
-  the local block or bids from other builders. This gives priority to bids
-  received via p2p in bid selection.
+  applied to the locally built block value when comparing against bids from
+  builders. This gives priority to the local block in bid selection.
 
 ```python
 class GlobalPreferences(Container):
+    min_bid: uint64
     bid_selection_strategy: ByteList[MAX_STRATEGY_DESC_BYTES]
     local_block_boost: uint64
-    p2p_bid_block_boost: uint64
 ```
 
 ### `BuilderWhitelist`
@@ -300,12 +300,19 @@ preferences.
 The following are the fields in the Builder Config:
 
 - `url`: The URL of the whitelisted builder where we can fetch bids from.
-- `max_trusted_bid`: The maximum amount which the proposer will accept in a
-  trusted payment. This will be sent in the validator registration to the
-  corresponding builder.
-- `min_bid`: The minimum amount of acceptable bid from the builder.
+- `builder_pubkey`: The advertised public key of the builder. This is configured
+  alongside the URL and forms the builder's off-chain identity. It is used to
+  bind registrations and request auth to a specific builder, preventing
+  cross-builder replay attacks.
+- `max_trusted_bid`: The maximum amount (in Gwei) which the proposer will accept
+  as a trusted execution layer payment from the builder. This will be sent in
+  the validator registration to the corresponding builder.
 - `bid_boost`: A multiplier factor (in basis points, where 10000 = 100%) applied
   to the builder's bid value when comparing against other builder bids.
+- `excluded_validators`: A list of validator public keys that should NOT interact
+  with this builder when proposing. By default all validators use all
+  whitelisted builders; this field allows operators to exclude specific
+  validators from specific builders.
 
 ### Deadline Enforcement
 
