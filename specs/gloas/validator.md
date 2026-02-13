@@ -34,6 +34,11 @@ external builder network broadcasts the
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
 corresponding to the bid to the PTC committee.
 
+## Constants
+
+| Name | Value | | ----------------------------------------- |
+------------------ | | `MAX_AUTH_DATA_BYTES` | `4096` |
+
 ## Containers
 
 ### New Containers
@@ -41,11 +46,13 @@ corresponding to the bid to the PTC committee.
 #### `RequestAuth`
 
 `RequestAuth` is used to authenticate requests to a builder. This is useful so
-that other builders do not DDOS or run replay attacks on the builder.
+that other builders do not DDOS or run replay attacks on the builder. The `message` 
+field contains opaque bytes (`auth_data`) that the validator signs without
+interpretation.
 
 ```python
 class RequestAuth(Container):
-    builder_index: BuilderIndex
+    message: ByteList[MAX_AUTH_DATA_BYTES]
 ```
 
 #### `SignedRequestAuth`
@@ -60,17 +67,24 @@ class SignedRequestAuth(Container):
 
 ### Constructing the `RequestAuth`
 
-To construct the `RequestAuth`, we need to fill the following information:
+To authenticate requests to a builder, the validator constructs a
+`SignedRequestAuth` by signing the opaque `message`. The `message` is
+builder-specific and prevents replay attacks across builders.
 
-- `builder_index`: This is the on-chain index associated with the builder.
+The `SignedRequestAuth` is included in the request
+body of both the [`registerValidatorV2`][register-validator-v2-api] and
+[`getExecutionPayloadBid`][get-execution-payload-bid-api] API calls.
 
-The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`.
-It sends the `SignedRequestAuth` in the request body along with the request to
-get the bid in the [`getExecutionPayloadBid`][get-execution-payload-bid-api] API
-call. It also sends the `SignedRequestAuth` in the
-[`registerValidatorV2`][register-validator-v2-api] to avoid replay attacks. A
-builder could send the registration to another builder and make them do
-unnecessary work.
+### Optional sidecar support via `POST /sign_auth`
+
+The CL will expose a `POST /sign_auth` endpoint (specified in the
+validator client API). This endpoint accepts opaque `message` bytes and returns
+a `SignedRequestAuth`. This enables sidecars to manage their own builder lists
+and obtain per-builder authorizations without requiring access to validator keys.
+
+`POST /sign_auth` MUST be disabled by default and only accessible to trusted
+local clients via JWT or equivalent authentication.
+
 
 ## Validator Registrations
 

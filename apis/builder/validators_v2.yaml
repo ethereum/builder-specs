@@ -30,8 +30,9 @@ post:
               type: array
               items:
                 $ref: "../../builder-oapi.yaml#/components/schemas/Gloas.SignedValidatorRegistrationV2"
-        example:
-          $ref: "../../builder-oapi.yaml#/components/examples/Gloas.SignedValidatorRegistrationsV2"
+        examples:
+          SignedValidatorRegistrationsV2:
+            $ref: "../../builder-oapi.yaml#/components/examples/Gloas.SignedValidatorRegistrationsV2"
       application/octet-stream:
         schema:
           description: "SSZ serialized `Container[SignedRequestAuth, List[SignedValidatorRegistrationV2, VALIDATOR_REGISTRY_LIMIT]]` bytes. Use content type header to indicate that SSZ data is contained in the request body."

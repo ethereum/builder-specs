@@ -1,12 +1,13 @@
 Gloas:
   RequestAuth:
     type: object
-    required: [builder_index]
+    description: "Used to authenticate requests to a builder. The message field contains opaque bytes (authorization data) that the validator signs without interpretation. By default, the message field is set to the builder's URL."
+    required: [message]
     properties:
-      builder_index:
+      message:
         type: string
-        pattern: "^0x[a-fA-F0-9]{1,16}$"
-        description: "The on-chain index associated with the builder, represented as a hex string."
+        format: binary
+        description: "Opaque bytes for authorization. Signed as-is by the validator."
   SignedRequestAuth:
     type: object
     required: [message, signature]

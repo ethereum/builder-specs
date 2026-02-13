@@ -2,7 +2,7 @@
     "value": {
       "signed_request_auth": {
         "message": {
-          "salt": "https://builder.example.com/api/v1"
+          "message": "0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d2f6170692f7631"
         },
         "signature": "0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505"
       },

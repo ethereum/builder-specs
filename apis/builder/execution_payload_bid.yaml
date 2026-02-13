@@ -76,6 +76,9 @@ post:
       application/json:
         schema:
           $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
+        examples:
+          SignedRequestAuth:
+            $ref: "../../builder-oapi.yaml#/components/examples/Gloas.SignedRequestAuth"
       application/octet-stream:
         schema:
           description: "SSZ serialized `SignedRequestAuth` bytes."
