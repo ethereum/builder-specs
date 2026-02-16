@@ -309,8 +309,8 @@ The following are the fields in the Builder Config:
   the validator registration to the corresponding builder.
 - `bid_boost`: A multiplier factor (in basis points, where 10000 = 100%) applied
   to the builder's bid value when comparing against other builder bids.
-- `excluded_validators`: A list of validator public keys that should NOT interact
-  with this builder when proposing. By default all validators use all
+- `excluded_validators`: A list of validator public keys that should NOT
+  interact with this builder when proposing. By default all validators use all
   whitelisted builders; this field allows operators to exclude specific
   validators from specific builders.
 
