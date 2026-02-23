@@ -50,9 +50,10 @@ material in the [Builder spec][builder-spec] and by extension the
 
 ## Constants
 
-| Name | Value | Units | | - | - | - | |
-`EPOCHS_PER_VALIDATOR_REGISTRATION_SUBMISSION` | 1 | epoch(s)| |
-`BUILDER_PROPOSAL_DELAY_TOLERANCE` | 1 | second(s) |
+| Name                                         | Value | Unit      |
+| -------------------------------------------- | ----- | --------- |
+`EPOCHS_PER_VALIDATOR_REGISTRATION_SUBMISSION` | 1     | epoch(s)  |
+`BUILDER_PROPOSAL_DELAY_TOLERANCE`             | 1     | second(s) |
 
 ## Validator registration
 
