@@ -8,6 +8,7 @@ dependencies = [
     "blacken-docs>=1.16.0",
     "codespell>=2.4.1",
     "mdformat>=1.0.0",
+    "mdformat-gfm>=1.0.0",
 ]
 
 [tool.codespell]
