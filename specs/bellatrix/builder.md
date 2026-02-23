@@ -42,13 +42,15 @@
 
 ### Domain types
 
-| Name | Value | | - | - | | `DOMAIN_APPLICATION_BUILDER` |
-`DomainType('0x00000001')` |
+| Name                         | Value                      |
+| ---------------------------- | -------------------------- |
+| `DOMAIN_APPLICATION_BUILDER` | `DomainType('0x00000001')` |
 
 ### Time parameters
 
-| Name | Value | Unit | Duration | | - | - | - | - | |
-`MAX_REGISTRATION_LOOKAHEAD` | `uint64(10)` | seconds | 10 seconds |
+| Name                         | Value        | Unit    | Duration   |
+| ---------------------------- | ------------ | ------- | ---------- |
+| `MAX_REGISTRATION_LOOKAHEAD` | `uint64(10)` | seconds | 10 seconds |
 
 ## Containers
 
