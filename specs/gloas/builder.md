@@ -8,13 +8,12 @@
   - [Containers](#containers)
     - [New Containers](#new-containers)
       - [`BuilderPreferences`](#builderpreferences)
-      - [`ValidatorRegistrationV2`](#validatorregistrationv2)
-      - [`SignedValidatorRegistrationV2`](#signedvalidatorregistrationv2)
-    - [`verify_registration_v2_signature`](#verify_registration_v2_signature)
+      - [`SignedBuilderPreferences`](#signedbuilderpreferences)
+    - [`verify_builder_preferences_signature`](#verify_builder_preferences_signature)
   - [Bidding](#bidding)
   - [Builder Preferences](#builder-preferences)
-  - [Validator Registration V2](#validator-registration-v2)
-    - [`process_registration_v2`](#process_registration_v2)
+  - [Proposer Preferences (Deprecation of Validator Registrations)](#proposer-preferences-deprecation-of-validator-registrations)
+    - [`process_builder_preferences`](#process_builder_preferences)
   - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
   - [Constructing a `SignedExecutionPayloadEnvelope`](#constructing-a-signedexecutionpayloadenvelope)
 
@@ -26,14 +25,15 @@
 
 This document documents the builder behaviour with the Builder-API post ePBS. It
 describes how builders interact with validators through
-[`ValidatorRegistrationV2`][validator-registration-v2] and construct
+[`BuilderPreferences`](#builderpreferences) and construct
 [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] objects.
 
 ## Constants
 
-| Name | Value | | ----------------------------------------- |
------------------- | | `MAX_TRUSTED_BID` | `2**64 - 1` |
+| Name | Value |
+| ----------------------------------------- | ------------------ |
+| `MAX_TRUSTED_BID` | `2**64 - 1` |
 
 ## Containers
 
@@ -43,42 +43,32 @@ describes how builders interact with validators through
 
 ```python
 class BuilderPreferences(Container):
+    builder_pubkey: BLSPubkey
     max_trusted_bid: uint64
 ```
 
-#### `ValidatorRegistrationV2`
+#### `SignedBuilderPreferences`
 
 ```python
-class ValidatorRegistrationV2(Container):
-    validator_index: ValidatorIndex
-    fee_recipient: ExecutionAddress
-    proposal_slot: Slot
-    gas_limit: uint64
-    builder_preferences: BuilderPreferences
-```
-
-#### `SignedValidatorRegistrationV2`
-
-```python
-class SignedValidatorRegistrationV2(Container):
-    message: ValidatorRegistrationV2
+class SignedBuilderPreferences(Container):
+    message: BuilderPreferences
     signature: BLSSignature
 ```
 
-### `verify_registration_v2_signature`
+### `verify_builder_preferences_signature`
 
 *Note*: `compute_domain` and `compute_signing_root` are defined in the
 [Gloas consensus specs][gloas-consensus-specs].
 
 ```python
-def verify_registration_v2_signature(
-    state: BeaconState, signed_registration: SignedValidatorRegistrationV2
+def verify_builder_preferences_signature(
+    state: BeaconState, signed_preferences: SignedBuilderPreferences, validator_index: ValidatorIndex
 ) -> bool:
-    validator = state.validators[signed_registration.message.validator_index]
+    validator = state.validators[validator_index]
     pubkey = validator.pubkey
     domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
-    signing_root = compute_signing_root(signed_registration.message, domain)
-    return bls.Verify(pubkey, signing_root, signed_registration.signature)
+    signing_root = compute_signing_root(signed_preferences.message, domain)
+    return bls.Verify(pubkey, signing_root, signed_preferences.signature)
 ```
 
 ## Bidding
@@ -98,7 +88,7 @@ the [Gloas consensus specs][gloas-consensus-specs].
 ```python
 def is_eligible_for_bid(
     state: BeaconState,
-    registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
+    proposer_preferences: Dict[ValidatorIndex, ProposerPreferences],
     slot: Slot,
     parent_hash: Hash32,
     # [New in Gloas]
@@ -111,7 +101,8 @@ def is_eligible_for_bid(
 
     assert validator_index in state.validators.keys()
 
-    assert validator_index in registrations.keys()
+    # Verify that proposer preferences have been received via the gossip topic
+    assert validator_index in proposer_preferences.keys()
 
     # Verify parent hash
     # [Modified in Gloas:EIP7732]
@@ -124,8 +115,10 @@ def is_eligible_for_bid(
 
 ## Builder Preferences
 
-Using validator registrations, a proposer can express the preferences it has for
-a builder. Currently, the only preference that is supported is:
+Validators send per-builder preferences directly to the builder via the
+[`submitBuilderPreferences`][submit-builder-preferences-api] API call. This
+allows a proposer to express trust preferences for a specific builder. Currently,
+the only preference that is supported is:
 
 - `max_trusted_bid`: Specifies the maximum value (in Gwei) that a proposer is
   willing to accept as a trusted execution layer payment from the builder. A
@@ -136,51 +129,55 @@ a builder. Currently, the only preference that is supported is:
   parameter based on their level of trust in the builder's reliability and
   reputation.
 
-## Validator Registration V2
+The `builder_pubkey` field identifies which builder the preferences are intended
+for.
 
-The second version of ValidatorRegistrations adds the following new fields:
+## Proposer Preferences (Deprecation of Validator Registrations)
 
-- `validator_index`: The index of the validator selected to propose a block at
-  slot `proposal_slot`
-- `builder_preferences`: This is a struct which contains the per builder
-  preferences the proposer has.
-- `proposal_slot`: The slot at which this validator is proposing.
+*Note*: `ValidatorRegistrationV2` is **deprecated** in favour of
+[`ProposerPreferences`][proposer-preferences] from the consensus specs.
 
-The following fields are removed:
+Builders SHOULD subscribe to the [`proposer_preferences`][proposer-preferences-topic]
+gossip topic to learn about a validator's general preferences for upcoming
+proposal slots. The `ProposerPreferences` message contains:
 
-- `pubkey`: This is the pubkey of the validator which has now been replaced with
-  `validator_index`.
-- `timestamp`: A new validator registration will be sent by the validator to the
-  builder in the epoch prior to one where they will be proposing.
+- `validator_index`: The index of the validator proposing.
+- `fee_recipient`: The execution layer address where fees should go.
+- `gas_limit`: The preferred gas limit.
+- `proposal_slot`: The slot in which the validator will be proposing.
 
-### `process_registration_v2`
+For per-builder preferences (such as `max_trusted_bid`), validators send
+[`SignedBuilderPreferences`](#signedbuilderpreferences) directly to the builder
+via the [`submitBuilderPreferences`][submit-builder-preferences-api] API call.
 
-A `validator_registration_v2` is considered valid if the following function
+### `process_builder_preferences`
+
+A `BuilderPreferences` message is considered valid if the following function
 completes without raising any assertions.
 
 ```python
-def process_registration_v2(
+def process_builder_preferences(
     state: BeaconState,
-    signed_registration: SignedValidatorRegistrationV2,
-    registrations: Dict[ValidatorIndex, ValidatorRegistrationV2],
+    proposer_preferences: ProposerPreferences,
+    signed_preferences: SignedBuilderPreferences,
+    validator_index: ValidatorIndex,
+    builder_preferences: Dict[ValidatorIndex, BuilderPreferences],
 ):
-    signature = signed_registration.signature
-    registration = signed_registration.message
-    validator_index = registration.validator_index
-    proposal_slot = registration.proposal_slot
+    preferences = signed_preferences.message
 
     validator = state.validators[validator_index]
 
-    # Verify validator registration eligibility
+    # Verify validator is eligible
     assert is_eligible_for_registration(state, validator)
 
-    # Verify that the old registration's proposal slot is earlier than the new registration's proposal slot
-    if validator_index in registrations.keys():
-        prev_registration = registrations[validator_index]
-        assert registration.proposal_slot >= prev_registration.proposal_slot
+    # Verify that proposer preferences have been received via the gossip topic
+    assert proposer_preferences.validator_index == validator_index
 
-    # Verify registration signature
-    assert verify_registration_v2_signature(state, signed_registration)
+    # Verify the builder_pubkey matches the builder receiving the preferences
+    # (implementation specific check)
+
+    # Verify builder preferences signature
+    assert verify_builder_preferences_signature(state, signed_preferences, validator_index)
 ```
 
 ## Constructing a `SignedExecutionPayloadBid`
@@ -206,6 +203,8 @@ documented in the [Gloas consensus specs][gloas-builder-specs].
 [eip-7732]: https://eips.ethereum.org/EIPS/eip-7732
 [gloas-builder-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
+[proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md
+[proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
-[validator-registration-v2]: #validatorregistrationv2
+[submit-builder-preferences-api]: ./../../apis/builder/preferences.yaml

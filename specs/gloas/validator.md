@@ -10,9 +10,10 @@
       - [`SignedRequestAuth`](#signedrequestauth)
   - [Bid Authentication](#bid-authentication)
     - [Constructing the `RequestAuth`](#constructing-the-requestauth)
-  - [Validator Registrations](#validator-registrations)
-    - [Constructing the `ValidatorRegistrationV2`](#constructing-the-validatorregistrationv2)
-    - [Validator Registration dissemination](#validator-registration-dissemination)
+  - [Proposer Preferences](#proposer-preferences)
+  - [Builder Preferences](#builder-preferences)
+    - [Constructing the `BuilderPreferences`](#constructing-the-builderpreferences)
+    - [Builder Preferences dissemination](#builder-preferences-dissemination)
   - [Validating a `SignedExecutionPayloadBid`](#validating-a-signedexecutionpayloadbid)
   - [Block proposal](#block-proposal)
     - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
@@ -68,59 +69,64 @@ The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`.
 It sends the `SignedRequestAuth` in the request body along with the request to
 get the bid in the [`getExecutionPayloadBid`][get-execution-payload-bid-api] API
 call. It also sends the `SignedRequestAuth` in the
-[`registerValidatorV2`][register-validator-v2-api] to avoid replay attacks. A
-builder could send the registration to another builder and make them do
+[`submitBuilderPreferences`][submit-builder-preferences-api] to avoid replay
+attacks. A builder could send the preferences to another builder and make them do
 unnecessary work.
 
-## Validator Registrations
+## Proposer Preferences
 
-### Constructing the `ValidatorRegistrationV2`
+*Note*: Validator registrations (`ValidatorRegistrationV2`) are **deprecated** in
+favour of [`ProposerPreferences`][proposer-preferences] from the consensus specs.
 
-To do this, the validator client assembles a
-[`ValidatorRegistrationV2`][validator-registration-v2] with the following
-information:
+General validator preferences are now communicated via the
+[`proposer_preferences`][proposer-preferences-topic] gossip topic defined in the
+[Gloas consensus specs][gloas-consensus-specs]. Validators broadcast
+[`SignedProposerPreferences`][proposer-preferences] messages at the beginning of
+each epoch containing:
 
 - `fee_recipient`: An execution layer address where fees for the validator
   should go.
 - `gas_limit`: The value a validator prefers for the execution block gas limit.
-- `validator_index`: The validator's index. Used to identify the beacon chain
-  validator and verify the wrapping signature.
-- `max_trusted_bid`: The amount(in Gwei) the proposer is willing to accept as a
+- `validator_index`: The validator's index.
+- `proposal_slot`: The slot in which the validator will be proposing. This can be
+  looked up in `state.proposer_lookahead`.
+
+Builders SHOULD subscribe to this gossip topic to learn about proposer
+preferences for upcoming slots.
+
+## Builder Preferences
+
+For per-builder preferences that cannot be communicated via a global gossip
+topic, validators send [`SignedBuilderPreferences`][builder-preferences] directly
+to the builder via the [`submitBuilderPreferences`][submit-builder-preferences-api]
+API call.
+
+### Constructing the `BuilderPreferences`
+
+To construct the `BuilderPreferences`, the validator client assembles a
+[`BuilderPreferences`][builder-preferences] with the following information:
+
+- `builder_pubkey`: The BLS public key of the builder that these preferences are
+  intended for.
+- `max_trusted_bid`: The amount (in Gwei) the proposer is willing to accept as a
   trusted execution layer payment from the builder.
-- `proposal_slot`: This is set to the slot in which the validator will be
-  proposing. This can be looked up in `state.proposer_lookahead`.
 
-### Validator Registration dissemination
+### Builder Preferences dissemination
 
-This specification suggests validators re-submit registrations only if they will
-be proposing in the upcoming epoch(E+1). This is such that we do not send too
-many validator registrations all at once to builders. Validators run
-`create_validator_registrations` at every epoch boundary to create validator
-registrations for all the slots they will be proposing in the upcoming epoch.
+Validators send builder preferences to each builder they wish to interact with
+for their upcoming proposal slots. Validators run
+`create_builder_preferences` at every epoch boundary to create builder
+preferences for all the builders they trust.
 
 ```python
-def create_validator_registrations(
-    state: BeaconState,
-    validator_index: ValidatorIndex,
-    gas_limit: uint64,
-    builder_preferences: BuilderPreferences,
-    fee_recipient: ExecutionAddress,
-) -> List[ValidatorRegistrationV2]:
-    slots = get_upcoming_proposal_slots(state, validator_index)
-    registrations: List[ValidatorRegistrationV2] = []
-
-    for slot in slots:
-        registrations.append(
-            ValidatorRegistrationV2(
-                fee_recipient=fee_recipient,
-                gas_limit=gas_limit,
-                validator_index=validator_index,
-                builder_preferences=builder_preferences,
-                proposal_slot=slot,
-            )
-        )
-
-    return registrations
+def create_builder_preferences(
+    builder_pubkey: BLSPubkey,
+    max_trusted_bid: uint64,
+) -> BuilderPreferences:
+    return BuilderPreferences(
+        builder_pubkey=builder_pubkey,
+        max_trusted_bid=max_trusted_bid,
+    )
 ```
 
 ## Validating a `SignedExecutionPayloadBid`
@@ -140,7 +146,8 @@ are also defined in the consensus specs.
 ```python
 def validate_bid(
     state: BeaconState,
-    reg: SignedValidatorRegistrationV2,
+    proposer_preferences: ProposerPreferences,
+    builder_preferences: BuilderPreferences,
     signed_bid: SignedExecutionPayloadBid,
     fee_recipient: ExecutionAddress,
 ) -> bool:
@@ -152,9 +159,9 @@ def validate_bid(
     assert bid.parent_block_hash == state.latest_block_hash
     assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
-    assert bid.gas_limit <= reg.message.gas_limit
+    assert bid.gas_limit <= proposer_preferences.gas_limit
 
-    assert bid.execution_payment <= reg.message.builder_preferences.max_trusted_bid
+    assert bid.execution_payment <= builder_preferences.max_trusted_bid
 
     if bid.value > 0:
         assert can_builder_cover_bid(state, bid.builder_index, bid.value)
@@ -169,8 +176,8 @@ bid's fee recipient matches the validators expected fee recipient and not the
 builder's fee recipient.
 
 To express per-builder preferences we need validators to remember which
-registration they have sent to the builder, so that they can validate whether
-the bid conforms to the preferences expressed by the validators.
+builder preferences they have sent to each builder, so that they can validate
+whether the bid conforms to the preferences expressed by the validators.
 
 ## Block proposal
 
@@ -205,15 +212,17 @@ When the circuit breaker condition is triggered for nodes, they *MUST* fallback
 to receiving bids from the P2P [`execution_payload_bid`][execution-payload-bid]
 topic and can also build blocks locally.
 
+[builder-preferences]: ./builder.md#builderpreferences
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#can_builder_cover_bid
 [execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md?plain=1#L321
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
 [gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal
 [is-active-builder]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#is_active_builder
-[register-validator-v2-api]: ./../../apis/builder/validators_v2.yaml
+[proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md
+[proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[submit-builder-preferences-api]: ./../../apis/builder/preferences.yaml
 [submit-signed-beacon-block]: ./../../apis/builder/beacon_block.yaml
-[validator-registration-v2]: ./builder.md#validatorregistrationv2
 [verify-execution-payload-bid-signature]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#verify_execution_payload_bid_signature

@@ -1,0 +1,60 @@
+post:
+  operationId: "submitBuilderPreferences"
+  summary: Submit per-builder preferences for Gloas.
+  description: |
+    Submits a validator's per-builder preferences (e.g. max_trusted_bid) to a
+    specific builder.
+
+    Note: General validator preferences (fee_recipient, gas_limit,
+    proposal_slot, validator_index) are now communicated via the
+    `proposer_preferences` gossip topic defined in the consensus specs. This
+    endpoint is only used for preferences that are specific to a particular
+    builder.
+
+    A success response (200) indicates that the preferences were valid. If the
+    preferences pass validation, then the builder MUST integrate the
+    preferences into its state, such that future bids built for the
+    validator conform to the preferences. If the preferences are invalid,
+    then the builder MUST return an error response (400) with a description
+    of the validation failure.
+  tags:
+    - Builder
+  requestBody:
+    description: |
+      Signed per-builder preferences, along with signed request authentication.
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - signed_request_auth
+            - preferences
+          properties:
+            signed_request_auth:
+              $ref: "../../builder-oapi.yaml#/components/schemas/Gloas.SignedRequestAuth"
+            preferences:
+              type: array
+              items:
+                $ref: "../../builder-oapi.yaml#/components/schemas/Gloas.SignedBuilderPreferences"
+        example:
+          $ref: "../../builder-oapi.yaml#/components/examples/Gloas.SignedBuilderPreferences"
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `Container[SignedRequestAuth, List[SignedBuilderPreferences, VALIDATOR_REGISTRY_LIMIT]]` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+  responses:
+    "200":
+      description: Success response.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          example:
+            code: 400
+            message: "invalid preferences"
+    "415":
+      $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
