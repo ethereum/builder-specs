@@ -1,12 +1,14 @@
 Gloas:
   RequestAuth:
     type: object
-    required: [builder_index]
+    required: [builder_pubkey, slot]
     properties:
-      builder_index:
-        type: string
-        pattern: "^0x[a-fA-F0-9]{1,16}$"
-        description: "The on-chain index associated with the builder, represented as a hex string."
+      builder_pubkey:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
+        description: "The BLS public key of the builder the request is intended for."
+      slot:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
+        description: "The slot for which the bid is being requested."
   SignedRequestAuth:
     type: object
     required: [message, signature]

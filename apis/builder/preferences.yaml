@@ -21,18 +21,15 @@ post:
     - Builder
   requestBody:
     description: |
-      Signed per-builder preferences, along with signed request authentication.
+      Signed per-builder preferences.
     required: true
     content:
       application/json:
         schema:
           type: object
           required:
-            - signed_request_auth
             - preferences
           properties:
-            signed_request_auth:
-              $ref: "../../builder-oapi.yaml#/components/schemas/Gloas.SignedRequestAuth"
             preferences:
               type: array
               items:
@@ -41,7 +38,7 @@ post:
           $ref: "../../builder-oapi.yaml#/components/examples/Gloas.SignedBuilderPreferences"
       application/octet-stream:
         schema:
-          description: "SSZ serialized `Container[SignedRequestAuth, List[SignedBuilderPreferences, VALIDATOR_REGISTRY_LIMIT]]` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+          description: "SSZ serialized `List[SignedBuilderPreferences, VALIDATOR_REGISTRY_LIMIT]` bytes. Use content type header to indicate that SSZ data is contained in the request body."
   responses:
     "200":
       description: Success response.

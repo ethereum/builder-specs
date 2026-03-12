@@ -31,8 +31,8 @@ describes how builders interact with validators through
 
 ## Constants
 
-| Name | Value |
-| ----------------------------------------- | ------------------ |
+| Name              | Value       |
+| ----------------- | ----------- |
 | `MAX_TRUSTED_BID` | `2**64 - 1` |
 
 ## Containers
@@ -44,6 +44,7 @@ describes how builders interact with validators through
 ```python
 class BuilderPreferences(Container):
     builder_pubkey: BLSPubkey
+    slot: Slot
     max_trusted_bid: uint64
 ```
 
@@ -62,7 +63,9 @@ class SignedBuilderPreferences(Container):
 
 ```python
 def verify_builder_preferences_signature(
-    state: BeaconState, signed_preferences: SignedBuilderPreferences, validator_index: ValidatorIndex
+    state: BeaconState,
+    signed_preferences: SignedBuilderPreferences,
+    validator_index: ValidatorIndex,
 ) -> bool:
     validator = state.validators[validator_index]
     pubkey = validator.pubkey
@@ -117,14 +120,14 @@ def is_eligible_for_bid(
 
 Validators send per-builder preferences directly to the builder via the
 [`submitBuilderPreferences`][submit-builder-preferences-api] API call. This
-allows a proposer to express trust preferences for a specific builder. Currently,
-the only preference that is supported is:
+allows a proposer to express trust preferences for a specific builder.
+Currently, the only preference that is supported is:
 
 - `max_trusted_bid`: Specifies the maximum value (in Gwei) that a proposer is
   willing to accept as a trusted execution layer payment from the builder. A
   value of `0` indicates that the proposer does not accept any trusted payments
-  from the builder, requiring all payments to be cryptographically verifiable
-  on-chain. A value of `MAX_TRUSTED_BID` indicates that the proposer will accept
+  from the builder, requiring all payments to use the on-chain trustless payments mechanism.
+  A value of `MAX_TRUSTED_BID` indicates that the proposer will accept
   any trusted payment amount from the builder. Proposers may adjust this
   parameter based on their level of trust in the builder's reliability and
   reputation.
@@ -134,12 +137,14 @@ for.
 
 ## Proposer Preferences (Deprecation of Validator Registrations)
 
-*Note*: `ValidatorRegistrationV2` is **deprecated** in favour of
+*Note*: `ValidatorRegistrationV1` is **deprecated** in favour of
 [`ProposerPreferences`][proposer-preferences] from the consensus specs.
 
-Builders SHOULD subscribe to the [`proposer_preferences`][proposer-preferences-topic]
-gossip topic to learn about a validator's general preferences for upcoming
-proposal slots. The `ProposerPreferences` message contains:
+Builders SHOULD subscribe to the
+[`proposer_preferences`][proposer-preferences-topic] gossip topic to learn about
+a validator's general preferences. Validators broadcast these messages at the
+beginning of each epoch for their proposal slots in the next epoch. The
+`ProposerPreferences` message contains:
 
 - `validator_index`: The index of the validator proposing.
 - `fee_recipient`: The execution layer address where fees should go.
@@ -177,7 +182,9 @@ def process_builder_preferences(
     # (implementation specific check)
 
     # Verify builder preferences signature
-    assert verify_builder_preferences_signature(state, signed_preferences, validator_index)
+    assert verify_builder_preferences_signature(
+        state, signed_preferences, validator_index
+    )
 ```
 
 ## Constructing a `SignedExecutionPayloadBid`

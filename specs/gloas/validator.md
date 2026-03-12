@@ -33,7 +33,7 @@ Validators request a [`SignedExecutionPayloadBid`][signed-execution-payload-bid]
 from the external builder network to put it in their `SignedBeaconBlock`. The
 external builder network broadcasts the
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
-corresponding to the bid to the PTC committee.
+corresponding to the included bid to the PTC committee.
 
 ## Containers
 
@@ -46,7 +46,8 @@ that other builders do not DDOS or run replay attacks on the builder.
 
 ```python
 class RequestAuth(Container):
-    builder_index: BuilderIndex
+    builder_pubkey: BLSPubkey
+    slot: Slot
 ```
 
 #### `SignedRequestAuth`
@@ -63,33 +64,32 @@ class SignedRequestAuth(Container):
 
 To construct the `RequestAuth`, we need to fill the following information:
 
-- `builder_index`: This is the on-chain index associated with the builder.
+- `builder_pubkey`: The BLS public key of the builder the request is intended for.
+- `slot`: The slot for which the bid is being requested.
 
 The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`.
 It sends the `SignedRequestAuth` in the request body along with the request to
 get the bid in the [`getExecutionPayloadBid`][get-execution-payload-bid-api] API
-call. It also sends the `SignedRequestAuth` in the
-[`submitBuilderPreferences`][submit-builder-preferences-api] to avoid replay
-attacks. A builder could send the preferences to another builder and make them do
-unnecessary work.
+call.
 
 ## Proposer Preferences
 
-*Note*: Validator registrations (`ValidatorRegistrationV2`) are **deprecated** in
-favour of [`ProposerPreferences`][proposer-preferences] from the consensus specs.
+*Note*: Validator registrations (`ValidatorRegistrationV1`) are **deprecated**
+in favour of [`ProposerPreferences`][proposer-preferences] from the consensus
+specs.
 
 General validator preferences are now communicated via the
 [`proposer_preferences`][proposer-preferences-topic] gossip topic defined in the
-[Gloas consensus specs][gloas-consensus-specs]. Validators broadcast
-[`SignedProposerPreferences`][proposer-preferences] messages at the beginning of
-each epoch containing:
+[Gloas consensus specs][gloas-consensus-specs]. At the beginning of each epoch,
+validators broadcast [`SignedProposerPreferences`][proposer-preferences] messages
+for their proposal slots in the next epoch containing:
 
 - `fee_recipient`: An execution layer address where fees for the validator
   should go.
 - `gas_limit`: The value a validator prefers for the execution block gas limit.
 - `validator_index`: The validator's index.
-- `proposal_slot`: The slot in which the validator will be proposing. This can be
-  looked up in `state.proposer_lookahead`.
+- `proposal_slot`: The slot in which the validator will be proposing. This can
+  be looked up in `state.proposer_lookahead`.
 
 Builders SHOULD subscribe to this gossip topic to learn about proposer
 preferences for upcoming slots.
@@ -97,9 +97,9 @@ preferences for upcoming slots.
 ## Builder Preferences
 
 For per-builder preferences that cannot be communicated via a global gossip
-topic, validators send [`SignedBuilderPreferences`][builder-preferences] directly
-to the builder via the [`submitBuilderPreferences`][submit-builder-preferences-api]
-API call.
+topic, validators send [`SignedBuilderPreferences`][builder-preferences]
+directly to the builder via the
+[`submitBuilderPreferences`][submit-builder-preferences-api] API call.
 
 ### Constructing the `BuilderPreferences`
 
@@ -108,23 +108,28 @@ To construct the `BuilderPreferences`, the validator client assembles a
 
 - `builder_pubkey`: The BLS public key of the builder that these preferences are
   intended for.
+- `slot`: The proposal slot of the validator. This can be looked up in
+  `state.proposer_lookahead`.
 - `max_trusted_bid`: The amount (in Gwei) the proposer is willing to accept as a
   trusted execution layer payment from the builder.
 
 ### Builder Preferences dissemination
 
 Validators send builder preferences to each builder they wish to interact with
-for their upcoming proposal slots. Validators run
-`create_builder_preferences` at every epoch boundary to create builder
-preferences for all the builders they trust.
+for their upcoming proposal slots. Validators run `create_builder_preferences`
+in the epoch prior to the epoch in which the validator will become a proposer,
+using the `proposer_lookahead` in the beacon state to determine their proposal
+slots.
 
 ```python
 def create_builder_preferences(
     builder_pubkey: BLSPubkey,
+    slot: Slot,
     max_trusted_bid: uint64,
 ) -> BuilderPreferences:
     return BuilderPreferences(
         builder_pubkey=builder_pubkey,
+        slot=slot,
         max_trusted_bid=max_trusted_bid,
     )
 ```
@@ -175,9 +180,9 @@ builder pays the validator via execution layer payments, we require that the
 bid's fee recipient matches the validators expected fee recipient and not the
 builder's fee recipient.
 
-To express per-builder preferences we need validators to remember which
-builder preferences they have sent to each builder, so that they can validate
-whether the bid conforms to the preferences expressed by the validators.
+To express per-builder preferences we need validators to remember which builder
+preferences they have sent to each builder, so that they can validate whether
+the bid conforms to the preferences expressed by the validators.
 
 ## Block proposal
 
@@ -200,10 +205,8 @@ block on top of a beacon `state` must take the following actions:
 3. The proposer returns the `SignedBeaconBlock` back to the upstream block
    building software via [`submitSignedBeaconBlock`][submit-signed-beacon-block]
    API call.
-4. The upstream block building software constructs the
-   [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
-   corresponding to the
-   [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and broadcasts it
+4. The upstream block building software constructs the corresponding
+   [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and broadcasts it
    to the PTC committee.
 
 ## Liveness failsafe

@@ -10,7 +10,7 @@ post:
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
     - The index of the proposer.
-    - A signed bid request auth using the builder's on-chain index to authenticate the request.
+    - A signed request auth containing the builder's public key and slot to authenticate the request.
 
     The builder responds with a 200 response containing an execution payload bid if it can provide one.
 
