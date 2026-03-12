@@ -126,10 +126,10 @@ Currently, the only preference that is supported is:
 - `max_trusted_bid`: Specifies the maximum value (in Gwei) that a proposer is
   willing to accept as a trusted execution layer payment from the builder. A
   value of `0` indicates that the proposer does not accept any trusted payments
-  from the builder, requiring all payments to use the on-chain trustless payments mechanism.
-  A value of `MAX_TRUSTED_BID` indicates that the proposer will accept
-  any trusted payment amount from the builder. Proposers may adjust this
-  parameter based on their level of trust in the builder's reliability and
+  from the builder, requiring all payments to use the on-chain trustless
+  payments mechanism. A value of `MAX_TRUSTED_BID` indicates that the proposer
+  will accept any trusted payment amount from the builder. Proposers may adjust
+  this parameter based on their level of trust in the builder's reliability and
   reputation.
 
 The `builder_pubkey` field identifies which builder the preferences are intended

@@ -64,7 +64,8 @@ class SignedRequestAuth(Container):
 
 To construct the `RequestAuth`, we need to fill the following information:
 
-- `builder_pubkey`: The BLS public key of the builder the request is intended for.
+- `builder_pubkey`: The BLS public key of the builder the request is intended
+  for.
 - `slot`: The slot for which the bid is being requested.
 
 The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`.
@@ -81,8 +82,8 @@ specs.
 General validator preferences are now communicated via the
 [`proposer_preferences`][proposer-preferences-topic] gossip topic defined in the
 [Gloas consensus specs][gloas-consensus-specs]. At the beginning of each epoch,
-validators broadcast [`SignedProposerPreferences`][proposer-preferences] messages
-for their proposal slots in the next epoch containing:
+validators broadcast [`SignedProposerPreferences`][proposer-preferences]
+messages for their proposal slots in the next epoch containing:
 
 - `fee_recipient`: An execution layer address where fees for the validator
   should go.
@@ -206,8 +207,8 @@ block on top of a beacon `state` must take the following actions:
    building software via [`submitSignedBeaconBlock`][submit-signed-beacon-block]
    API call.
 4. The upstream block building software constructs the corresponding
-   [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and broadcasts it
-   to the PTC committee.
+   [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and
+   broadcasts it to the PTC committee.
 
 ## Liveness failsafe
 
