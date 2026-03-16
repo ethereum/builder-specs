@@ -83,14 +83,7 @@ General validator preferences are now communicated via the
 [`proposer_preferences`][proposer-preferences-topic] gossip topic defined in the
 [Gloas consensus specs][gloas-consensus-specs]. At the beginning of each epoch,
 validators broadcast [`SignedProposerPreferences`][proposer-preferences]
-messages for their proposal slots in the next epoch containing:
-
-- `fee_recipient`: An execution layer address where fees for the validator
-  should go.
-- `gas_limit`: The value a validator prefers for the execution block gas limit.
-- `validator_index`: The validator's index.
-- `proposal_slot`: The slot in which the validator will be proposing. This can
-  be looked up in `state.proposer_lookahead`.
+messages for their proposal slots in the next epoch.
 
 Builders SHOULD subscribe to this gossip topic to learn about proposer
 preferences for upcoming slots.

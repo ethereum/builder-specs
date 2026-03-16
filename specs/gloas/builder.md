@@ -143,13 +143,7 @@ for.
 Builders SHOULD subscribe to the
 [`proposer_preferences`][proposer-preferences-topic] gossip topic to learn about
 a validator's general preferences. Validators broadcast these messages at the
-beginning of each epoch for their proposal slots in the next epoch. The
-`ProposerPreferences` message contains:
-
-- `validator_index`: The index of the validator proposing.
-- `fee_recipient`: The execution layer address where fees should go.
-- `gas_limit`: The preferred gas limit.
-- `proposal_slot`: The slot in which the validator will be proposing.
+beginning of each epoch for their proposal slots in the next epoch.
 
 For per-builder preferences (such as `max_trusted_bid`), validators send
 [`SignedBuilderPreferences`](#signedbuilderpreferences) directly to the builder
@@ -200,8 +194,7 @@ been accepted by the proposer and it has been included in its
 `SignedBeaconBlock`, then the builder has to construct a
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
 corresponding to the [`SignedExecutionPayloadBid`][signed-execution-payload-bid]
-and it has to broadcast it to the PTC committee via the
-`execution_payload_envelope` gossip topic.
+and it has to broadcast via the `execution_payload_envelope` gossip topic.
 
 The specification for a block builder to construct a
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] is
