@@ -33,7 +33,11 @@ Validators request a [`SignedExecutionPayloadBid`][signed-execution-payload-bid]
 from the external builder network to put it in their `SignedBeaconBlock`. The
 external builder network broadcasts the
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
+<<<<<<< HEAD
 corresponding to the included bid to the PTC committee.
+=======
+corresponding to the bid to the PTC committee.
+>>>>>>> b522a99 (Update liveness failsafe section)
 
 ## Containers
 
@@ -46,9 +50,13 @@ that other builders do not DDOS or run replay attacks on the builder.
 
 ```python
 class RequestAuth(Container):
+<<<<<<< HEAD
     builder_pubkey: BLSPubkey
     validator_pubkey: BLSPubkey
     slot: Slot
+=======
+    builder_index: BuilderIndex
+>>>>>>> b522a99 (Update liveness failsafe section)
 ```
 
 #### `SignedRequestAuth`
@@ -66,6 +74,7 @@ class SignedRequestAuth(Container):
 To construct the `RequestAuth`, we need to fill the following information:
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 - `builder_pubkey`: The BLS public key of the builder the request is intended
   for.
 - `validator_pubkey`: The BLS public key of the validator making the request.
@@ -75,6 +84,9 @@ To construct the `RequestAuth`, we need to fill the following information:
   builder. The spec requires the proposer to set it to the URL provided by the
   whitelisted builder.
 >>>>>>> 53c7d9f (use get-upcoming-proposal-slots)
+=======
+- `builder_index`: This is the on-chain index associated with the builder.
+>>>>>>> b522a99 (Update liveness failsafe section)
 
 The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`.
 It MAY send the `SignedRequestAuth` in the request body along with the request to
