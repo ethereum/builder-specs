@@ -65,10 +65,16 @@ class SignedRequestAuth(Container):
 
 To construct the `RequestAuth`, we need to fill the following information:
 
+<<<<<<< HEAD
 - `builder_pubkey`: The BLS public key of the builder the request is intended
   for.
 - `validator_pubkey`: The BLS public key of the validator making the request.
 - `slot`: The slot for which the bid is being requested.
+=======
+- `salt`: This is a 4kB salt which has to be specific to each whitelisted
+  builder. The spec requires the proposer to set it to the URL provided by the
+  whitelisted builder.
+>>>>>>> 53c7d9f (use get-upcoming-proposal-slots)
 
 The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`.
 It MAY send the `SignedRequestAuth` in the request body along with the request to
