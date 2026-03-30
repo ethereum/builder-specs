@@ -44,7 +44,8 @@ describes how builders interact with validators through
 ```python
 class BuilderPreferences(Container):
     builder_pubkey: BLSPubkey
-    slot: Slot
+    validator_pubkey: BLSPubkey
+    proposal_slot: Slot
     max_trusted_bid: uint64
 ```
 
@@ -63,12 +64,9 @@ class SignedBuilderPreferences(Container):
 
 ```python
 def verify_builder_preferences_signature(
-    state: BeaconState,
     signed_preferences: SignedBuilderPreferences,
-    validator_index: ValidatorIndex,
 ) -> bool:
-    validator = state.validators[validator_index]
-    pubkey = validator.pubkey
+    pubkey = signed_preferences.message.validator_pubkey
     domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
     signing_root = compute_signing_root(signed_preferences.message, domain)
     return bls.Verify(pubkey, signing_root, signed_preferences.signature)
@@ -159,11 +157,11 @@ def process_builder_preferences(
     state: BeaconState,
     proposer_preferences: ProposerPreferences,
     signed_preferences: SignedBuilderPreferences,
-    validator_index: ValidatorIndex,
     builder_preferences: Dict[ValidatorIndex, BuilderPreferences],
 ):
     preferences = signed_preferences.message
 
+    validator_index = ValidatorIndex(state.validators.index(preferences.validator_pubkey))
     validator = state.validators[validator_index]
 
     # Verify validator is eligible
@@ -177,7 +175,7 @@ def process_builder_preferences(
 
     # Verify builder preferences signature
     assert verify_builder_preferences_signature(
-        state, signed_preferences, validator_index
+        signed_preferences,
     )
 ```
 

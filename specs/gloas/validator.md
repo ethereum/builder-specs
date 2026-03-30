@@ -47,6 +47,7 @@ that other builders do not DDOS or run replay attacks on the builder.
 ```python
 class RequestAuth(Container):
     builder_pubkey: BLSPubkey
+    validator_pubkey: BLSPubkey
     slot: Slot
 ```
 
@@ -66,12 +67,14 @@ To construct the `RequestAuth`, we need to fill the following information:
 
 - `builder_pubkey`: The BLS public key of the builder the request is intended
   for.
+- `validator_pubkey`: The BLS public key of the validator making the request.
 - `slot`: The slot for which the bid is being requested.
 
 The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`.
-It sends the `SignedRequestAuth` in the request body along with the request to
+It MAY send the `SignedRequestAuth` in the request body along with the request to
 get the bid in the [`getExecutionPayloadBid`][get-execution-payload-bid-api] API
-call.
+call. Sending the `SignedRequestAuth` is optional; builders MAY require it for
+authentication purposes.
 
 ## Proposer Preferences
 
@@ -102,6 +105,7 @@ To construct the `BuilderPreferences`, the validator client assembles a
 
 - `builder_pubkey`: The BLS public key of the builder that these preferences are
   intended for.
+- `validator_pubkey`: The BLS public key of the validator sending the preferences.
 - `slot`: The proposal slot of the validator. This can be looked up in
   `state.proposer_lookahead`.
 - `max_trusted_bid`: The amount (in Gwei) the proposer is willing to accept as a
@@ -118,11 +122,13 @@ slots.
 ```python
 def create_builder_preferences(
     builder_pubkey: BLSPubkey,
+    validator_pubkey: BLSPubkey,
     slot: Slot,
     max_trusted_bid: uint64,
 ) -> BuilderPreferences:
     return BuilderPreferences(
         builder_pubkey=builder_pubkey,
+        validator_pubkey=validator_pubkey,
         slot=slot,
         max_trusted_bid=max_trusted_bid,
     )
@@ -190,7 +196,7 @@ block on top of a beacon `state` must take the following actions:
 1. Call upstream builder software to get a
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] using the
    [`getExecutionPayloadBid`][get-execution-payload-bid-api] API call. The
-   validator is required to send the `SignedRequestAuth` in the request body in
+   validator MAY send the `SignedRequestAuth` in the request body in
    order to authenticate the request to the builder.
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
    [Gloas validator specs][gloas-validator-specs] but with the best

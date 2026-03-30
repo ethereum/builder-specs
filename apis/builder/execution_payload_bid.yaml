@@ -10,14 +10,14 @@ post:
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
     - The index of the proposer.
-    - A signed request auth containing the builder's public key and slot to authenticate the request.
+    - An optional signed request auth containing the builder's public key, validator's public key, and slot to authenticate the request.
 
     The builder responds with a 200 response containing an execution payload bid if it can provide one.
 
     If the builder is unable to produce a valid execution payload bid, then
     the builder MUST return a 204 response. If the request is invalid, then the
     builder MUST return an error response (400) with a description of the
-    validation failure. If the SignedRequestAuth is invalid, the builder MUST return a 400 response.
+    validation failure. If the `SignedRequestAuth` is provided and invalid, the builder MUST return a 400 response.
 
     This API is applicable from Gloas fork onwards.
   tags:
@@ -71,7 +71,7 @@ post:
         format: int64
         example: 10000
   requestBody:
-    required: true
+    required: false
     content:
       application/json:
         schema:
