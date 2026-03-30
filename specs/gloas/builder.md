@@ -135,7 +135,7 @@ for.
 
 ## Proposer Preferences (Deprecation of Validator Registrations)
 
-*Note*: `ValidatorRegistrationV1` is **deprecated** in favour of
+*Note*: `ValidatorRegistrationV1` is **deprecated** in favor of
 [`ProposerPreferences`][proposer-preferences] from the consensus specs.
 
 Builders SHOULD subscribe to the
