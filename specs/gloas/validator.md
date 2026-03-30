@@ -24,8 +24,6 @@
   - [Liveness failsafe](#liveness-failsafe)
   - [Connecting with upstream block building](#connecting-with-upstream-block-building)
     - [Builder Config](#builder-config)
-    - [Deadline Enforcement](#deadline-enforcement)
-    - [Bid Selection Strategy](#bid-selection-strategy)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -40,11 +38,7 @@ Validators request a [`SignedExecutionPayloadBid`][signed-execution-payload-bid]
 from the external builder network to put it in their `SignedBeaconBlock`. The
 external builder network broadcasts the
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
-<<<<<<< HEAD
 corresponding to the included bid to the PTC committee.
-=======
-corresponding to the bid to the PTC committee.
->>>>>>> b522a99 (Update liveness failsafe section)
 
 ## Containers
 
@@ -57,13 +51,9 @@ that other builders do not DDOS or run replay attacks on the builder.
 
 ```python
 class RequestAuth(Container):
-<<<<<<< HEAD
     builder_pubkey: BLSPubkey
     validator_pubkey: BLSPubkey
     slot: Slot
-=======
-    builder_index: BuilderIndex
->>>>>>> b522a99 (Update liveness failsafe section)
 ```
 
 #### `SignedRequestAuth`
@@ -87,15 +77,13 @@ class BuilderConfig(Container):
 
 ### `GlobalPreferences`
 
-The GlobalPreferences container contains validator preferences across all
+The `GlobalPreferences` container contains validator preferences across all
 builders. This includes:
 
 - `min_bid`: The minimum bid value (in Gwei) from any builder for the proposer
   to consider using a builder bid. If no builder bid meets this threshold, the
   proposer falls back to the locally built block. A value of `0` means no
   minimum.
-- `bid_selection_strategy`: Strategy with which the proposer selects the winning
-  bids given a list of bids from whitelisted builders.
 - `local_block_boost`: A multiplier factor (in basis points, where 10000 = 100%)
   applied to the locally built block value when comparing against bids from
   builders. This gives priority to the local block in bid selection.
@@ -103,7 +91,6 @@ builders. This includes:
 ```python
 class GlobalPreferences(Container):
     min_bid: uint64
-    bid_selection_strategy: ByteList[MAX_STRATEGY_DESC_BYTES]
     local_block_boost: uint64
 ```
 
@@ -281,23 +268,20 @@ When the circuit breaker condition is triggered for nodes, they *MUST* fallback
 to receiving bids from the P2P [`execution_payload_bid`][execution-payload-bid]
 topic and can also build blocks locally.
 
-<<<<<<< HEAD
-[builder-preferences]: ./builder.md#builderpreferences
-=======
 ## Connecting with upstream block building
 
 ### Builder Config
 
-The Builder Config above specifies how the client can maintain builder
-configurations. The Builder Config is manually maintained by an operator. It
+The `BuilderConfig` specifies how the client can maintain builder
+configurations. It is manually maintained by an operator and
 contains the information on how to call a builder and preferences for the
 specific builder. It is left up to the client on how the config is passed and
 parsed.
 
-The Builder Whitelist includes the per builder configs along with the global
+The `BuilderWhitelist` includes the per-builder configs along with the global
 preferences.
 
-The following are the fields in the Builder Config:
+The following are the fields in the `BuilderConfig`:
 
 - `url`: The URL of the whitelisted builder where we can fetch bids from.
 - `builder_pubkey`: The advertised public key of the builder. This is configured
@@ -306,7 +290,7 @@ The following are the fields in the Builder Config:
   cross-builder replay attacks.
 - `max_trusted_bid`: The maximum amount (in Gwei) which the proposer will accept
   as a trusted execution layer payment from the builder. This will be sent in
-  the validator registration to the corresponding builder.
+  the builder preferences to the corresponding builder.
 - `bid_boost`: A multiplier factor (in basis points, where 10000 = 100%) applied
   to the builder's bid value when comparing against other builder bids.
 - `excluded_validators`: A list of validator public keys that should NOT
@@ -314,31 +298,18 @@ The following are the fields in the Builder Config:
   whitelisted builders; this field allows operators to exclude specific
   validators from specific builders.
 
-### Deadline Enforcement
+The `GlobalPreferences` contains cross-builder parameters:
 
-Clients need to configure a timeout `BUILDER_DEADLINE_MS` for all builders.
+- `min_bid`: The minimum bid value (in Gwei) from any builder for the proposer
+  to consider. Below this threshold, the proposer falls back to the local block.
+- `local_block_boost`: A multiplier factor (in basis points, where 10000 = 100%)
+  applied to the locally built block value when comparing against bids from
+  builders.
 
-```python
-def get_builder_deadline(slot_start_time: uint64) -> uint64:
-    """
-    Calculate deadline for builder responses.
-    Must leave time for local fallback if needed.
-    """
+Aspects such as deadline enforcement and bid selection strategy are left up to
+the client implementation.
 
-    return slot_start_time + BUILDER_DEADLINE_MS
-```
-
-### Bid Selection Strategy
-
-A bid selection strategy defines how a client will pick the winning bid out of
-the many bids it receives from it's whitelisted builders.
-
-We can define different types of bid selection strategies but for now we only
-define one:
-
-- `max_profit`: The proposer picks the bid which maximizes profit.
-
->>>>>>> fc0ded5 (define builder config spec)
+[builder-preferences]: ./builder.md#builderpreferences
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#can_builder_cover_bid
 [execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md?plain=1#L321
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
