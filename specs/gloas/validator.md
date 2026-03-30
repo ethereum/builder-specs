@@ -8,6 +8,11 @@
     - [New Containers](#new-containers)
       - [`RequestAuth`](#requestauth)
       - [`SignedRequestAuth`](#signedrequestauth)
+    - [`BuilderConfig`](#builderconfig)
+    - [`GlobalPreferences`](#globalpreferences)
+    - [`BuilderWhitelist`](#builderwhitelist)
+  - [Helper](#helper)
+    - [`get_proposer_slots_in_upcoming_epoch`](#get_proposer_slots_in_upcoming_epoch)
   - [Bid Authentication](#bid-authentication)
     - [Constructing the `RequestAuth`](#constructing-the-requestauth)
   - [Proposer Preferences](#proposer-preferences)
@@ -19,6 +24,10 @@
     - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
       - [Receiving ExecutionPayloadBid](#receiving-executionpayloadbid)
   - [Liveness failsafe](#liveness-failsafe)
+  - [Connecting with upstream block building](#connecting-with-upstream-block-building)
+    - [Builder Config](#builder-config)
+    - [Deadline Enforcement](#deadline-enforcement)
+    - [Bid Selection Strategy](#bid-selection-strategy)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -65,6 +74,63 @@ class RequestAuth(Container):
 class SignedRequestAuth(Container):
     message: RequestAuth
     signature: BLSSignature
+```
+
+### `BuilderConfig`
+
+```python
+class BuilderConfig(Container):
+    url: ByteList[MAX_URL_BYTES]
+    max_trusted_bid: uint64
+    min_bid: uint64
+    bid_boost: uint64
+```
+
+### `GlobalPreferences`
+
+The GlobalPreferences container contains validator preferences across all
+builders. This includes:
+
+- `bid_selection_strategy`: Strategy with which the proposer selects the winning
+  bids given a list of bids from whitelisted builders.
+
+```python
+class GlobalPreferences(Container):
+    bid_selection_strategy: ByteList[MAX_STRATEGY_DESC_BYTES]
+```
+
+### `BuilderWhitelist`
+
+```python
+class BuilderWhitelist(Container):
+    builders: List[BuilderConfig, MAX_WHITELISTED_BUILDERS]
+    global_preferences: GlobalPreferences
+```
+
+## Helper
+
+### `get_proposer_slots_in_upcoming_epoch`
+
+*Note*: `compute_start_slot_at_epoch` and `get_current_epoch` are defined in the
+[Gloas consensus specs][gloas-consensus-specs].
+
+```python
+def get_proposer_slots_in_upcoming_epoch(
+    state: BeaconState, validator_index: ValidatorIndex
+) -> List[Slot]:
+    """
+    Return all slots where validator_index is the proposer within the lookahead window in the next epoch.
+    """
+    proposer_slots = []
+    current_epoch_start_slot = compute_start_slot_at_epoch(get_current_epoch(state))
+    next_epoch_proposer_lookahead = state.proposer_lookahead[SLOTS_PER_EPOCH:]
+
+    for offset, proposer_index in enumerate(next_epoch_proposer_lookahead):
+        if proposer_index == validator_index:
+            slot = current_epoch_start_slot + SLOTS_PER_EPOCH + offset
+            proposer_slots.append(slot)
+
+    return proposer_slots
 ```
 
 ## Bid Authentication
@@ -233,7 +299,58 @@ When the circuit breaker condition is triggered for nodes, they *MUST* fallback
 to receiving bids from the P2P [`execution_payload_bid`][execution-payload-bid]
 topic and can also build blocks locally.
 
+<<<<<<< HEAD
 [builder-preferences]: ./builder.md#builderpreferences
+=======
+## Connecting with upstream block building
+
+### Builder Config
+
+The Builder Config above specifies how the client can maintain builder
+configurations. The Builder Config is manually maintained by an operator. It
+contains the information on how to call a builder and preferences for the
+specific builder. It is left up to the client on how the config is passed and
+parsed.
+
+The Builder Whitelist includes the per builder configs along with the global
+preferences.
+
+The following are the fields in the Builder Config:
+
+- `url`: The URL of the whitelisted builder where we can fetch bids from.
+- `max_trusted_bid`: The maximum amount which the proposer will accept in a
+  trusted payment. This will be sent in the validator registration to the
+  corresponding builder.
+- `min_bid`: The minimum amount of acceptable bid from the builder.
+- `bid_boost`: A multiplier factor (in basis points, where 10000 = 100%) applied
+  to the builder's bid value when comparing against other bids or the local
+  block value.
+
+### Deadline Enforcement
+
+Clients need to configure a timeout `BUILDER_DEADLINE_MS` for all builders.
+
+```python
+def get_builder_deadline(slot_start_time: uint64) -> uint64:
+    """
+    Calculate deadline for builder responses.
+    Must leave time for local fallback if needed.
+    """
+
+    return slot_start_time + BUILDER_DEADLINE_MS
+```
+
+### Bid Selection Strategy
+
+A bid selection strategy defines how a client will pick the winning bid out of
+the many bids it receives from it's whitelisted builders.
+
+We can define different types of bid selection strategies but for now we only
+define one:
+
+- `max_profit`: The proposer picks the bid which maximizes profit.
+
+>>>>>>> fc0ded5 (define builder config spec)
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#can_builder_cover_bid
 [execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md?plain=1#L321
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
