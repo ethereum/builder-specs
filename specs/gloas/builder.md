@@ -185,6 +185,18 @@ The specification for a block builder to construct a
 [`SignedExecutionPayloadBid`][signed-execution-payload-bid] is documented in the
 [Gloas consensus specs][gloas-builder-specs].
 
+`bid.fee_recipient` MUST be set to the fee recipient from the proposer's
+[`ProposerPreferences`][proposer-preferences], regardless of whether the builder
+pays via `bid.execution_payment` or `bid.value`.
+
+If the builder intends to pay the proposer via their staked collateral, they
+MUST set `bid.value` to the amount they are committing to pay.
+
+If the builder intends to pay the proposer via an execution layer payment, they
+MUST set `bid.execution_payment`. This value MUST NOT exceed the
+`max_trusted_bid` from the proposer's
+[`SignedBuilderPreferences`](#signedbuilderpreferences).
+
 ## Constructing a `SignedExecutionPayloadEnvelope`
 
 If the builder's [`SignedExecutionPayloadBid`][signed-execution-payload-bid] has
