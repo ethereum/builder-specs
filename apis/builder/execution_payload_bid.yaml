@@ -3,21 +3,26 @@ post:
   summary: Get an execution payload bid.
   description: |
     Requests a builder node to produce a valid execution payload bid, which
-    can be integrated into a beacon block and signed. 
+    can be integrated into a beacon block and signed.
 
     The proposer sends a POST request to the builder with the following information:
     - The slot for which the block should be proposed.
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
     - The index of the proposer.
-    - An optional signed request auth containing the builder's public key, validator's public key, and slot to authenticate the request.
+    - The `X-Eth-Request-Auth` header containing a JSON-encoded `SignedRequestAuth` that authenticates the request.
+    - The `X-Eth-Max-Trusted-Bid` header carrying the proposer's `max_trusted_bid` (decimal `uint64`, in Gwei) for this request.
+
+    Both headers are required. If either is missing, malformed, or fails
+    validation, the builder MUST NOT serve a bid for the proposer and MUST
+    return a 400 response.
 
     The builder responds with a 200 response containing an execution payload bid if it can provide one.
 
     If the builder is unable to produce a valid execution payload bid, then
     the builder MUST return a 204 response. If the request is invalid, then the
     builder MUST return an error response (400) with a description of the
-    validation failure. If the `SignedRequestAuth` is provided and invalid, the builder MUST return a 400 response.
+    validation failure.
 
     This API is applicable from Gloas fork onwards.
   tags:
@@ -62,23 +67,40 @@ post:
       in: header
       required: false
       description: |
-        Optional header containing the proposer's timeout for the request in milliseconds. 
-        Builders should use this header to adjust the amount of time by which they delay the 
-        requests to maximise block rewards. Otherwise, requests will timeout and the proposer 
+        Optional header containing the proposer's timeout for the request in milliseconds.
+        Builders should use this header to adjust the amount of time by which they delay the
+        requests to maximise block rewards. Otherwise, requests will timeout and the proposer
         will not receive the header in time.
       schema:
         type: integer
         format: int64
         example: 10000
-  requestBody:
-    required: false
-    content:
-      application/json:
-        schema:
-          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
-      application/octet-stream:
-        schema:
-          description: "SSZ serialized `SignedRequestAuth` bytes."
+    - name: X-Eth-Request-Auth
+      in: header
+      required: true
+      description: |
+        JSON-encoded `SignedRequestAuth` authenticating the request. The
+        builder MUST verify the BLS signature against `validator_pubkey` and
+        check that `builder_pubkey` matches its own identity and that `slot`
+        matches the requested slot. If the header is missing or invalid, the
+        builder MUST return a 400 response.
+      schema:
+        $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
+    - name: X-Eth-Max-Trusted-Bid
+      in: header
+      required: true
+      description: |
+        Decimal `uint64` (in Gwei) carrying the proposer's `max_trusted_bid`
+        for this request. `bid.execution_payment` MUST NOT exceed this value.
+        A value of `0` indicates that the proposer does not accept any
+        trusted payments from this builder. A value of `2**64 - 1`
+        (`MAX_TRUSTED_BID`) indicates that the proposer accepts any trusted
+        payment amount. If the header is missing or malformed, the builder
+        MUST return a 400 response.
+      schema:
+        type: integer
+        format: uint64
+        example: 1000000000
   responses:
     "200":
       description: Success response.
@@ -115,10 +137,18 @@ post:
               value:
                 code: 400
                 message: "Unknown hash: missing parent hash"
+            MissingRequestAuth:
+              value:
+                code: 400
+                message: "Missing X-Eth-Request-Auth header"
             InvalidAuth:
               value:
                 code: 400
                 message: "Invalid SignedRequestAuth: signature verification failed"
+            MissingMaxTrustedBid:
+              value:
+                code: 400
+                message: "Missing X-Eth-Max-Trusted-Bid header"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "500":

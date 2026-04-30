@@ -5,15 +5,10 @@
 - [Gloas - Builder Specification](#gloas---builder-specification)
   - [Introduction](#introduction)
   - [Constants](#constants)
-  - [Containers](#containers)
-    - [New Containers](#new-containers)
-      - [`BuilderPreferences`](#builderpreferences)
-      - [`SignedBuilderPreferences`](#signedbuilderpreferences)
-    - [`verify_builder_preferences_signature`](#verify_builder_preferences_signature)
   - [Bidding](#bidding)
-  - [Builder Preferences](#builder-preferences)
+  - [Per-request Validator Inputs](#per-request-validator-inputs)
+    - [`max_trusted_bid`](#max_trusted_bid)
   - [Proposer Preferences (Deprecation of Validator Registrations)](#proposer-preferences-deprecation-of-validator-registrations)
-    - [`process_builder_preferences`](#process_builder_preferences)
   - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
   - [Constructing a `SignedExecutionPayloadEnvelope`](#constructing-a-signedexecutionpayloadenvelope)
 
@@ -23,10 +18,9 @@
 
 ## Introduction
 
-This document documents the builder behaviour with the Builder-API post ePBS. It
-describes how builders interact with validators through
-[`BuilderPreferences`](#builderpreferences) and construct
-[`SignedExecutionPayloadBid`][signed-execution-payload-bid] and
+This document documents the builder behaviour with the Builder-API post ePBS.
+It describes how builders consume per-request inputs from validators and
+construct [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] objects.
 
 ## Constants
@@ -34,43 +28,6 @@ describes how builders interact with validators through
 | Name              | Value       |
 | ----------------- | ----------- |
 | `MAX_TRUSTED_BID` | `2**64 - 1` |
-
-## Containers
-
-### New Containers
-
-#### `BuilderPreferences`
-
-```python
-class BuilderPreferences(Container):
-    builder_pubkey: BLSPubkey
-    validator_pubkey: BLSPubkey
-    proposal_slot: Slot
-    max_trusted_bid: uint64
-```
-
-#### `SignedBuilderPreferences`
-
-```python
-class SignedBuilderPreferences(Container):
-    message: BuilderPreferences
-    signature: BLSSignature
-```
-
-### `verify_builder_preferences_signature`
-
-*Note*: `compute_domain` and `compute_signing_root` are defined in the
-[Gloas consensus specs][gloas-consensus-specs].
-
-```python
-def verify_builder_preferences_signature(
-    signed_preferences: SignedBuilderPreferences,
-) -> bool:
-    pubkey = signed_preferences.message.validator_pubkey
-    domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
-    signing_root = compute_signing_root(signed_preferences.message, domain)
-    return bls.Verify(pubkey, signing_root, signed_preferences.signature)
-```
 
 ## Bidding
 
@@ -114,24 +71,35 @@ def is_eligible_for_bid(
     assert parent_root == hash_tree_root(state.latest_block_header)
 ```
 
-## Builder Preferences
+## Per-request Validator Inputs
 
-Validators send per-builder preferences directly to the builder via the
-[`submitBuilderPreferences`][submit-builder-preferences-api] API call. This
-allows a proposer to express trust preferences for a specific builder.
-Currently, the only preference that is supported is:
+Validators communicate per-request inputs to a builder via HTTP headers on
+each [`getExecutionPayloadBid`][get-execution-payload-bid-api] call:
 
-- `max_trusted_bid`: Specifies the maximum value (in Gwei) that a proposer is
-  willing to accept as a trusted execution layer payment from the builder. A
-  value of `0` indicates that the proposer does not accept any trusted payments
-  from the builder, requiring all payments to use the on-chain trustless
-  payments mechanism. A value of `MAX_TRUSTED_BID` indicates that the proposer
-  will accept any trusted payment amount from the builder. Proposers may adjust
-  this parameter based on their level of trust in the builder's reliability and
-  reputation.
+- `X-Eth-Request-Auth`: a JSON-encoded
+  [`SignedRequestAuth`][signed-request-auth] used to authenticate the
+  requesting validator. Builders MUST verify the signature against
+  `validator_pubkey` and check that `builder_pubkey` matches their own
+  identity and that `slot` matches the requested slot.
+- `X-Eth-Max-Trusted-Bid`: a decimal `uint64` (in Gwei) carrying the
+  proposer's `max_trusted_bid` for this request.
 
-The `builder_pubkey` field identifies which builder the preferences are intended
-for.
+If either header is missing, malformed, or fails validation, the builder MUST
+NOT serve a bid for the proposer (return a 400 response).
+
+### `max_trusted_bid`
+
+`max_trusted_bid` is the maximum value (in Gwei) that a proposer is willing
+to accept as a trusted execution layer payment from this builder for this
+request. A value of `0` indicates that the proposer does not accept any
+trusted payments from the builder, requiring all payments to use the on-chain
+trustless payments mechanism. A value of `MAX_TRUSTED_BID` indicates that the
+proposer will accept any trusted payment amount from the builder. Proposers
+may adjust this parameter based on their level of trust in the builder's
+reliability and reputation.
+
+`max_trusted_bid` is sent in the clear in the `X-Eth-Max-Trusted-Bid` header
+and is **not** covered by the `RequestAuth` signature.
 
 ## Proposer Preferences (Deprecation of Validator Registrations)
 
@@ -142,42 +110,6 @@ Builders SHOULD subscribe to the
 [`proposer_preferences`][proposer-preferences-topic] gossip topic to learn about
 a validator's general preferences. Validators broadcast these messages at the
 beginning of each epoch for their proposal slots in the next epoch.
-
-For per-builder preferences (such as `max_trusted_bid`), validators send
-[`SignedBuilderPreferences`](#signedbuilderpreferences) directly to the builder
-via the [`submitBuilderPreferences`][submit-builder-preferences-api] API call.
-
-### `process_builder_preferences`
-
-A `BuilderPreferences` message is considered valid if the following function
-completes without raising any assertions.
-
-```python
-def process_builder_preferences(
-    state: BeaconState,
-    proposer_preferences: ProposerPreferences,
-    signed_preferences: SignedBuilderPreferences,
-    builder_preferences: Dict[ValidatorIndex, BuilderPreferences],
-):
-    preferences = signed_preferences.message
-
-    validator_index = ValidatorIndex(state.validators.index(preferences.validator_pubkey))
-    validator = state.validators[validator_index]
-
-    # Verify validator is eligible
-    assert is_eligible_for_registration(state, validator)
-
-    # Verify that proposer preferences have been received via the gossip topic
-    assert proposer_preferences.validator_index == validator_index
-
-    # Verify the builder_pubkey matches the builder receiving the preferences
-    # (implementation specific check)
-
-    # Verify builder preferences signature
-    assert verify_builder_preferences_signature(
-        signed_preferences,
-    )
-```
 
 ## Constructing a `SignedExecutionPayloadBid`
 
@@ -194,8 +126,9 @@ MUST set `bid.value` to the amount they are committing to pay.
 
 If the builder intends to pay the proposer via an execution layer payment, they
 MUST set `bid.execution_payment`. This value MUST NOT exceed the
-`max_trusted_bid` from the proposer's
-[`SignedBuilderPreferences`](#signedbuilderpreferences).
+`max_trusted_bid` received in the `X-Eth-Max-Trusted-Bid` header of the
+corresponding [`getExecutionPayloadBid`][get-execution-payload-bid-api]
+request.
 
 ## Constructing a `SignedExecutionPayloadEnvelope`
 
@@ -211,10 +144,11 @@ The specification for a block builder to construct a
 documented in the [Gloas consensus specs][gloas-builder-specs].
 
 [eip-7732]: https://eips.ethereum.org/EIPS/eip-7732
+[get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
 [gloas-builder-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
 [proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md
 [proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
-[submit-builder-preferences-api]: ./../../apis/builder/preferences.yaml
+[signed-request-auth]: ./validator.md#signedrequestauth
