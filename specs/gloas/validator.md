@@ -44,7 +44,6 @@ that other builders do not DDOS or run replay attacks on the builder.
 ```python
 class RequestAuth(Container):
     builder_pubkey: BLSPubkey
-    validator_pubkey: BLSPubkey
     slot: Slot
 ```
 
@@ -78,14 +77,23 @@ If the validator chooses to authenticate its request, it constructs a
 
 - `builder_pubkey`: The BLS public key of the builder the request is intended
   for.
-- `validator_pubkey`: The BLS public key of the validator making the request.
 - `slot`: The slot for which the bid is being requested.
+
+The builder resolves the validator's public key from the `proposer_index` path
+parameter of the [`getExecutionPayloadBid`][get-execution-payload-bid-api]
+request, so it does not need to be carried inside `RequestAuth`.
 
 The validator then constructs the `SignedRequestAuth` by signing the
 `RequestAuth`, and sends it in the body of the
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] request. The signature
 lets builders authenticate the requesting validator and discard requests from
 other parties (e.g. DDOS or replay attempts from competing builders).
+
+*Note*: validators MAY also set `builder_pubkey` to the zero pubkey
+(`0x00…00`) to produce a `SignedRequestAuth` that authenticates the
+proposer without binding the signature to any specific builder. This trades
+cross-builder replay-protection for the ability to broadcast the same
+signed object to multiple builders.
 
 ### `max_trusted_bid`
 

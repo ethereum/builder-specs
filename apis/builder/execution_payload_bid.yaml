@@ -22,8 +22,8 @@ post:
     return a 400 response.
 
     The `SignedRequestAuth` body is optional. If it is present but malformed
-    or fails signature verification, the builder MUST return a 400 response.
-    If it is absent, the builder MAY still serve a bid, but builders SHOULD
+    or fails signature verification, the builder MAY return a 400 response.
+    If it is absent, the builder MAY still serve a bid, but builders MAY
     use the presence and validity of the `SignedRequestAuth` to apply
     per-validator policy (e.g. rate-limiting, prioritization, or refusing
     unauthenticated requests).
@@ -112,10 +112,11 @@ post:
   requestBody:
     description: |
       Optional `SignedRequestAuth` authenticating the request. If provided,
-      the builder MUST verify the BLS signature against `validator_pubkey`
-      and check that `builder_pubkey` matches its own identity and that
-      `slot` matches the requested slot. If absent, the builder MAY still
-      serve a bid subject to its own policy.
+      the builder MAY verify the BLS signature against the validator pubkey
+      resolved from the `proposer_index` path parameter, and check that
+      `builder_pubkey` matches its own identity and that `slot` matches the
+      requested slot. If absent, the builder MAY still serve a bid subject
+      to its own policy.
     required: false
     content:
       application/json:

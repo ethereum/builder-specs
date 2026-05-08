@@ -92,10 +92,11 @@ Validators communicate per-request inputs to a builder on each
 If the `X-Eth-Max-Trusted-Bid` header is missing or malformed, the builder MUST
 NOT serve a bid for the proposer (return a 400 response).
 
-If the request body is present, builders MUST verify the `SignedRequestAuth`
-signature against `validator_pubkey` and check that `builder_pubkey` matches
-their own identity and that `slot` matches the requested slot. If verification
-fails, the builder MUST return a 400 response.
+If the request body is present, builders MAY verify the `SignedRequestAuth`
+signature against the validator pubkey resolved from the `proposer_index` path
+parameter, and check that `builder_pubkey` matches their own identity and that
+`slot` matches the requested slot. If verification fails, the builder MAY return
+a 400 response.
 
 If the request body is absent, the builder MAY still serve a bid.
 
@@ -139,6 +140,12 @@ If the builder intends to pay the proposer via an execution layer payment, they
 MUST set `bid.execution_payment`. This value MUST NOT exceed the
 `max_trusted_bid` received in the `X-Eth-Max-Trusted-Bid` header of the
 corresponding [`getExecutionPayloadBid`][get-execution-payload-bid-api] request.
+
+*Note*: `bid.value` and `bid.execution_payment` are not mutually exclusive.
+A builder MAY set both fields on a single bid; in that case the builder is
+committing to pay the proposer the sum of the two. `bid.value` is deducted
+from the builder's staked collateral on-chain even when
+`bid.execution_payment` is also set.
 
 ## Constructing a `SignedExecutionPayloadEnvelope`
 
