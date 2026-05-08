@@ -10,12 +10,23 @@ post:
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
     - The index of the proposer.
-    - The `X-Eth-Request-Auth` header containing a JSON-encoded `SignedRequestAuth` that authenticates the request.
-    - The `X-Eth-Max-Trusted-Bid` header carrying the proposer's `max_trusted_bid` (decimal `uint64`, in Gwei) for this request.
+    - The `X-Eth-Max-Trusted-Bid` header carrying the proposer's
+      `max_trusted_bid` (decimal `uint64`, in Gwei) for this request.
+    - Optionally, a `SignedRequestAuth` in the request body that
+      authenticates the request. The body MAY be encoded as JSON
+      (`Content-Type: application/json`) or SSZ
+      (`Content-Type: application/octet-stream`).
 
-    Both headers are required. If either is missing, malformed, or fails
-    validation, the builder MUST NOT serve a bid for the proposer and MUST
+    The `X-Eth-Max-Trusted-Bid` header is required. If it is missing or
+    malformed, the builder MUST NOT serve a bid for the proposer and MUST
     return a 400 response.
+
+    The `SignedRequestAuth` body is optional. If it is present but malformed
+    or fails signature verification, the builder MUST return a 400 response.
+    If it is absent, the builder MAY still serve a bid, but builders SHOULD
+    use the presence and validity of the `SignedRequestAuth` to apply
+    per-validator policy (e.g. rate-limiting, prioritisation, or refusing
+    unauthenticated requests).
 
     The builder responds with a 200 response containing an execution payload bid if it can provide one.
 
@@ -75,17 +86,14 @@ post:
         type: integer
         format: int64
         example: 10000
-    - name: X-Eth-Request-Auth
+    - name: Eth-Consensus-Version
       in: header
-      required: true
+      required: false
       description: |
-        JSON-encoded `SignedRequestAuth` authenticating the request. The
-        builder MUST verify the BLS signature against `validator_pubkey` and
-        check that `builder_pubkey` matches its own identity and that `slot`
-        matches the requested slot. If the header is missing or invalid, the
-        builder MUST return a 400 response.
+        The active consensus version to which the `SignedRequestAuth` in the
+        request body belongs. Required if the request body is SSZ encoded.
       schema:
-        $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
+        $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
     - name: X-Eth-Max-Trusted-Bid
       in: header
       required: true
@@ -101,6 +109,21 @@ post:
         type: integer
         format: uint64
         example: 1000000000
+  requestBody:
+    description: |
+      Optional `SignedRequestAuth` authenticating the request. If provided,
+      the builder MUST verify the BLS signature against `validator_pubkey`
+      and check that `builder_pubkey` matches its own identity and that
+      `slot` matches the requested slot. If absent, the builder MAY still
+      serve a bid subject to its own policy.
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `SignedRequestAuth` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body. The `Eth-Consensus-Version` header MUST also be set."
   responses:
     "200":
       description: Success response.
@@ -137,10 +160,6 @@ post:
               value:
                 code: 400
                 message: "Unknown hash: missing parent hash"
-            MissingRequestAuth:
-              value:
-                code: 400
-                message: "Missing X-Eth-Request-Auth header"
             InvalidAuth:
               value:
                 code: 400
@@ -151,5 +170,7 @@ post:
                 message: "Missing X-Eth-Max-Trusted-Bid header"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
+    "415":
+      $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
     "500":
       $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

@@ -16,7 +16,6 @@
   - [Block proposal](#block-proposal)
     - [Constructing the `BeaconBlockBody`](#constructing-the-beaconblockbody)
       - [Receiving ExecutionPayloadBid](#receiving-executionpayloadbid)
-  - [Liveness failsafe](#liveness-failsafe)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -60,47 +59,47 @@ class SignedRequestAuth(Container):
 ## Bid Request
 
 When calling [`getExecutionPayloadBid`][get-execution-payload-bid-api], the
-validator MUST send two HTTP headers:
+validator MUST send the `X-Eth-Max-Trusted-Bid` header carrying a decimal
+`uint64` (in Gwei) expressing the per-builder `max_trusted_bid` for this
+request. See [`max_trusted_bid`](#max_trusted_bid). If the header is missing,
+the builder will not serve a bid for the proposer.
 
-- `X-Eth-Request-Auth`: a JSON-encoded
-  [`SignedRequestAuth`](#signedrequestauth) that authenticates the request.
-- `X-Eth-Max-Trusted-Bid`: a decimal `uint64` (in Gwei) expressing the
-  per-builder `max_trusted_bid` for this request. See
-  [`max_trusted_bid`](#max_trusted_bid).
-
-If either header is missing, the builder will not serve a bid for the
-proposer.
+The validator MAY additionally send a [`SignedRequestAuth`](#signedrequestauth)
+as the request body to authenticate the request. The body MAY be encoded as JSON
+(`Content-Type: application/json`) or SSZ
+(`Content-Type: application/octet-stream`); when SSZ is used, the validator MUST
+also send the `Eth-Consensus-Version` header. If the body is omitted, the
+builder MAY still serve a bid.
 
 ### Constructing the `RequestAuth`
 
-To construct the `RequestAuth`, we need to fill the following information:
+If the validator chooses to authenticate its request, it constructs a
+`RequestAuth` with the following fields:
 
 - `builder_pubkey`: The BLS public key of the builder the request is intended
   for.
 - `validator_pubkey`: The BLS public key of the validator making the request.
 - `slot`: The slot for which the bid is being requested.
 
-The validator constructs the `SignedRequestAuth` by signing the `RequestAuth`,
-JSON-encodes it, and sends it in the `X-Eth-Request-Auth` header of the
-[`getExecutionPayloadBid`][get-execution-payload-bid-api] request. The
-signature lets builders authenticate the requesting validator and discard
-requests from other parties (e.g. DDOS or replay attempts from competing
-builders).
+The validator then constructs the `SignedRequestAuth` by signing the
+`RequestAuth`, and sends it in the body of the
+[`getExecutionPayloadBid`][get-execution-payload-bid-api] request. The signature
+lets builders authenticate the requesting validator and discard requests from
+other parties (e.g. DDOS or replay attempts from competing builders).
 
 ### `max_trusted_bid`
 
-`max_trusted_bid` is the maximum value (in Gwei) that the proposer is willing
-to accept as a trusted execution layer payment from this builder for this
-request. A value of `0` means the proposer does not accept any trusted
-payments from this builder, requiring all payments to go through the on-chain
-trustless payments mechanism. A value of `MAX_TRUSTED_BID` means the proposer
-will accept any trusted payment amount from the builder. Proposers may adjust
-this parameter based on their level of trust in the builder's reliability and
-reputation.
+`max_trusted_bid` is the maximum value (in Gwei) that the proposer is willing to
+accept as a trusted execution layer payment from this builder for this request.
+A value of `0` means the proposer does not accept any trusted payments from this
+builder, requiring all payments to go through the on-chain trustless payments
+mechanism. A value of `MAX_TRUSTED_BID` means the proposer will accept any
+trusted payment amount from the builder. Proposers may adjust this parameter
+based on their level of trust in the builder's reliability and reputation.
 
 The validator sends `max_trusted_bid` as a decimal `uint64` in the
-`X-Eth-Max-Trusted-Bid` header. Note that `max_trusted_bid` is **not**
-covered by the `RequestAuth` signature. The validator MUST remember the
+`X-Eth-Max-Trusted-Bid` header. Note that `max_trusted_bid` is **not** covered
+by the `RequestAuth` signature. The validator MUST remember the
 `max_trusted_bid` value it sent for each request so it can validate the
 resulting bid against the same value.
 
@@ -151,7 +150,11 @@ def validate_bid(
     assert is_active_builder(state, bid.builder_index)
     assert bid.slot == state.slot
     assert bid.fee_recipient == fee_recipient
-    assert bid.parent_block_hash == state.latest_block_hash
+    # Bid can choose to extend on FULL or EMPTY.
+    assert (
+        bid.parent_block_hash == state.latest_execution_payload_bid.block_hash
+        or bid.parent_block_hash == state.latest_block_hash
+    )
     assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
     assert bid.gas_limit <= proposer_preferences.gas_limit
@@ -164,11 +167,10 @@ def validate_bid(
     return verify_execution_payload_bid_signature(state, signed_bid)
 ```
 
-`max_trusted_bid` is the value the validator sent in the
-`X-Eth-Max-Trusted-Bid` header of the corresponding
+`max_trusted_bid` is the value the validator sent in the `X-Eth-Max-Trusted-Bid`
+header of the corresponding
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] request. Validators
-MUST validate each bid against the `max_trusted_bid` they sent for that
-request.
+MUST validate each bid against the `max_trusted_bid` they sent for that request.
 
 Note that, the fee recipient specified in `bid.fee_recipient` does not
 necessarily correspond to the fee recipient of the execution payload. Even if a
@@ -188,9 +190,9 @@ block on top of a beacon `state` must take the following actions:
 1. Call upstream builder software to get a
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] using the
    [`getExecutionPayloadBid`][get-execution-payload-bid-api] API call. The
-   validator MUST include the `X-Eth-Request-Auth` and
-   `X-Eth-Max-Trusted-Bid` headers on the request; otherwise the builder will
-   not serve a bid.
+   validator MUST include the `X-Eth-Max-Trusted-Bid` header on the request;
+   otherwise the builder will not serve a bid. The validator MAY additionally
+   send a `SignedRequestAuth` in the request body to authenticate the request.
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
    [Gloas validator specs][gloas-validator-specs] but with the best
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior
@@ -202,14 +204,7 @@ block on top of a beacon `state` must take the following actions:
    [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and
    broadcasts it to the PTC committee.
 
-## Liveness failsafe
-
-When the circuit breaker condition is triggered for nodes, they *MUST* fallback
-to receiving bids from the P2P [`execution_payload_bid`][execution-payload-bid]
-topic and can also build blocks locally.
-
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#can_builder_cover_bid
-[execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md?plain=1#L321
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
 [gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal

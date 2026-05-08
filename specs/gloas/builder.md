@@ -18,9 +18,9 @@
 
 ## Introduction
 
-This document documents the builder behaviour with the Builder-API post ePBS.
-It describes how builders consume per-request inputs from validators and
-construct [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and
+This document documents the builder behaviour with the Builder-API post ePBS. It
+describes how builders consume per-request inputs from validators and construct
+[`SignedExecutionPayloadBid`][signed-execution-payload-bid] and
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] objects.
 
 ## Constants
@@ -62,9 +62,13 @@ def is_eligible_for_bid(
     # Verify that proposer preferences have been received via the gossip topic
     assert validator_index in proposer_preferences.keys()
 
-    # Verify parent hash
+    # Verify parent hash. The proposer could build on the FULL parent block or on the EMPTY parent block based on
+    # their view of the chain.
     # [Modified in Gloas:EIP7732]
-    assert parent_hash == state.latest_block_hash
+    assert (
+        parent_hash == state.latest_execution_payload_bid.block_hash
+        or parent_hash == state.latest_block_hash
+    )
 
     # Verify parent root
     # [Modified in Gloas:EIP7732]
@@ -73,33 +77,43 @@ def is_eligible_for_bid(
 
 ## Per-request Validator Inputs
 
-Validators communicate per-request inputs to a builder via HTTP headers on
-each [`getExecutionPayloadBid`][get-execution-payload-bid-api] call:
+Validators communicate per-request inputs to a builder on each
+[`getExecutionPayloadBid`][get-execution-payload-bid-api] call:
 
-- `X-Eth-Request-Auth`: a JSON-encoded
-  [`SignedRequestAuth`][signed-request-auth] used to authenticate the
-  requesting validator. Builders MUST verify the signature against
-  `validator_pubkey` and check that `builder_pubkey` matches their own
-  identity and that `slot` matches the requested slot.
-- `X-Eth-Max-Trusted-Bid`: a decimal `uint64` (in Gwei) carrying the
-  proposer's `max_trusted_bid` for this request.
+- The `X-Eth-Max-Trusted-Bid` header carrying a decimal `uint64` (in Gwei) with
+  the proposer's `max_trusted_bid` for this request. This header is
+  **required**.
+- Optionally, a [`SignedRequestAuth`][signed-request-auth] in the request body
+  used to authenticate the requesting validator. The body MAY be encoded as JSON
+  (`Content-Type: application/json`) or SSZ
+  (`Content-Type: application/octet-stream`); when SSZ is used, the
+  `Eth-Consensus-Version` header MUST also be set.
 
-If either header is missing, malformed, or fails validation, the builder MUST
+If the `X-Eth-Max-Trusted-Bid` header is missing or malformed, the builder MUST
 NOT serve a bid for the proposer (return a 400 response).
+
+If the request body is present, builders MUST verify the `SignedRequestAuth`
+signature against `validator_pubkey` and check that `builder_pubkey` matches
+their own identity and that `slot` matches the requested slot. If verification
+fails, the builder MUST return a 400 response.
+
+If the request body is absent, the builder MAY still serve a bid, but SHOULD use
+the presence and validity of the `SignedRequestAuth` to inform per-validator
+policy (e.g. rate-limiting, prioritisation, or refusing unauthenticated
+requests).
 
 ### `max_trusted_bid`
 
-`max_trusted_bid` is the maximum value (in Gwei) that a proposer is willing
-to accept as a trusted execution layer payment from this builder for this
-request. A value of `0` indicates that the proposer does not accept any
-trusted payments from the builder, requiring all payments to use the on-chain
-trustless payments mechanism. A value of `MAX_TRUSTED_BID` indicates that the
-proposer will accept any trusted payment amount from the builder. Proposers
-may adjust this parameter based on their level of trust in the builder's
-reliability and reputation.
+`max_trusted_bid` is the maximum value (in Gwei) that a proposer is willing to
+accept as a trusted execution layer payment from this builder for this request.
+A value of `0` indicates that the proposer does not accept any trusted payments
+from the builder, requiring all payments to use the on-chain trustless payments
+mechanism. A value of `MAX_TRUSTED_BID` indicates that the proposer will accept
+any trusted payment amount from the builder. Proposers may adjust this parameter
+based on their level of trust in the builder's reliability and reputation.
 
-`max_trusted_bid` is sent in the clear in the `X-Eth-Max-Trusted-Bid` header
-and is **not** covered by the `RequestAuth` signature.
+`max_trusted_bid` is sent in the clear in the `X-Eth-Max-Trusted-Bid` header and
+is **not** covered by the `RequestAuth` signature.
 
 ## Proposer Preferences (Deprecation of Validator Registrations)
 
@@ -127,8 +141,7 @@ MUST set `bid.value` to the amount they are committing to pay.
 If the builder intends to pay the proposer via an execution layer payment, they
 MUST set `bid.execution_payment`. This value MUST NOT exceed the
 `max_trusted_bid` received in the `X-Eth-Max-Trusted-Bid` header of the
-corresponding [`getExecutionPayloadBid`][get-execution-payload-bid-api]
-request.
+corresponding [`getExecutionPayloadBid`][get-execution-payload-bid-api] request.
 
 ## Constructing a `SignedExecutionPayloadEnvelope`
 
