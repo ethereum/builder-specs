@@ -25,7 +25,7 @@ post:
     or fails signature verification, the builder MUST return a 400 response.
     If it is absent, the builder MAY still serve a bid, but builders SHOULD
     use the presence and validity of the `SignedRequestAuth` to apply
-    per-validator policy (e.g. rate-limiting, prioritisation, or refusing
+    per-validator policy (e.g. rate-limiting, prioritization, or refusing
     unauthenticated requests).
 
     The builder responds with a 200 response containing an execution payload bid if it can provide one.

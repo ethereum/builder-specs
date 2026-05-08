@@ -106,7 +106,7 @@ resulting bid against the same value.
 ## Proposer Preferences
 
 *Note*: Validator registrations (`ValidatorRegistrationV1`) are **deprecated**
-in favour of [`ProposerPreferences`][proposer-preferences] from the consensus
+in favor of [`ProposerPreferences`][proposer-preferences] from the consensus
 specs.
 
 General validator preferences are now communicated via the

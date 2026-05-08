@@ -97,10 +97,7 @@ signature against `validator_pubkey` and check that `builder_pubkey` matches
 their own identity and that `slot` matches the requested slot. If verification
 fails, the builder MUST return a 400 response.
 
-If the request body is absent, the builder MAY still serve a bid, but SHOULD use
-the presence and validity of the `SignedRequestAuth` to inform per-validator
-policy (e.g. rate-limiting, prioritisation, or refusing unauthenticated
-requests).
+If the request body is absent, the builder MAY still serve a bid.
 
 ### `max_trusted_bid`
 
@@ -117,7 +114,7 @@ is **not** covered by the `RequestAuth` signature.
 
 ## Proposer Preferences (Deprecation of Validator Registrations)
 
-*Note*: `ValidatorRegistrationV1` is **deprecated** in favour of
+*Note*: `ValidatorRegistrationV1` is **deprecated** in favor of
 [`ProposerPreferences`][proposer-preferences] from the consensus specs.
 
 Builders SHOULD subscribe to the
