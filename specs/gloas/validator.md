@@ -89,12 +89,6 @@ The validator then constructs the `SignedRequestAuth` by signing the
 lets builders authenticate the requesting validator and discard requests from
 other parties (e.g. DDOS or replay attempts from competing builders).
 
-*Note*: validators MAY also set `builder_pubkey` to the zero pubkey
-(`0x00…00`) to produce a `SignedRequestAuth` that authenticates the
-proposer without binding the signature to any specific builder. This trades
-cross-builder replay-protection for the ability to broadcast the same
-signed object to multiple builders.
-
 ### `max_trusted_bid`
 
 `max_trusted_bid` is the maximum value (in Gwei) that the proposer is willing to
@@ -125,11 +119,6 @@ messages for their proposal slots in the next epoch.
 
 Builders SHOULD subscribe to this gossip topic to learn about proposer
 preferences for upcoming slots.
-
-Per-builder preferences (currently just `max_trusted_bid`) are not gossiped;
-they are sent directly to the builder as a header on each
-[`getExecutionPayloadBid`][get-execution-payload-bid-api] request. See
-[`max_trusted_bid`](#max_trusted_bid).
 
 ## Validating a `SignedExecutionPayloadBid`
 
