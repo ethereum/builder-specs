@@ -1,0 +1,44 @@
+post:
+  operationId: "submitBuilderPreferences"
+  summary: Submit builder preferences for a proposer.
+  description: |
+    Submits a proposer's `BuilderPreferences` to the builder, including the
+    `max_trusted_bid` that the proposer is willing to accept from this builder.
+
+    The `builder_pubkey` in the body MUST match the builder's own identity.
+    If it does not, the builder MUST return a 400 response.
+
+    A success response (200) indicates that the preferences were accepted. If
+    the preferences are invalid, then the builder MUST return an error response
+    (400) with a description of the validation failure.
+
+    This API is applicable from Gloas fork onwards.
+  tags:
+    - Builder
+  requestBody:
+    description: A `BuilderPreferences` object expressing the proposer's per-builder preferences.
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferences"
+  responses:
+    "200":
+      description: Success response.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            WrongBuilder:
+              value:
+                code: 400
+                message: "builder_pubkey does not match this builder's identity"
+            InvalidPreferences:
+              value:
+                code: 400
+                message: "Invalid builder preferences: max_trusted_bid malformed"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
