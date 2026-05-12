@@ -169,6 +169,17 @@ post:
               value:
                 code: 400
                 message: "Missing X-Eth-Max-Trusted-Bid header"
+    "401":
+      description: Authentication required.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            MissingAuth:
+              value:
+                code: 401
+                message: "Missing SignedRequestAuth: this builder requires authenticated requests"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "415":
