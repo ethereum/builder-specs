@@ -2,11 +2,14 @@ post:
   operationId: "submitBuilderPreferences"
   summary: Submit builder preferences for a proposer.
   description: |
-    Submits a proposer's `BuilderPreferences` to the builder, including the
+    Submits a proposer's `SignedBuilderPreferences` to the builder, including the
     `max_trusted_bid` that the proposer is willing to accept from this builder.
 
-    The `builder_pubkey` in the body MUST match the builder's own identity.
+    The `builder_pubkey` in the message MUST match the builder's own identity.
     If it does not, the builder MUST return a 400 response.
+
+    The builder MUST verify the BLS signature against `message.proposer_pubkey`.
+    If signature verification fails, the builder MUST return a 400 response.
 
     A success response (200) indicates that the preferences were accepted. If
     the preferences are invalid, then the builder MUST return an error response
@@ -16,12 +19,12 @@ post:
   tags:
     - Builder
   requestBody:
-    description: A `BuilderPreferences` object expressing the proposer's per-builder preferences.
+    description: A `SignedBuilderPreferences` object expressing the proposer's per-builder preferences.
     required: true
     content:
       application/json:
         schema:
-          $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferences"
+          $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/SignedBuilderPreferences"
   responses:
     "200":
       description: Success response.

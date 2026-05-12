@@ -13,3 +13,12 @@ Gloas:
       proposer_pubkey:
         $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
         description: "The BLS public key of the proposer expressing these preferences."
+  SignedBuilderPreferences:
+    type: object
+    description: "A signed `BuilderPreferences` message."
+    required: [message, signature]
+    properties:
+      message:
+        $ref: "#/Gloas/BuilderPreferences"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"
