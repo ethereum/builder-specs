@@ -79,9 +79,9 @@ def is_eligible_for_bid(
 ## Builder Preferences
 
 Validators communicate their per-builder preferences ahead of the bid request by
-calling the [`submitBuilderPreferences`][submit-builder-preferences-api] API,
-typically an epoch prior to their proposing epoch based on the proposer
-lookahead. The builder receives a `SignedBuilderPreferences` object whose
+calling the [`submitBuilderPreferences`][submit-builder-preferences-api] API in
+the epoch prior to the epoch in which they will be proposing, as determined from
+`state.lookahead`. The builder receives a `SignedBuilderPreferences` object whose
 `message` contains:
 
 - `max_trusted_bid`: The maximum trusted execution layer payment the proposer

@@ -80,11 +80,12 @@ class SignedBuilderPreferences(Container):
 
 ## Submitting Builder Preferences
 
-Based on the proposer lookahead, the validator SHOULD submit its
+The validator SHOULD submit its
 [`SignedBuilderPreferences`](#signedbuilderpreferences) to each builder via the
-[`submitBuilderPreferences`][submit-builder-preferences-api] API call an epoch
-prior to the proposing epoch. This ensures builders have the preferences before
-the bid request arrives.
+[`submitBuilderPreferences`][submit-builder-preferences-api] API call in the
+epoch prior to the epoch in which they will be proposing, as determined from
+`state.lookahead`. This ensures builders have the preferences before the bid
+request arrives.
 
 The validator constructs a `BuilderPreferences` with:
 
