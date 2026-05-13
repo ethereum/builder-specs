@@ -10,15 +10,17 @@ post:
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
     - The index of the proposer.
+    - The `X-Eth-Max-Trusted-Bid` header carrying the proposer's
+      `max_trusted_bid` (decimal `uint64`, in Gwei) for this request.
     - Optionally, a `SignedRequestAuth` in the request body that
       authenticates the request. The body MAY be encoded as JSON
       (`Content-Type: application/json`) or SSZ
       (`Content-Type: application/octet-stream`).
 
-    The builder uses the `max_trusted_bid` previously submitted via the
-    `/eth/v1/builder/builder_preferences/{proposer_index}` endpoint to
-    enforce payment limits. If no preferences have been submitted, the
-    builder MUST treat the `max_trusted_bid` as `0`.
+    The `X-Eth-Max-Trusted-Bid` header is optional. A validator MAY send it
+    if they have not already submitted a `SignedBuilderPreferences` to this
+    builder. If both are present, the header takes precedence for this request.
+    If neither is present, the builder MUST treat `max_trusted_bid` as `0`.
 
     The `SignedRequestAuth` body is optional. If it is present but malformed
     or fails signature verification, the builder MAY return a 400 response.
@@ -93,6 +95,22 @@ post:
         request body belongs. Required if the request body is SSZ encoded.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
+    - name: X-Eth-Max-Trusted-Bid
+      in: header
+      required: false
+      description: |
+        Optional decimal `uint64` (in Gwei) carrying the proposer's
+        `max_trusted_bid` for this request. MAY be sent if the validator has
+        not already submitted a `SignedBuilderPreferences` to this builder.
+        If present, `bid.execution_payment` MUST NOT exceed this value and it
+        takes precedence over any previously submitted `BuilderPreferences`.
+        A value of `0` indicates that the proposer does not accept any trusted
+        payments from this builder. A value of `2**64 - 1` (`MAX_TRUSTED_BID`)
+        indicates that the proposer accepts any trusted payment amount.
+      schema:
+        type: integer
+        format: uint64
+        example: 1000000000
   requestBody:
     description: |
       Optional `SignedRequestAuth` authenticating the request. If provided,
