@@ -5,6 +5,10 @@ post:
     Submits a proposer's `SignedBuilderPreferences` to the builder, including the
     `max_trusted_bid` that the proposer is willing to accept from this builder.
 
+    Validators SHOULD call this endpoint an epoch prior to their proposing epoch
+    based on the proposer lookahead, so that builders have the preferences before
+    the bid request arrives.
+
     The `builder_pubkey` in the message MUST match the builder's own identity.
     If it does not, the builder MUST return a 400 response.
 

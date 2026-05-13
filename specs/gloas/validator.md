@@ -80,11 +80,11 @@ class SignedBuilderPreferences(Container):
 
 ## Submitting Builder Preferences
 
-Before requesting a bid, the validator SHOULD submit its
+Based on the proposer lookahead, the validator SHOULD submit its
 [`SignedBuilderPreferences`](#signedbuilderpreferences) to each builder via the
-[`submitBuilderPreferences`][submit-builder-preferences-api] API call. This
-communicates the proposer's `max_trusted_bid` to the builder ahead of the bid
-request.
+[`submitBuilderPreferences`][submit-builder-preferences-api] API call an epoch
+prior to the proposing epoch. This ensures builders have the preferences before
+the bid request arrives.
 
 The validator constructs a `BuilderPreferences` with:
 
@@ -115,11 +115,11 @@ level of trust in the builder's reliability and reputation.
 The validator MAY also send `max_trusted_bid` as a decimal `uint64` in the
 `X-Eth-Max-Trusted-Bid` header on a
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] request, for example
-if `BuilderPreferences` have not been submitted to this builder. If sent, the
-header takes precedence over stored `BuilderPreferences` for that request. Note
-that `max_trusted_bid` is **not** covered by the `RequestAuth` signature. The
-validator MUST remember the effective `max_trusted_bid` for each request so it
-can validate the resulting bid against the same value.
+if `BuilderPreferences` have not been submitted to this builder. If a
+`BuilderPreferences` has been submitted, it takes precedence over the header.
+Note that `max_trusted_bid` is **not** covered by the `RequestAuth` signature.
+The validator MUST remember the effective `max_trusted_bid` for each request so
+it can validate the resulting bid against the same value.
 
 ## Bid Request
 

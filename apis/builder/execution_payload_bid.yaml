@@ -19,8 +19,9 @@ post:
 
     The `X-Eth-Max-Trusted-Bid` header is optional. A validator MAY send it
     if they have not already submitted a `SignedBuilderPreferences` to this
-    builder. If both are present, the header takes precedence for this request.
-    If neither is present, the builder MUST treat `max_trusted_bid` as `0`.
+    builder. If both are present, the stored `BuilderPreferences` takes
+    precedence over the header. If neither is present, the builder MUST treat
+    `max_trusted_bid` as `0`.
 
     The `SignedRequestAuth` body is optional. If it is present but malformed
     or fails signature verification, the builder MAY return a 400 response.
@@ -102,8 +103,9 @@ post:
         Optional decimal `uint64` (in Gwei) carrying the proposer's
         `max_trusted_bid` for this request. MAY be sent if the validator has
         not already submitted a `SignedBuilderPreferences` to this builder.
-        If present, `bid.execution_payment` MUST NOT exceed this value and it
-        takes precedence over any previously submitted `BuilderPreferences`.
+        If a stored `BuilderPreferences` exists for this proposer, it takes
+        precedence over this header. If no `BuilderPreferences` has been
+        submitted, `bid.execution_payment` MUST NOT exceed this value.
         A value of `0` indicates that the proposer does not accept any trusted
         payments from this builder. A value of `2**64 - 1` (`MAX_TRUSTED_BID`)
         indicates that the proposer accepts any trusted payment amount.

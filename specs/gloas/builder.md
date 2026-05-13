@@ -79,8 +79,10 @@ def is_eligible_for_bid(
 ## Builder Preferences
 
 Validators communicate their per-builder preferences ahead of the bid request by
-calling the [`submitBuilderPreferences`][submit-builder-preferences-api] API.
-The builder receives a `SignedBuilderPreferences` object whose `message` contains:
+calling the [`submitBuilderPreferences`][submit-builder-preferences-api] API,
+typically an epoch prior to their proposing epoch based on the proposer
+lookahead. The builder receives a `SignedBuilderPreferences` object whose
+`message` contains:
 
 - `max_trusted_bid`: The maximum trusted execution layer payment the proposer
   will accept from this builder (in Gwei).
@@ -116,16 +118,18 @@ Validators communicate per-request inputs to a builder on each
 - Optionally, the `X-Eth-Max-Trusted-Bid` header carrying a decimal `uint64`
   (in Gwei) with the proposer's `max_trusted_bid` for this request. MAY be
   omitted if the proposer has already submitted a `SignedBuilderPreferences`
-  to this builder. If present, it takes precedence over stored
-  `BuilderPreferences` for this request.
+  to this builder. If a stored `BuilderPreferences` exists for the proposer,
+  it takes precedence over this header.
 - Optionally, a [`SignedRequestAuth`][signed-request-auth] in the request body
   used to authenticate the requesting validator. The body MAY be encoded as JSON
   (`Content-Type: application/json`) or SSZ
   (`Content-Type: application/octet-stream`); when SSZ is used, the
   `Eth-Consensus-Version` header MUST also be set.
 
-If neither the `X-Eth-Max-Trusted-Bid` header nor a stored `BuilderPreferences`
-is available for the proposer, the builder MUST treat `max_trusted_bid` as `0`.
+The builder resolves `max_trusted_bid` in the following order of precedence:
+1. Stored `BuilderPreferences` for the proposer, if previously submitted.
+2. The `X-Eth-Max-Trusted-Bid` header, if present on this request.
+3. `0`, if neither is available.
 
 If the request body is present, builders MAY verify the `SignedRequestAuth`
 signature against the validator pubkey resolved from the `proposer_index` path
