@@ -66,7 +66,6 @@ specific builder ahead of the bid request.
 ```python
 class BuilderPreferences(Container):
     max_trusted_bid: Gwei
-    builder_pubkey: BLSPubkey
     validator_pubkey: BLSPubkey
 ```
 
@@ -91,16 +90,15 @@ The validator constructs a `BuilderPreferences` with:
 
 - `max_trusted_bid`: The maximum trusted execution layer payment the proposer
   will accept from this builder. See [`max_trusted_bid`](#max_trusted_bid).
-- `builder_pubkey`: The BLS public key of the builder these preferences are
-  intended for.
 - `validator_pubkey`: The validator's own BLS public key.
 
 The validator then constructs a `BuilderPreferencesRequest` with the
 `BuilderPreferences` as `preferences` and a `SignedRequestAuth` as `auth`. The
 `SignedRequestAuth` is constructed as described in
-[Constructing the `RequestAuth`](#constructing-the-requestauth). The builder
-MUST verify the `auth` signature against `preferences.validator_pubkey` and MUST
-reject the request with a 400 response if `preferences.builder_pubkey` does not
+[Constructing the `RequestAuth`](#constructing-the-requestauth); its
+`auth.message.builder_pubkey` identifies the intended builder. The builder MUST
+verify the `auth` signature against `preferences.validator_pubkey` and MUST
+reject the request with a 400 response if `auth.message.builder_pubkey` does not
 match its own identity.
 
 If no preferences have been submitted, the builder MUST treat the proposer's

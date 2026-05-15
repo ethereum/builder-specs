@@ -10,13 +10,10 @@ post:
     which they will be proposing, as determined from `state.lookahead`, so that
     builders have the preferences before the bid request arrives.
 
-    The `preferences.builder_pubkey` MUST match the builder's own identity.
-    If it does not, the builder MUST return a 400 response.
-
-    The builder MUST verify the BLS signature in `auth` against the validator
-    pubkey resolved from `preferences.validator_pubkey`, and check that
-    `auth.message.builder_pubkey` matches its own identity. If verification
-    fails, the builder MUST return a 400 response.
+    The builder MUST verify the BLS signature in `auth` against
+    `preferences.validator_pubkey`, and check that `auth.message.builder_pubkey`
+    matches its own identity. If either check fails, the builder MUST return a
+    400 response.
 
     A success response (200) indicates that the preferences were accepted. If
     the preferences are invalid, then the builder MUST return an error response
@@ -45,7 +42,7 @@ post:
             WrongBuilder:
               value:
                 code: 400
-                message: "builder_pubkey does not match this builder's identity"
+                message: "auth.message.builder_pubkey does not match this builder's identity"
             InvalidPreferences:
               value:
                 code: 400

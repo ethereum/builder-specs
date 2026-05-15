@@ -86,15 +86,12 @@ determined from `state.lookahead`. The builder receives a `BuilderPreferencesReq
 - `preferences`: A `BuilderPreferences` with:
   - `max_trusted_bid`: The maximum trusted execution layer payment the proposer
     will accept from this builder (in Gwei).
-  - `builder_pubkey`: The BLS public key of this builder. The builder MUST
-    return a 400 response if this does not match its own identity.
   - `validator_pubkey`: The BLS public key of the validator submitting these
     preferences.
-- `auth`: A `SignedRequestAuth` authenticating the request.
-
-The builder MUST verify the BLS signature in `auth` against
-`preferences.validator_pubkey` before storing the preferences. If verification
-fails, the builder MUST return a 400 response.
+- `auth`: A `SignedRequestAuth` authenticating the request. The builder MUST
+  check that `auth.message.builder_pubkey` matches its own identity and MUST
+  verify the BLS signature against `preferences.validator_pubkey`. If either
+  check fails, the builder MUST return a 400 response.
 
 The builder MUST store the preferences for each proposer and apply the
 `max_trusted_bid` constraint when constructing bids. If no preferences have been
