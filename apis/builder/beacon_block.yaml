@@ -8,6 +8,8 @@ post:
     valid. If the signed beacon block was invalid, then the builder
     must return an error response (400) with a description of the validation
     failure.
+
+    This API is applicable from Gloas fork onwards.
   tags:
     - Builder
   parameters:

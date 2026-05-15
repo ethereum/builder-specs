@@ -78,22 +78,23 @@ def is_eligible_for_bid(
 
 ## Builder Preferences
 
-Validators communicate their per-builder preferences ahead of the bid request by
-calling the [`submitBuilderPreferences`][submit-builder-preferences-api] API in
-the epoch prior to the epoch in which they will be proposing, as determined from
-`state.lookahead`. The builder receives a `SignedBuilderPreferences` object whose
-`message` contains:
+Validators MAY communicate their per-builder preferences ahead of the bid
+request by calling the [`submitBuilderPreferences`][submit-builder-preferences-api]
+API in the epoch prior to the epoch in which they will be proposing, as
+determined from `state.lookahead`. The builder receives a `BuilderPreferencesRequest` object containing:
 
-- `max_trusted_bid`: The maximum trusted execution layer payment the proposer
-  will accept from this builder (in Gwei).
-- `builder_pubkey`: The BLS public key of this builder. The builder MUST return
-  a 400 response if this does not match its own identity.
-- `proposer_pubkey`: The BLS public key of the proposer submitting these
-  preferences.
+- `preferences`: A `BuilderPreferences` with:
+  - `max_trusted_bid`: The maximum trusted execution layer payment the proposer
+    will accept from this builder (in Gwei).
+  - `builder_pubkey`: The BLS public key of this builder. The builder MUST
+    return a 400 response if this does not match its own identity.
+  - `validator_pubkey`: The BLS public key of the validator submitting these
+    preferences.
+- `auth`: A `SignedRequestAuth` authenticating the request.
 
-The builder MUST verify the BLS signature against `message.proposer_pubkey`
-before storing the preferences. If verification fails, the builder MUST return a
-400 response.
+The builder MUST verify the BLS signature in `auth` against
+`preferences.validator_pubkey` before storing the preferences. If verification
+fails, the builder MUST return a 400 response.
 
 The builder MUST store the preferences for each proposer and apply the
 `max_trusted_bid` constraint when constructing bids. If no preferences have been
@@ -117,7 +118,7 @@ Validators communicate per-request inputs to a builder on each
 
 - Optionally, the `X-Eth-Max-Trusted-Bid` header carrying a decimal `uint64`
   (in Gwei) with the proposer's `max_trusted_bid` for this request. MAY be
-  omitted if the proposer has already submitted a `SignedBuilderPreferences`
+  omitted if the proposer has already submitted a `BuilderPreferencesRequest`
   to this builder. If a stored `BuilderPreferences` exists for the proposer,
   it takes precedence over this header.
 - Optionally, a [`SignedRequestAuth`][signed-request-auth] in the request body

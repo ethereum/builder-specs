@@ -9,7 +9,7 @@
       - [`RequestAuth`](#requestauth)
       - [`SignedRequestAuth`](#signedrequestauth)
       - [`BuilderPreferences`](#builderpreferences)
-      - [`SignedBuilderPreferences`](#signedbuilderpreferences)
+      - [`BuilderPreferencesRequest`](#builderpreferencesrequest)
   - [Submitting Builder Preferences](#submitting-builder-preferences)
     - [`max_trusted_bid`](#max_trusted_bid)
   - [Bid Request](#bid-request)
@@ -67,22 +67,22 @@ specific builder ahead of the bid request.
 class BuilderPreferences(Container):
     max_trusted_bid: Gwei
     builder_pubkey: BLSPubkey
-    proposer_pubkey: BLSPubkey
+    validator_pubkey: BLSPubkey
 ```
 
-#### `SignedBuilderPreferences`
+#### `BuilderPreferencesRequest`
 
 ```python
-class SignedBuilderPreferences(Container):
-    message: BuilderPreferences
-    signature: BLSSignature
+class BuilderPreferencesRequest(Container):
+    preferences: BuilderPreferences
+    auth: SignedRequestAuth
 ```
 
 ## Submitting Builder Preferences
 
-The validator SHOULD submit its
-[`SignedBuilderPreferences`](#signedbuilderpreferences) to each builder via the
-[`submitBuilderPreferences`][submit-builder-preferences-api] API call in the
+The validator MAY submit its
+[`BuilderPreferencesRequest`](#builderpreferencesrequest) to each builder via
+the [`submitBuilderPreferences`][submit-builder-preferences-api] API call in the
 epoch prior to the epoch in which they will be proposing, as determined from
 `state.lookahead`. This ensures builders have the preferences before the bid
 request arrives.
@@ -93,12 +93,15 @@ The validator constructs a `BuilderPreferences` with:
   will accept from this builder. See [`max_trusted_bid`](#max_trusted_bid).
 - `builder_pubkey`: The BLS public key of the builder these preferences are
   intended for.
-- `proposer_pubkey`: The validator's own BLS public key.
+- `validator_pubkey`: The validator's own BLS public key.
 
-The validator then signs the `BuilderPreferences` to produce a
-`SignedBuilderPreferences` and submits it to the builder. The builder MUST
-verify the signature against `proposer_pubkey` and MUST reject the request with
-a 400 response if `builder_pubkey` does not match its own identity.
+The validator then constructs a `BuilderPreferencesRequest` with the
+`BuilderPreferences` as `preferences` and a `SignedRequestAuth` as `auth`. The
+`SignedRequestAuth` is constructed as described in
+[Constructing the `RequestAuth`](#constructing-the-requestauth). The builder
+MUST verify the `auth` signature against `preferences.validator_pubkey` and MUST
+reject the request with a 400 response if `preferences.builder_pubkey` does not
+match its own identity.
 
 If no preferences have been submitted, the builder MUST treat the proposer's
 `max_trusted_bid` as `0`.
@@ -128,7 +131,7 @@ When calling [`getExecutionPayloadBid`][get-execution-payload-bid-api], the
 validator MAY send the `X-Eth-Max-Trusted-Bid` header carrying a decimal
 `uint64` (in Gwei) expressing the per-request `max_trusted_bid`. This header
 MAY be omitted if the validator has already submitted a
-[`SignedBuilderPreferences`](#signedbuilderpreferences) to this builder. If the
+[`BuilderPreferencesRequest`](#builderpreferencesrequest) to this builder. If the
 header is present, it takes precedence over the stored `BuilderPreferences` for
 this request.
 

@@ -114,8 +114,8 @@ components:
       $ref: "./types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
     Gloas.BuilderPreferences:
       $ref: "./types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferences"
-    Gloas.SignedBuilderPreferences:
-      $ref: "./types/gloas/builder_preferences.yaml#/Gloas/SignedBuilderPreferences"
+    Gloas.BuilderPreferencesRequest:
+      $ref: "./types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesRequest"
   
   responses:
     InternalError:

@@ -2,18 +2,21 @@ post:
   operationId: "submitBuilderPreferences"
   summary: Submit builder preferences for a proposer.
   description: |
-    Submits a proposer's `SignedBuilderPreferences` to the builder, including the
-    `max_trusted_bid` that the proposer is willing to accept from this builder.
+    Submits a proposer's `BuilderPreferencesRequest` to the builder, including
+    the `max_trusted_bid` that the proposer is willing to accept from this
+    builder, authenticated via a `SignedRequestAuth`.
 
-    Validators SHOULD call this endpoint in the epoch prior to the epoch in
+    Validators MAY call this endpoint in the epoch prior to the epoch in
     which they will be proposing, as determined from `state.lookahead`, so that
     builders have the preferences before the bid request arrives.
 
-    The `builder_pubkey` in the message MUST match the builder's own identity.
+    The `preferences.builder_pubkey` MUST match the builder's own identity.
     If it does not, the builder MUST return a 400 response.
 
-    The builder MUST verify the BLS signature against `message.proposer_pubkey`.
-    If signature verification fails, the builder MUST return a 400 response.
+    The builder MUST verify the BLS signature in `auth` against the validator
+    pubkey resolved from `preferences.validator_pubkey`, and check that
+    `auth.message.builder_pubkey` matches its own identity. If verification
+    fails, the builder MUST return a 400 response.
 
     A success response (200) indicates that the preferences were accepted. If
     the preferences are invalid, then the builder MUST return an error response
@@ -23,12 +26,12 @@ post:
   tags:
     - Builder
   requestBody:
-    description: A `SignedBuilderPreferences` object expressing the proposer's per-builder preferences.
+    description: A `BuilderPreferencesRequest` containing the proposer's preferences and a `SignedRequestAuth` for authentication.
     required: true
     content:
       application/json:
         schema:
-          $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/SignedBuilderPreferences"
+          $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesRequest"
   responses:
     "200":
       description: Success response.
