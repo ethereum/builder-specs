@@ -51,8 +51,6 @@ tags:
 paths:
   /eth/v1/builder/validators:
     $ref: "./apis/builder/validators.yaml"
-  /eth/v1/builder/preferences:
-    $ref: "./apis/builder/preferences.yaml"
   /eth/v1/builder/header/{slot}/{parent_hash}/{pubkey}:
     $ref: "./apis/builder/header.yaml"
   /eth/v1/builder/execution_payload_bid/{slot}/{parent_hash}/{parent_root}/{proposer_index}:
@@ -112,10 +110,6 @@ components:
       $ref: "./types/gloas/request_auth.yaml#/Gloas/RequestAuth"
     Gloas.SignedRequestAuth:
       $ref: "./types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
-    Gloas.BuilderPreferences:
-      $ref: "./types/gloas/preferences.yaml#/Gloas/BuilderPreferences"
-    Gloas.SignedBuilderPreferences:
-      $ref: "./types/gloas/preferences.yaml#/Gloas/SignedBuilderPreferences"
   
   responses:
     InternalError:
@@ -167,5 +161,3 @@ components:
       $ref: "./examples/fulu/signed_builder_bid.json"
     Gloas.SignedRequestAuth:
       $ref: "./examples/gloas/signed_request_auth.json"
-    Gloas.SignedBuilderPreferences:
-      $ref: "./examples/gloas/signed_builder_preferences.json"
