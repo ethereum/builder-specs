@@ -2,14 +2,11 @@ Gloas:
   BuilderPreferences:
     type: object
     description: "Per-builder preferences that a proposer can express."
-    required: [max_trusted_bid, validator_pubkey]
+    required: [max_trusted_bid]
     properties:
       max_trusted_bid:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
         description: "Indicates the maximum amount that a proposer is willing to accept as a trusted payment amount from the builder."
-      validator_pubkey:
-        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
-        description: "The BLS public key of the validator expressing these preferences."
   BuilderPreferencesRequest:
     type: object
     description: "A builder preferences submission containing the proposer's preferences and a signed request authentication."

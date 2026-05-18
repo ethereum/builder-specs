@@ -11,17 +11,24 @@ post:
     builders have the preferences before the bid request arrives.
 
     The builder MUST verify the BLS signature in `auth` against
-    `preferences.validator_pubkey`, and check that `auth.message.builder_pubkey`
+    `validator_pubkey`, and check that `auth.message.builder_pubkey`
     matches its own identity. If either check fails, the builder MUST return a
     400 response.
 
-    A success response (200) indicates that the preferences were accepted. If
+    A success response (202) indicates that the preferences were accepted. If
     the preferences are invalid, then the builder MUST return an error response
     (400) with a description of the validation failure.
 
     This API is applicable from Gloas fork onwards.
   tags:
     - Builder
+  parameters:
+    - name: validator_pubkey
+      in: path
+      required: true
+      description: "The BLS public key of the validator expressing these preferences."
+      schema:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
   requestBody:
     description: A `BuilderPreferencesRequest` containing the proposer's preferences and a `SignedRequestAuth` for authentication.
     required: true
