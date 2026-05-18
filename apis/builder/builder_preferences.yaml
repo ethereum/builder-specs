@@ -36,6 +36,9 @@ post:
       application/json:
         schema:
           $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesRequest"
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `BuilderPreferencesRequest` bytes. Use content type header to indicate that SSZ data is contained in the request body."
   responses:
     "200":
       description: Success response.

@@ -83,17 +83,17 @@ request by calling the [`submitBuilderPreferences`][submit-builder-preferences-a
 API in the epoch prior to the epoch in which they will be proposing, as
 determined from `state.lookahead`. The builder receives a `BuilderPreferencesRequest` object containing:
 
+- `validator_pubkey`: The BLS public key of the validator submitting these
+  preferences, passed as a path parameter.
 - `preferences`: A `BuilderPreferences` with:
   - `max_trusted_bid`: The maximum trusted execution layer payment the proposer
     will accept from this builder (in Gwei).
-  - `validator_pubkey`: The BLS public key of the validator submitting these
-    preferences.
 - `auth`: A `SignedRequestAuth` authenticating the request. The builder MUST
   check that `auth.message.builder_pubkey` matches its own identity and MUST
-  verify the BLS signature against `preferences.validator_pubkey`. If either
-  check fails, the builder MUST return a 400 response.
+  verify the BLS signature against the `validator_pubkey` path parameter. If
+  either check fails, the builder MUST return a 400 response.
 
-The builder MUST store the preferences for each proposer and apply the
+The builder SHOULD store the preferences for each proposer and apply the
 `max_trusted_bid` constraint when constructing bids. If no preferences have been
 submitted for a proposer, the builder MUST treat the proposer's `max_trusted_bid`
 as `0`.
