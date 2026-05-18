@@ -55,13 +55,67 @@ class SignedRequestAuth(Container):
     signature: BLSSignature
 ```
 
+### `BuilderConfig`
+
+`BuilderConfig` specifies the connection details and per-builder preferences for
+a single whitelisted builder. This includes:
+
+- `url`: The URL of the builder where execution payload bids can be fetched.
+- `builder_pubkey`: The advertised BLS public key of the builder. Configured
+  alongside the URL, it forms the builder's off-chain identity and is used to
+  bind request authentication to a specific builder, preventing cross-builder
+  replay attacks.
+- `max_trusted_bid`: The maximum value (in Gwei) the proposer is willing to
+  accept as a trusted execution layer payment from this builder. A value of `0`
+  means the proposer does not accept any trusted payments from this builder,
+  requiring all payments to use the on-chain trustless mechanism. A value of
+  `MAX_TRUSTED_BID` means the proposer accepts any trusted payment amount.
+  Proposers should adjust this based on their level of trust in the builder.
+- `bid_boost`: A multiplier factor (in basis points, where 10000 = 100%) applied
+  to this builder's bid score when comparing against bids from other builders.
+
+```python
+class BuilderConfig(Container):
+    url: ByteList[MAX_URL_BYTES]
+    builder_pubkey: BLSPubkey
+    max_trusted_bid: uint64
+    bid_boost: uint64
+```
+
+### `GlobalPreferences`
+
+The `GlobalPreferences` container contains validator preferences across all
+builders. This includes:
+
+- `min_bid`: The minimum bid value (in Gwei) from any builder for the proposer
+  to consider using a builder bid. If no builder bid meets this threshold, the
+  proposer falls back to the locally built block. A value of `0` means no
+  minimum.
+- `local_block_boost`: A multiplier factor (in basis points, where 10000 = 100%)
+  applied to the locally built block value when comparing against bids from
+  builders. This gives priority to the local block in bid selection.
+
+```python
+class GlobalPreferences(Container):
+    min_bid: uint64
+    local_block_boost: uint64
+```
+
+### `BuilderWhitelist`
+
+```python
+class BuilderWhitelist(Container):
+    builders: List[BuilderConfig, MAX_WHITELISTED_BUILDERS]
+    global_preferences: GlobalPreferences
+```
+
 ## Bid Request
 
 When calling [`getExecutionPayloadBid`][get-execution-payload-bid-api], the
 validator MUST send the `X-Eth-Max-Trusted-Bid` header carrying a decimal
-`uint64` (in Gwei) expressing the per-builder `max_trusted_bid` for this
-request. See [`max_trusted_bid`](#max_trusted_bid). If the header is missing,
-the builder will not serve a bid for the proposer.
+`uint64` (in Gwei) expressing the per-builder `max_trusted_bid` configured in
+the [`BuilderConfig`](#builderconfig) for this builder. If the header is
+missing, the builder will not serve a bid for the proposer.
 
 The validator MAY additionally send a [`SignedRequestAuth`](#signedrequestauth)
 as the request body to authenticate the request. The body MAY be encoded as JSON
@@ -88,22 +142,6 @@ The validator then constructs the `SignedRequestAuth` by signing the
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] request. The signature
 lets builders authenticate the requesting validator and discard requests from
 other parties (e.g. DDOS or replay attempts from competing builders).
-
-### `max_trusted_bid`
-
-`max_trusted_bid` is the maximum value (in Gwei) that the proposer is willing to
-accept as a trusted execution layer payment from this builder for this request.
-A value of `0` means the proposer does not accept any trusted payments from this
-builder, requiring all payments to go through the on-chain trustless payments
-mechanism. A value of `MAX_TRUSTED_BID` means the proposer will accept any
-trusted payment amount from the builder. Proposers may adjust this parameter
-based on their level of trust in the builder's reliability and reputation.
-
-The validator sends `max_trusted_bid` as a decimal `uint64` in the
-`X-Eth-Max-Trusted-Bid` header. Note that `max_trusted_bid` is **not** covered
-by the `RequestAuth` signature. The validator MUST remember the
-`max_trusted_bid` value it sent for each request so it can validate the
-resulting bid against the same value.
 
 ## Proposer Preferences
 
@@ -201,6 +239,26 @@ block on top of a beacon `state` must take the following actions:
    [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and
    broadcasts it to the PTC committee.
 
+## Connecting with upstream block building
+
+### Builder Config
+
+The `BuilderConfig` specifies how the client can maintain builder
+configurations. It is manually maintained by an operator and
+contains the information on how to call a builder and preferences for the
+specific builder. It is left up to the client on how the config is passed and
+parsed.
+
+The `BuilderWhitelist` includes the per-builder configs along with the global
+preferences.
+
+See [`BuilderConfig`](#builderconfig) and [`GlobalPreferences`](#globalpreferences)
+for field descriptions.
+
+Aspects such as deadline enforcement and bid selection strategy are left up to
+the client implementation.
+
+[builder-preferences]: ./builder.md#builderpreferences
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#can_builder_cover_bid
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
