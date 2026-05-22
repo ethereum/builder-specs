@@ -1,0 +1,61 @@
+post:
+  operationId: "submitBuilderPreferences"
+  summary: Submit builder preferences for a proposer.
+  description: |
+    Submits a proposer's `BuilderPreferencesRequest` to the builder, including
+    the `max_trusted_bid` that the proposer is willing to accept from this
+    builder, authenticated via a `SignedRequestAuth`.
+
+    Validators MAY call this endpoint in the epoch prior to the epoch in
+    which they will be proposing, as determined from `state.lookahead`, so that
+    builders have the preferences before the bid request arrives.
+
+    The builder MUST verify the BLS signature in `auth` against
+    `validator_pubkey`, and check that `auth.message.builder_pubkey`
+    matches its own identity. If either check fails, the builder MUST return a
+    400 response.
+
+    A success response (202) indicates that the preferences were accepted. If
+    the preferences are invalid, then the builder MUST return an error response
+    (400) with a description of the validation failure.
+
+    This API is applicable from Gloas fork onwards.
+  tags:
+    - Builder
+  parameters:
+    - name: validator_pubkey
+      in: path
+      required: true
+      description: "The BLS public key of the validator expressing these preferences."
+      schema:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
+  requestBody:
+    description: A `BuilderPreferencesRequest` containing the proposer's preferences and a `SignedRequestAuth` for authentication.
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesRequest"
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `BuilderPreferencesRequest` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+  responses:
+    "200":
+      description: Success response.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            WrongBuilder:
+              value:
+                code: 400
+                message: "auth.message.builder_pubkey does not match this builder's identity"
+            InvalidPreferences:
+              value:
+                code: 400
+                message: "Invalid builder preferences: max_trusted_bid malformed"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

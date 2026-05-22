@@ -4,10 +4,12 @@ post:
   description: |
     Submits a `SignedBeaconBlock` to the builder, binding the proposer to the block. 
 
-    A success response (200) indicates that the signed beacon block was
+    A success response (202) indicates that the signed beacon block was
     valid. If the signed beacon block was invalid, then the builder
     must return an error response (400) with a description of the validation
     failure.
+
+    This API is applicable from Gloas fork onwards.
   tags:
     - Builder
   parameters:
