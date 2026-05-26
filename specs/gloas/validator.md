@@ -115,26 +115,15 @@ A value of `MAX_EXECUTION_PAYMENT` means the proposer will accept any execution 
 amount from the builder. Proposers may adjust this parameter based on their
 level of trust in the builder's reliability and reputation.
 
-The validator MAY also send `max_execution_payment` as a decimal `uint64` in the
-`X-Eth-Max-Execution-Payment` header on a
-[`getExecutionPayloadBid`][get-execution-payload-bid-api] request, for example
-if `BuilderPreferences` have not been submitted to this builder. If a
-`BuilderPreferences` has been submitted, it takes precedence over the header.
-Note that `max_execution_payment` is **not** covered by the `RequestAuth` signature.
-The validator MUST remember the effective `max_execution_payment` for each request so
-it can validate the resulting bid against the same value.
+`max_execution_payment` is communicated exclusively via the
+[`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
+`BuilderPreferences` have been submitted to a builder, that builder MUST NOT
+include an execution layer payment in its bid.
 
 ## Bid Request
 
 When calling [`getExecutionPayloadBid`][get-execution-payload-bid-api], the
-validator MAY send the `X-Eth-Max-Execution-Payment` header carrying a decimal
-`uint64` (in Gwei) expressing the per-request `max_execution_payment`. This header
-MAY be omitted if the validator has already submitted a
-[`BuilderPreferencesRequest`](#builderpreferencesrequest) to this builder. If the
-header is present, it takes precedence over the stored `BuilderPreferences` for
-this request.
-
-The validator MAY additionally send a [`SignedRequestAuth`](#signedrequestauth)
+validator MAY send a [`SignedRequestAuth`](#signedrequestauth)
 as the request body to authenticate the request. The body MAY be encoded as JSON
 (`Content-Type: application/json`) or SSZ
 (`Content-Type: application/octet-stream`); when SSZ is used, the validator MUST
@@ -219,10 +208,10 @@ def validate_bid(
     return verify_execution_payload_bid_signature(state, signed_bid)
 ```
 
-`max_execution_payment` is the value the validator sent in the `X-Eth-Max-Execution-Payment`
-header of the corresponding
-[`getExecutionPayloadBid`][get-execution-payload-bid-api] request. Validators
-MUST validate each bid against the `max_execution_payment` they sent for that request.
+`max_execution_payment` is the value from the `BuilderPreferences` the validator
+submitted to this builder via [`submitBuilderPreferences`][submit-builder-preferences-api].
+Validators MUST validate each bid against the `max_execution_payment` they submitted
+for that builder.
 
 Note that, the fee recipient specified in `bid.fee_recipient` does not
 necessarily correspond to the fee recipient of the execution payload. Even if a
@@ -242,10 +231,8 @@ block on top of a beacon `state` must take the following actions:
 1. Call upstream builder software to get a
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] using the
    [`getExecutionPayloadBid`][get-execution-payload-bid-api] API call. The
-   validator MAY include the `X-Eth-Max-Execution-Payment` header on the request if
-   `BuilderPreferences` have not been previously submitted to this builder. The
-   validator MAY additionally
-   send a `SignedRequestAuth` in the request body to authenticate the request.
+   validator MAY send a `SignedRequestAuth` in the request body to authenticate
+   the request.
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
    [Gloas validator specs][gloas-validator-specs] but with the best
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior

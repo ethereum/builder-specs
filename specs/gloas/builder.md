@@ -114,21 +114,16 @@ their level of trust in the builder's reliability and reputation.
 Validators communicate per-request inputs to a builder on each
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] call:
 
-- Optionally, the `X-Eth-Max-Execution-Payment` header carrying a decimal `uint64`
-  (in Gwei) with the proposer's `max_execution_payment` for this request. MAY be
-  omitted if the proposer has already submitted a `BuilderPreferencesRequest`
-  to this builder. If a stored `BuilderPreferences` exists for the proposer,
-  it takes precedence over this header.
 - Optionally, a [`SignedRequestAuth`][signed-request-auth] in the request body
   used to authenticate the requesting validator. The body MAY be encoded as JSON
   (`Content-Type: application/json`) or SSZ
   (`Content-Type: application/octet-stream`); when SSZ is used, the
   `Eth-Consensus-Version` header MUST also be set.
 
-The builder resolves `max_execution_payment` in the following order of precedence:
-1. Stored `BuilderPreferences` for the proposer, if previously submitted.
-2. The `X-Eth-Max-Execution-Payment` header, if present on this request.
-3. `0`, if neither is available.
+The proposer's `max_execution_payment` is communicated exclusively via the
+[`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
+`BuilderPreferences` have been submitted for the proposer, the builder MUST
+treat `max_execution_payment` as `0`.
 
 If the request body is present, builders MAY verify the `SignedRequestAuth`
 signature against the validator pubkey resolved from the `proposer_index` path
@@ -173,8 +168,9 @@ MUST set `bid.value` to the amount they are committing to pay.
 
 If the builder intends to pay the proposer via an execution layer payment, they
 MUST set `bid.execution_payment`. This value MUST NOT exceed the
-`max_execution_payment` received in the `X-Eth-Max-Execution-Payment` header of the
-corresponding [`getExecutionPayloadBid`][get-execution-payload-bid-api] request.
+`max_execution_payment` from the proposer's stored `BuilderPreferences`. If no
+`BuilderPreferences` have been submitted, the builder MUST NOT include an
+execution layer payment (i.e. MUST set `bid.execution_payment` to `0`).
 
 *Note*: `bid.value` and `bid.execution_payment` are not mutually exclusive.
 A builder MAY set both fields on a single bid; in that case the builder is
