@@ -126,9 +126,9 @@ The proposer's `max_execution_payment` is communicated exclusively via the
 treat `max_execution_payment` as `0`.
 
 If the request body is present, builders MAY verify the `SignedRequestAuth`
-signature against the validator pubkey resolved from the `proposer_index` path
-parameter, and check that `builder_pubkey` matches their own identity and that
-`slot` matches the requested slot. If verification fails, the builder MAY return
+signature against the `proposer_pubkey` path parameter, and check that
+`builder_pubkey` matches their own identity and that `slot` matches the
+requested slot. If verification fails, the builder MAY return
 a 400 response.
 
 ```python

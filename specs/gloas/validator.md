@@ -139,7 +139,7 @@ If the validator chooses to authenticate its request, it constructs a
   for.
 - `slot`: The slot for which the bid is being requested.
 
-The builder resolves the validator's public key from the `proposer_index` path
+The proposer's public key is already carried as the `proposer_pubkey` path
 parameter of the [`getExecutionPayloadBid`][get-execution-payload-bid-api]
 request, so it does not need to be carried inside `RequestAuth`.
 

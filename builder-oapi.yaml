@@ -53,7 +53,7 @@ paths:
     $ref: "./apis/builder/validators.yaml"
   /eth/v1/builder/header/{slot}/{parent_hash}/{pubkey}:
     $ref: "./apis/builder/header.yaml"
-  /eth/v1/builder/execution_payload_bid/{slot}/{parent_hash}/{parent_root}/{proposer_index}:
+  /eth/v1/builder/execution_payload_bid/{slot}/{parent_hash}/{parent_root}/{proposer_pubkey}:
     $ref: "./apis/builder/execution_payload_bid.yaml"
   /eth/v1/builder/beacon_block:
     $ref: "./apis/builder/beacon_block.yaml"

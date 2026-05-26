@@ -57,12 +57,12 @@ post:
       description: Root of the beacon block the proposer will build on.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/Root"
-    - name: proposer_index
+    - name: proposer_pubkey
       in: path
       required: true
-      description: Index of the proposer.
+      description: BLS public key of the proposer.
       schema:
-        $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
+        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
     - name: Date-Milliseconds
       in: header
       required: false
@@ -98,7 +98,7 @@ post:
     description: |
       Optional `SignedRequestAuth` authenticating the request. If provided,
       the builder MAY verify the BLS signature against the validator pubkey
-      resolved from the `proposer_index` path parameter, and check that
+      resolved from the `proposer_pubkey` path parameter, and check that
       `builder_pubkey` matches its own identity and that `slot` matches the
       requested slot. If absent, the builder MAY still serve a bid subject
       to its own policy.
@@ -116,7 +116,7 @@ post:
       headers:
         Eth-Consensus-Version:
           $ref: "../../builder-oapi.yaml#/components/headers/Eth-Consensus-Version"
-          required: false
+          required: true
       content:
         application/json:
           schema:
