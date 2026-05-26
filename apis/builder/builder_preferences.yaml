@@ -3,7 +3,7 @@ post:
   summary: Submit builder preferences for a proposer.
   description: |
     Submits a proposer's `BuilderPreferencesRequest` to the builder, including
-    the `max_trusted_bid` that the proposer is willing to accept from this
+    the `max_execution_payment` that the proposer is willing to accept from this
     builder, authenticated via a `SignedRequestAuth`.
 
     Validators MAY call this endpoint in the epoch prior to the epoch in
@@ -56,6 +56,6 @@ post:
             InvalidPreferences:
               value:
                 code: 400
-                message: "Invalid builder preferences: max_trusted_bid malformed"
+                message: "Invalid builder preferences: max_execution_payment malformed"
     "500":
       $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

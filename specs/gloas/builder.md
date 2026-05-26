@@ -7,7 +7,7 @@
   - [Constants](#constants)
   - [Bidding](#bidding)
   - [Builder Preferences](#builder-preferences)
-    - [`max_trusted_bid`](#max_trusted_bid)
+    - [`max_execution_payment`](#max_execution_payment)
   - [Per-request Validator Inputs](#per-request-validator-inputs)
   - [Proposer Preferences (Deprecation of Validator Registrations)](#proposer-preferences-deprecation-of-validator-registrations)
   - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
@@ -28,7 +28,8 @@ describes how builders consume per-request inputs from validators and construct
 
 | Name              | Value       |
 | ----------------- | ----------- |
-| `MAX_TRUSTED_BID` | `2**64 - 1` |
+| `MAX_EXECUTION_PAYMENT` | `2**64 - 1` |
+| `DOMAIN_REQUEST_AUTH` | `DomainType('0x0B000001')` |
 
 ## Bidding
 
@@ -86,7 +87,7 @@ determined from `state.lookahead`. The builder receives a `BuilderPreferencesReq
 - `validator_pubkey`: The BLS public key of the validator submitting these
   preferences, passed as a path parameter.
 - `preferences`: A `BuilderPreferences` with:
-  - `max_trusted_bid`: The maximum trusted execution layer payment the proposer
+  - `max_execution_payment`: The maximum trusted execution layer payment the proposer
     will accept from this builder (in Gwei).
 - `auth`: A `SignedRequestAuth` authenticating the request. The builder MUST
   check that `auth.message.builder_pubkey` matches its own identity and MUST
@@ -94,17 +95,17 @@ determined from `state.lookahead`. The builder receives a `BuilderPreferencesReq
   either check fails, the builder MUST return a 400 response.
 
 The builder SHOULD store the preferences for each proposer and apply the
-`max_trusted_bid` constraint when constructing bids. If no preferences have been
-submitted for a proposer, the builder MUST treat the proposer's `max_trusted_bid`
+`max_execution_payment` constraint when constructing bids. If no preferences have been
+submitted for a proposer, the builder MUST treat the proposer's `max_execution_payment`
 as `0`.
 
-### `max_trusted_bid`
+### `max_execution_payment`
 
-`max_trusted_bid` is the maximum value (in Gwei) that a proposer is willing to
+`max_execution_payment` is the maximum value (in Gwei) that a proposer is willing to
 accept as a trusted execution layer payment from this builder. A value of `0`
-indicates that the proposer does not accept any trusted payments from the
+indicates that the proposer does not accept any execution payments from the
 builder, requiring all payments to use the on-chain trustless payments mechanism.
-A value of `MAX_TRUSTED_BID` indicates that the proposer will accept any trusted
+A value of `MAX_EXECUTION_PAYMENT` indicates that the proposer will accept any trusted
 payment amount from the builder. Proposers may adjust this parameter based on
 their level of trust in the builder's reliability and reputation.
 
@@ -113,8 +114,8 @@ their level of trust in the builder's reliability and reputation.
 Validators communicate per-request inputs to a builder on each
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] call:
 
-- Optionally, the `X-Eth-Max-Trusted-Bid` header carrying a decimal `uint64`
-  (in Gwei) with the proposer's `max_trusted_bid` for this request. MAY be
+- Optionally, the `X-Eth-Max-Execution-Payment` header carrying a decimal `uint64`
+  (in Gwei) with the proposer's `max_execution_payment` for this request. MAY be
   omitted if the proposer has already submitted a `BuilderPreferencesRequest`
   to this builder. If a stored `BuilderPreferences` exists for the proposer,
   it takes precedence over this header.
@@ -124,9 +125,9 @@ Validators communicate per-request inputs to a builder on each
   (`Content-Type: application/octet-stream`); when SSZ is used, the
   `Eth-Consensus-Version` header MUST also be set.
 
-The builder resolves `max_trusted_bid` in the following order of precedence:
+The builder resolves `max_execution_payment` in the following order of precedence:
 1. Stored `BuilderPreferences` for the proposer, if previously submitted.
-2. The `X-Eth-Max-Trusted-Bid` header, if present on this request.
+2. The `X-Eth-Max-Execution-Payment` header, if present on this request.
 3. `0`, if neither is available.
 
 If the request body is present, builders MAY verify the `SignedRequestAuth`
@@ -134,6 +135,16 @@ signature against the validator pubkey resolved from the `proposer_index` path
 parameter, and check that `builder_pubkey` matches their own identity and that
 `slot` matches the requested slot. If verification fails, the builder MAY return
 a 400 response.
+
+```python
+def verify_request_auth_signature(
+    signed_request_auth: SignedRequestAuth,
+    pubkey: BLSPubkey,
+) -> bool:
+    domain = compute_domain(DOMAIN_REQUEST_AUTH)
+    signing_root = compute_signing_root(signed_request_auth.message, domain)
+    return bls.Verify(pubkey, signing_root, signed_request_auth.signature)
+```
 
 If the request body is absent, the builder MAY still serve a bid.
 
@@ -162,7 +173,7 @@ MUST set `bid.value` to the amount they are committing to pay.
 
 If the builder intends to pay the proposer via an execution layer payment, they
 MUST set `bid.execution_payment`. This value MUST NOT exceed the
-`max_trusted_bid` received in the `X-Eth-Max-Trusted-Bid` header of the
+`max_execution_payment` received in the `X-Eth-Max-Execution-Payment` header of the
 corresponding [`getExecutionPayloadBid`][get-execution-payload-bid-api] request.
 
 *Note*: `bid.value` and `bid.execution_payment` are not mutually exclusive.
