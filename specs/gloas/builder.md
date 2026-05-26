@@ -37,8 +37,8 @@ In Gloas, Execution payloads are built for a specific `slot`, `parent_hash`,
 `validator_index` along with the `parent_root` tuple corresponding to a unique
 beacon block serving as the parent.
 
-We update `is_eligible_for_bid` below. *Note*: `hash_tree_root` is defined in
-the [Gloas consensus specs][gloas-consensus-specs].
+We update `is_eligible_for_bid` below. *Note*: `hash_tree_root` and
+`get_beacon_proposer_index` are defined in the [Gloas consensus specs][gloas-consensus-specs].
 
 ```python
 def is_eligible_for_bid(
@@ -49,12 +49,17 @@ def is_eligible_for_bid(
     # [New in Gloas]
     parent_root: Root,
     # [New in Gloas]
-    validator_index: ValidatorIndex,
+    proposer_pubkey: BLSPubkey,
 ):
     # Verify slot
     assert slot == state.slot
 
-    assert validator_index in state.validators.keys()
+    # Verify proposer pubkey matches the expected proposer for this slot
+    validator_index = get_beacon_proposer_index(state)
+    assert state.validators[validator_index].pubkey == proposer_pubkey
+
+    # Verify the proposer is active
+    assert is_active_validator(state.validators[validator_index], get_current_epoch(state))
 
     # Verify that proposer preferences have been received via the gossip topic
     assert validator_index in proposer_preferences.keys()
