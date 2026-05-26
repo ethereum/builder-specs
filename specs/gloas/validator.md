@@ -213,7 +213,7 @@ submitted to this builder via [`submitBuilderPreferences`][submit-builder-prefer
 Validators MUST validate each bid against the `max_execution_payment` they submitted
 for that builder.
 
-Note that, the fee recipient specified in `bid.fee_recipient` does not
+Note that the fee recipient specified in `bid.fee_recipient` does not
 necessarily correspond to the fee recipient of the execution payload. Even if a
 builder pays the validator via execution layer payments, we require that the
 bid's fee recipient matches the validators expected fee recipient and not the

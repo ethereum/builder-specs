@@ -37,11 +37,6 @@ In Gloas, Execution payloads are built for a specific `slot`, `parent_hash`,
 `validator_index` along with the `parent_root` tuple corresponding to a unique
 beacon block serving as the parent.
 
-This is because in Gloas with [EIP-7732], the execution payload and beacon
-blocks are decoupled. The `parent_hash` could refer to a beacon block which is
-an ancestor of the parent beacon block corresponding to the current beacon block
-for which we are building the execution payload.
-
 We update `is_eligible_for_bid` below. *Note*: `hash_tree_root` is defined in
 the [Gloas consensus specs][gloas-consensus-specs].
 
