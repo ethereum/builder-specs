@@ -65,6 +65,8 @@ paths:
     $ref: "./apis/builder/builder_preferences.yaml"
   /eth/v1/builder/status:
     $ref: "./apis/builder/status.yaml"
+  /eth/v1/builder/identity:
+    $ref: "./apis/builder/identity.yaml"
 
 components:
   schemas:

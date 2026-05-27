@@ -22,7 +22,7 @@ post:
     payment in the bid.
 
     The `SignedRequestAuth` body is optional. If it is present but malformed
-    or fails signature verification, the builder MAY return a 400 response.
+    or fails signature verification, the builder MAY return a 401 response.
     If it is absent, the builder MAY still serve a bid, but builders MAY
     use the presence and validity of the `SignedRequestAuth` to apply
     per-validator policy (e.g. rate-limiting, prioritization, or refusing
@@ -146,10 +146,6 @@ post:
               value:
                 code: 400
                 message: "Unknown hash: missing parent hash"
-            InvalidAuth:
-              value:
-                code: 400
-                message: "Invalid SignedRequestAuth: signature verification failed"
     "401":
       description: Authentication required.
       content:
@@ -161,6 +157,10 @@ post:
               value:
                 code: 401
                 message: "Missing SignedRequestAuth: this builder requires authenticated requests"
+            InvalidAuth:
+              value:
+                code: 401
+                message: "Invalid SignedRequestAuth: signature verification failed"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "415":
