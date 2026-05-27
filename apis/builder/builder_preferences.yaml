@@ -11,8 +11,8 @@ post:
     builders have the preferences before the bid request arrives.
 
     The builder MUST verify the BLS signature in `auth` against
-    `validator_pubkey`, and check that `auth.message.builder_pubkey`
-    matches its own identity. If either check fails, the builder MUST return a
+    `validator_pubkey`, and check that `auth.message.builder_url`
+    matches its own URL. If either check fails, the builder MUST return a
     400 response.
 
     A success response (202) indicates that the preferences were accepted. If
@@ -52,7 +52,7 @@ post:
             WrongBuilder:
               value:
                 code: 400
-                message: "auth.message.builder_pubkey does not match this builder's identity"
+                message: "auth.message.builder_url does not match this builder's URL"
             InvalidPreferences:
               value:
                 code: 400

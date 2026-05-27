@@ -29,6 +29,7 @@ describes how builders consume per-request inputs from validators and construct
 | Name                    | Value                      |
 | ----------------------- | -------------------------- |
 | `MAX_EXECUTION_PAYMENT` | `2**64 - 1`                |
+| `MAX_URL_SIZE`          | `2048`                     |
 | `DOMAIN_REQUEST_AUTH`   | `DomainType('0x0B000001')` |
 
 ## Bidding
@@ -97,7 +98,7 @@ containing:
   - `max_execution_payment`: The maximum trusted execution layer payment the
     proposer will accept from this builder (in Gwei).
 - `auth`: A `SignedRequestAuth` authenticating the request. The builder MUST
-  check that `auth.message.builder_pubkey` matches its own identity and MUST
+  check that `auth.message.builder_url` matches its own URL and MUST
   verify the BLS signature against the `validator_pubkey` path parameter. If
   either check fails, the builder MUST return a 400 response.
 
@@ -135,8 +136,8 @@ treat `max_execution_payment` as `0`.
 
 If the request body is present, builders MAY verify the `SignedRequestAuth`
 signature against the `proposer_pubkey` path parameter, and check that
-`builder_pubkey` matches their own identity and that `slot` matches the
-requested slot. If verification fails, the builder MAY return a 400 response.
+`builder_url` matches their own URL and that `slot` matches the
+requested slot. If verification fails, the builder MAY return a 401 response.
 
 ```python
 def verify_request_auth_signature(

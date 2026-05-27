@@ -99,7 +99,7 @@ post:
       Optional `SignedRequestAuth` authenticating the request. If provided,
       the builder MAY verify the BLS signature against the validator pubkey
       resolved from the `proposer_pubkey` path parameter, and check that
-      `builder_pubkey` matches its own identity and that `slot` matches the
+      `builder_url` matches its own URL and that `slot` matches the
       requested slot. If absent, the builder MAY still serve a bid subject
       to its own policy.
     required: false

@@ -46,7 +46,7 @@ that other builders do not DDOS or run replay attacks on the builder.
 
 ```python
 class RequestAuth(Container):
-    builder_pubkey: BLSPubkey
+    builder_url: ByteList[MAX_URL_SIZE]
     slot: Slot
 ```
 
@@ -97,10 +97,10 @@ The validator then constructs a `BuilderPreferencesRequest` with the
 `BuilderPreferences` as `preferences` and a `SignedRequestAuth` as `auth`. The
 `SignedRequestAuth` is constructed as described in
 [Constructing the `RequestAuth`](#constructing-the-requestauth); its
-`auth.message.builder_pubkey` identifies the intended builder. The builder MUST
+`auth.message.builder_url` identifies the intended builder. The builder MUST
 verify the `auth` signature against the `validator_pubkey` path parameter and MUST
-reject the request with a 400 response if `auth.message.builder_pubkey` does not
-match its own identity.
+reject the request with a 400 response if `auth.message.builder_url` does not
+match its own URL.
 
 If no preferences have been submitted, the builder MUST treat the proposer's
 `max_execution_payment` as `0`.
@@ -135,8 +135,7 @@ builder MAY still serve a bid.
 If the validator chooses to authenticate its request, it constructs a
 `RequestAuth` with the following fields:
 
-- `builder_pubkey`: The BLS public key of the builder the request is intended
-  for.
+- `builder_url`: The URL of the builder the request is intended for.
 - `slot`: The slot for which the bid is being requested.
 
 The proposer's public key is already carried as the `proposer_pubkey` path

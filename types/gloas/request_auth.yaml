@@ -1,11 +1,12 @@
 Gloas:
   RequestAuth:
     type: object
-    required: [builder_pubkey, slot]
+    required: [builder_url, slot]
     properties:
-      builder_pubkey:
-        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
-        description: "The BLS public key of the builder the request is intended for."
+      builder_url:
+        type: string
+        description: "The URL of the builder the request is intended for."
+        example: "https://builder.example.com"
       slot:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
         description: "The slot for which the bid is being requested."
