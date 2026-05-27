@@ -25,12 +25,7 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          required: [data]
-          properties:
-            data:
-              $ref: "../../beacon-apis/types/gloas/block.yaml#/Gloas/SignedBeaconBlock"
-              description: "The signed beacon block."
+          $ref: "../../beacon-apis/types/gloas/block.yaml#/Gloas/SignedBeaconBlock"
       application/octet-stream:
         schema:
           description: "SSZ serialized `SignedBeaconBlock` bytes. Use content type header to indicate that SSZ data is contained in the request body."
