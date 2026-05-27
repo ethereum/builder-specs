@@ -26,10 +26,10 @@ describes how builders consume per-request inputs from validators and construct
 
 ## Constants
 
-| Name              | Value       |
-| ----------------- | ----------- |
-| `MAX_EXECUTION_PAYMENT` | `2**64 - 1` |
-| `DOMAIN_REQUEST_AUTH` | `DomainType('0x0B000001')` |
+| Name                    | Value                      |
+| ----------------------- | -------------------------- |
+| `MAX_EXECUTION_PAYMENT` | `2**64 - 1`                |
+| `DOMAIN_REQUEST_AUTH`   | `DomainType('0x0B000001')` |
 
 ## Bidding
 
@@ -37,8 +37,13 @@ In Gloas, Execution payloads are built for a specific `slot`, `parent_hash`,
 `validator_index` along with the `parent_root` tuple corresponding to a unique
 beacon block serving as the parent.
 
+This is because with ePBS, the beacon block and execution payload are decoupled.
+The `parent_hash` could be associated with a different beacon block as that of
+`parent_root`.
+
 We update `is_eligible_for_bid` below. *Note*: `hash_tree_root` and
-`get_beacon_proposer_index` are defined in the [Gloas consensus specs][gloas-consensus-specs].
+`get_beacon_proposer_index` are defined in the
+[Gloas consensus specs][gloas-consensus-specs].
 
 ```python
 def is_eligible_for_bid(
@@ -80,34 +85,37 @@ def is_eligible_for_bid(
 ## Builder Preferences
 
 Validators MAY communicate their per-builder preferences ahead of the bid
-request by calling the [`submitBuilderPreferences`][submit-builder-preferences-api]
-API in the epoch prior to the epoch in which they will be proposing, as
-determined from `state.lookahead`. The builder receives a `BuilderPreferencesRequest` object containing:
+request by calling the
+[`submitBuilderPreferences`][submit-builder-preferences-api] API in the epoch
+prior to the epoch in which they will be proposing, as determined from
+`state.lookahead`. The builder receives a `BuilderPreferencesRequest` object
+containing:
 
 - `validator_pubkey`: The BLS public key of the validator submitting these
   preferences, passed as a path parameter.
 - `preferences`: A `BuilderPreferences` with:
-  - `max_execution_payment`: The maximum trusted execution layer payment the proposer
-    will accept from this builder (in Gwei).
+  - `max_execution_payment`: The maximum trusted execution layer payment the
+    proposer will accept from this builder (in Gwei).
 - `auth`: A `SignedRequestAuth` authenticating the request. The builder MUST
   check that `auth.message.builder_pubkey` matches its own identity and MUST
   verify the BLS signature against the `validator_pubkey` path parameter. If
   either check fails, the builder MUST return a 400 response.
 
 The builder SHOULD store the preferences for each proposer and apply the
-`max_execution_payment` constraint when constructing bids. If no preferences have been
-submitted for a proposer, the builder MUST treat the proposer's `max_execution_payment`
-as `0`.
+`max_execution_payment` constraint when constructing bids. If no preferences
+have been submitted for a proposer, the builder MUST treat the proposer's
+`max_execution_payment` as `0`.
 
 ### `max_execution_payment`
 
-`max_execution_payment` is the maximum value (in Gwei) that a proposer is willing to
-accept as a trusted execution layer payment from this builder. A value of `0`
-indicates that the proposer does not accept any execution payments from the
-builder, requiring all payments to use the on-chain trustless payments mechanism.
-A value of `MAX_EXECUTION_PAYMENT` indicates that the proposer will accept any trusted
-payment amount from the builder. Proposers may adjust this parameter based on
-their level of trust in the builder's reliability and reputation.
+`max_execution_payment` is the maximum value (in Gwei) that a proposer is
+willing to accept as a trusted execution layer payment from this builder. A
+value of `0` indicates that the proposer does not accept any execution payments
+from the builder, requiring all payments to use the on-chain trustless payments
+mechanism. A value of `MAX_EXECUTION_PAYMENT` indicates that the proposer will
+accept any trusted payment amount from the builder. Proposers may adjust this
+parameter based on their level of trust in the builder's reliability and
+reputation.
 
 ## Per-request Validator Inputs
 
@@ -128,8 +136,7 @@ treat `max_execution_payment` as `0`.
 If the request body is present, builders MAY verify the `SignedRequestAuth`
 signature against the `proposer_pubkey` path parameter, and check that
 `builder_pubkey` matches their own identity and that `slot` matches the
-requested slot. If verification fails, the builder MAY return
-a 400 response.
+requested slot. If verification fails, the builder MAY return a 400 response.
 
 ```python
 def verify_request_auth_signature(
@@ -172,11 +179,11 @@ MUST set `bid.execution_payment`. This value MUST NOT exceed the
 `BuilderPreferences` have been submitted, the builder MUST NOT include an
 execution layer payment (i.e. MUST set `bid.execution_payment` to `0`).
 
-*Note*: `bid.value` and `bid.execution_payment` are not mutually exclusive.
-A builder MAY set both fields on a single bid; in that case the builder is
-committing to pay the proposer the sum of the two. `bid.value` is deducted
-from the builder's staked collateral on-chain even when
-`bid.execution_payment` is also set.
+*Note*: `bid.value` and `bid.execution_payment` are not mutually exclusive. A
+builder MAY set both fields on a single bid; in that case the builder is
+committing to pay the proposer the sum of the two. `bid.value` is deducted from
+the builder's staked collateral on-chain even when `bid.execution_payment` is
+also set.
 
 ## Constructing a `SignedExecutionPayloadEnvelope`
 
@@ -191,9 +198,7 @@ The specification for a block builder to construct a
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] is
 documented in the [Gloas consensus specs][gloas-builder-specs].
 
-[eip-7732]: https://eips.ethereum.org/EIPS/eip-7732
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
-[submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml
 [gloas-builder-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
 [proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md
@@ -201,3 +206,4 @@ documented in the [Gloas consensus specs][gloas-builder-specs].
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
 [signed-request-auth]: ./validator.md#signedrequestauth
+[submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml
