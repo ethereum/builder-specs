@@ -30,6 +30,12 @@ post:
       description: "The BLS public key of the validator expressing these preferences."
       schema:
         $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
+    - name: Eth-Consensus-Version
+      in: header
+      required: false
+      description: "The active consensus version to which the request body belongs. Required if the request body is SSZ encoded."
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
   requestBody:
     description: A `BuilderPreferencesRequest` containing the proposer's preferences and a `SignedRequestAuth` for authentication.
     required: true
