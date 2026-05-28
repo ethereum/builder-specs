@@ -1,5 +1,5 @@
 Gloas:
-  RequestAuth:
+  RequestAuthV1:
     type: object
     required: [builder_url, slot]
     properties:
@@ -10,11 +10,11 @@ Gloas:
       slot:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
         description: "The slot for which the bid is being requested."
-  SignedRequestAuth:
+  SignedRequestAuthV1:
     type: object
     required: [message, signature]
     properties:
       message:
-        $ref: "#/Gloas/RequestAuth"
+        $ref: "#/Gloas/RequestAuthV1"
       signature:
         $ref: "../../beacon-apis/types/primitive.yaml#/Signature"

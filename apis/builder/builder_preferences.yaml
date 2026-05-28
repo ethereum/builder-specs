@@ -2,9 +2,9 @@ post:
   operationId: "submitBuilderPreferences"
   summary: Submit builder preferences for a proposer.
   description: |
-    Submits a proposer's `BuilderPreferencesRequest` to the builder, including
+    Submits a proposer's `BuilderPreferencesRequestV1` to the builder, including
     the `max_execution_payment` that the proposer is willing to accept from this
-    builder, authenticated via a `SignedRequestAuth`.
+    builder, authenticated via a `SignedRequestAuthV1`.
 
     Validators MAY call this endpoint in the epoch prior to the epoch in
     which they will be proposing, as determined from `state.lookahead`, so that
@@ -37,15 +37,15 @@ post:
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
   requestBody:
-    description: A `BuilderPreferencesRequest` containing the proposer's preferences and a `SignedRequestAuth` for authentication.
+    description: A `BuilderPreferencesRequestV1` containing the proposer's preferences and a `SignedRequestAuthV1` for authentication.
     required: true
     content:
       application/json:
         schema:
-          $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesRequest"
+          $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesRequestV1"
       application/octet-stream:
         schema:
-          description: "SSZ serialized `BuilderPreferencesRequest` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+          description: "SSZ serialized `BuilderPreferencesRequestV1` bytes. Use content type header to indicate that SSZ data is contained in the request body."
   responses:
     "202":
       description: Success response.
@@ -59,7 +59,7 @@ post:
             SlotMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuth: auth.message.slot does not match the requested slot"
+                message: "Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot"
             WrongBuilder:
               value:
                 code: 400
@@ -78,6 +78,6 @@ post:
             SignatureVerificationFailed:
               value:
                 code: 401
-                message: "Invalid SignedRequestAuth: signature verification failed"
+                message: "Invalid SignedRequestAuthV1: signature verification failed"
     "500":
       $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

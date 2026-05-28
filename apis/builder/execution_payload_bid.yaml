@@ -10,21 +10,21 @@ post:
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
     - The index of the proposer.
-    - Optionally, a `SignedRequestAuth` in the request body that
+    - Optionally, a `SignedRequestAuthV1` in the request body that
       authenticates the request. The body MAY be encoded as JSON
       (`Content-Type: application/json`) or SSZ
       (`Content-Type: application/octet-stream`).
 
     The proposer's `max_execution_payment` is communicated exclusively via the
     [`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
-    `BuilderPreferences` have been submitted for the proposer, the builder MUST
+    `BuilderPreferencesV1` have been submitted for the proposer, the builder MUST
     treat `max_execution_payment` as `0` and MUST NOT include an execution layer
     payment in the bid.
 
-    The `SignedRequestAuth` body is optional. If it is present but malformed
+    The `SignedRequestAuthV1` body is optional. If it is present but malformed
     or fails signature verification, the builder MAY return a 401 response.
     If it is absent, the builder MAY still serve a bid, but builders MAY
-    use the presence and validity of the `SignedRequestAuth` to apply
+    use the presence and validity of the `SignedRequestAuthV1` to apply
     per-validator policy (e.g. rate-limiting, prioritization, or refusing
     unauthenticated requests).
 
@@ -90,13 +90,13 @@ post:
       in: header
       required: false
       description: |
-        The active consensus version to which the `SignedRequestAuth` in the
+        The active consensus version to which the `SignedRequestAuthV1` in the
         request body belongs. Required if the request body is SSZ encoded.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
   requestBody:
     description: |
-      Optional `SignedRequestAuth` authenticating the request. If provided,
+      Optional `SignedRequestAuthV1` authenticating the request. If provided,
       the builder MAY verify the BLS signature against the validator pubkey
       resolved from the `proposer_pubkey` path parameter, and check that
       `builder_url` matches its own URL and that `slot` matches the
@@ -106,10 +106,10 @@ post:
     content:
       application/json:
         schema:
-          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
+          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuthV1"
       application/octet-stream:
         schema:
-          description: "SSZ serialized `SignedRequestAuth` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body. The `Eth-Consensus-Version` header MUST also be set."
+          description: "SSZ serialized `SignedRequestAuthV1` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body. The `Eth-Consensus-Version` header MUST also be set."
   responses:
     "200":
       description: Success response.
@@ -149,11 +149,11 @@ post:
             SlotMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuth: auth.message.slot does not match the requested slot"
+                message: "Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot"
             WrongBuilder:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuth: auth.message.builder_url does not match this builder's URL"
+                message: "Invalid SignedRequestAuthV1: auth.message.builder_url does not match this builder's URL"
     "401":
       description: Authentication required.
       content:
@@ -164,11 +164,11 @@ post:
             MissingAuth:
               value:
                 code: 401
-                message: "Missing SignedRequestAuth: this builder requires authenticated requests"
+                message: "Missing SignedRequestAuthV1: this builder requires authenticated requests"
             InvalidAuth:
               value:
                 code: 401
-                message: "Invalid SignedRequestAuth: signature verification failed"
+                message: "Invalid SignedRequestAuthV1: signature verification failed"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "415":

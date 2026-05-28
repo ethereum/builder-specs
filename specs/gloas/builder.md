@@ -89,15 +89,15 @@ Validators MAY communicate their per-builder preferences ahead of the bid
 request by calling the
 [`submitBuilderPreferences`][submit-builder-preferences-api] API in the epoch
 prior to the epoch in which they will be proposing, as determined from
-`state.lookahead`. The builder receives a `BuilderPreferencesRequest` object
+`state.lookahead`. The builder receives a `BuilderPreferencesRequestV1` object
 containing:
 
 - `validator_pubkey`: The BLS public key of the validator submitting these
   preferences, passed as a path parameter.
-- `preferences`: A `BuilderPreferences` with:
+- `preferences`: A `BuilderPreferencesV1` with:
   - `max_execution_payment`: The maximum trusted execution layer payment the
     proposer will accept from this builder (in Gwei).
-- `auth`: A `SignedRequestAuth` authenticating the request. The builder MUST
+- `auth`: A `SignedRequestAuthV1` authenticating the request. The builder MUST
   check that `auth.message.builder_url` matches its own URL and MUST
   verify the BLS signature against the `validator_pubkey` path parameter. If
   either check fails, the builder MUST return a 400 response.
@@ -123,7 +123,7 @@ reputation.
 Validators communicate per-request inputs to a builder on each
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] call:
 
-- Optionally, a [`SignedRequestAuth`][signed-request-auth] in the request body
+- Optionally, a [`SignedRequestAuthV1`][signed-request-auth] in the request body
   used to authenticate the requesting validator. The body MAY be encoded as JSON
   (`Content-Type: application/json`) or SSZ
   (`Content-Type: application/octet-stream`); when SSZ is used, the
@@ -131,17 +131,17 @@ Validators communicate per-request inputs to a builder on each
 
 The proposer's `max_execution_payment` is communicated exclusively via the
 [`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
-`BuilderPreferences` have been submitted for the proposer, the builder MUST
+`BuilderPreferencesV1` have been submitted for the proposer, the builder MUST
 treat `max_execution_payment` as `0`.
 
-If the request body is present, builders MAY verify the `SignedRequestAuth`
+If the request body is present, builders MAY verify the `SignedRequestAuthV1`
 signature against the `proposer_pubkey` path parameter, and check that
 `builder_url` matches their own URL and that `slot` matches the
 requested slot. If verification fails, the builder MAY return a 401 response.
 
 ```python
 def verify_request_auth_signature(
-    signed_request_auth: SignedRequestAuth,
+    signed_request_auth: SignedRequestAuthV1,
     pubkey: BLSPubkey,
 ) -> bool:
     domain = compute_domain(DOMAIN_REQUEST_AUTH)
@@ -176,8 +176,8 @@ MUST set `bid.value` to the amount they are committing to pay.
 
 If the builder intends to pay the proposer via an execution layer payment, they
 MUST set `bid.execution_payment`. This value MUST NOT exceed the
-`max_execution_payment` from the proposer's stored `BuilderPreferences`. If no
-`BuilderPreferences` have been submitted, the builder MUST NOT include an
+`max_execution_payment` from the proposer's stored `BuilderPreferencesV1`. If no
+`BuilderPreferencesV1` have been submitted, the builder MUST NOT include an
 execution layer payment (i.e. MUST set `bid.execution_payment` to `0`).
 
 *Note*: `bid.value` and `bid.execution_payment` are not mutually exclusive. A
@@ -206,5 +206,5 @@ documented in the [Gloas consensus specs][gloas-builder-specs].
 [proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
-[signed-request-auth]: ./validator.md#signedrequestauth
+[signed-request-auth]: ./validator.md#signedrequestauthv1
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml
