@@ -12,8 +12,9 @@ post:
 
     The builder MUST verify the BLS signature in `auth` against
     `validator_pubkey`, and check that `auth.message.builder_url`
-    matches its own URL. If either check fails, the builder MUST return a
-    400 response.
+    matches its own URL. If the signature check fails, the builder MUST
+    return a 401 response. If the URL or slot check fails, the builder MUST
+    return a 400 response.
 
     A success response (202) indicates that the preferences were accepted. If
     the preferences are invalid, then the builder MUST return an error response
@@ -49,6 +50,10 @@ post:
           schema:
             $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
           examples:
+            SlotMismatch:
+              value:
+                code: 400
+                message: "Invalid SignedRequestAuth: auth.message.slot does not match the requested slot"
             WrongBuilder:
               value:
                 code: 400
@@ -57,5 +62,16 @@ post:
               value:
                 code: 400
                 message: "Invalid builder preferences: max_execution_payment malformed"
+    "401":
+      description: Authentication required.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            SignatureVerificationFailed:
+              value:
+                code: 401
+                message: "Invalid SignedRequestAuth: signature verification failed"
     "500":
       $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

@@ -146,6 +146,14 @@ post:
               value:
                 code: 400
                 message: "Unknown hash: missing parent hash"
+            SlotMismatch:
+              value:
+                code: 400
+                message: "Invalid SignedRequestAuth: auth.message.slot does not match the requested slot"
+            WrongBuilder:
+              value:
+                code: 400
+                message: "Invalid SignedRequestAuth: auth.message.builder_url does not match this builder's URL"
     "401":
       description: Authentication required.
       content:

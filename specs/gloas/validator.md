@@ -136,17 +136,15 @@ If the validator chooses to authenticate its request, it constructs a
 `RequestAuth` with the following fields:
 
 - `builder_url`: The URL of the builder the request is intended for.
-- `slot`: The slot for which the bid is being requested.
+- `slot`: The slot for which the request is being sent.
 
-The proposer's public key is already carried as the `proposer_pubkey` path
-parameter of the [`getExecutionPayloadBid`][get-execution-payload-bid-api]
-request, so it does not need to be carried inside `RequestAuth`.
+The proposer's public key is already carried as a path parameter in the relevant
+API request, so it does not need to be carried inside `RequestAuth`.
 
 The validator then constructs the `SignedRequestAuth` by signing the
-`RequestAuth`, and sends it in the body of the
-[`getExecutionPayloadBid`][get-execution-payload-bid-api] request. The signature
-lets builders authenticate the requesting validator and discard requests from
-other parties (e.g. DDOS or replay attempts from competing builders).
+`RequestAuth`. The signature lets builders authenticate the requesting validator
+and discard requests from other parties (e.g. DDOS or replay attempts from
+competing builders).
 
 ## Proposer Preferences
 
