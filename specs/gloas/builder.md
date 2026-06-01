@@ -97,7 +97,7 @@ containing:
 - `validator_pubkey`: The BLS public key of the validator submitting these
   preferences, passed as a path parameter.
 - `preferences`: A `BuilderPreferencesV1` with:
-  - `max_execution_payment`: The maximum trusted execution layer payment the
+  - `max_execution_payment`: The maximum execution layer payment the
     proposer will accept from this builder (in Gwei).
 - `auth`: A `SignedRequestAuthV1` authenticating the request. The builder MUST
   check that `auth.message.builder_url` matches its own URL and MUST verify the
@@ -112,11 +112,11 @@ have been submitted for a proposer, the builder MUST treat the proposer's
 ### `max_execution_payment`
 
 `max_execution_payment` is the maximum value (in Gwei) that a proposer is
-willing to accept as a trusted execution layer payment from this builder. A
+willing to accept as an execution layer payment from this builder. A
 value of `0` indicates that the proposer does not accept any execution payments
 from the builder, requiring all payments to use the on-chain trustless payments
 mechanism. A value of `MAX_EXECUTION_PAYMENT` indicates that the proposer will
-accept any trusted payment amount from the builder. Proposers may adjust this
+accept any execution layer payment amount from the builder. Proposers may adjust this
 parameter based on their level of trust in the builder's reliability and
 reputation.
 
