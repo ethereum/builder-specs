@@ -10,23 +10,21 @@ post:
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
     - The index of the proposer.
-    - The `X-Eth-Max-Trusted-Bid` header carrying the proposer's
-      `max_trusted_bid` (decimal `uint64`, in Gwei) for this request.
-    - Optionally, a `SignedRequestAuth` in the request body that
+    - Optionally, a `SignedRequestAuthV1` in the request body that
       authenticates the request. The body MAY be encoded as JSON
       (`Content-Type: application/json`) or SSZ
       (`Content-Type: application/octet-stream`).
 
-    The `X-Eth-Max-Trusted-Bid` header is optional. A validator MAY send it
-    if they have not already submitted a `SignedBuilderPreferences` to this
-    builder. If both are present, the stored `BuilderPreferences` takes
-    precedence over the header. If neither is present, the builder MUST treat
-    `max_trusted_bid` as `0`.
+    The proposer's `max_execution_payment` is communicated exclusively via the
+    [`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
+    `BuilderPreferencesV1` have been submitted for the proposer, the builder MUST
+    treat `max_execution_payment` as `0` and MUST NOT include an execution layer
+    payment in the bid.
 
-    The `SignedRequestAuth` body is optional. If it is present but malformed
-    or fails signature verification, the builder MAY return a 400 response.
+    The `SignedRequestAuthV1` body is optional. If it is present but malformed
+    or fails signature verification, the builder MAY return a 401 response.
     If it is absent, the builder MAY still serve a bid, but builders MAY
-    use the presence and validity of the `SignedRequestAuth` to apply
+    use the presence and validity of the `SignedRequestAuthV1` to apply
     per-validator policy (e.g. rate-limiting, prioritization, or refusing
     unauthenticated requests).
 
@@ -59,12 +57,12 @@ post:
       description: Root of the beacon block the proposer will build on.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/Root"
-    - name: proposer_index
+    - name: proposer_pubkey
       in: path
       required: true
-      description: Index of the proposer.
+      description: BLS public key of the proposer.
       schema:
-        $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
+        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
     - name: Date-Milliseconds
       in: header
       required: false
@@ -92,50 +90,33 @@ post:
       in: header
       required: false
       description: |
-        The active consensus version to which the `SignedRequestAuth` in the
+        The active consensus version to which the `SignedRequestAuthV1` in the
         request body belongs. Required if the request body is SSZ encoded.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
-    - name: X-Eth-Max-Trusted-Bid
-      in: header
-      required: false
-      description: |
-        Optional decimal `uint64` (in Gwei) carrying the proposer's
-        `max_trusted_bid` for this request. MAY be sent if the validator has
-        not already submitted a `SignedBuilderPreferences` to this builder.
-        If a stored `BuilderPreferences` exists for this proposer, it takes
-        precedence over this header. If no `BuilderPreferences` has been
-        submitted, `bid.execution_payment` MUST NOT exceed this value.
-        A value of `0` indicates that the proposer does not accept any trusted
-        payments from this builder. A value of `2**64 - 1` (`MAX_TRUSTED_BID`)
-        indicates that the proposer accepts any trusted payment amount.
-      schema:
-        type: integer
-        format: uint64
-        example: 1000000000
   requestBody:
     description: |
-      Optional `SignedRequestAuth` authenticating the request. If provided,
+      Optional `SignedRequestAuthV1` authenticating the request. If provided,
       the builder MAY verify the BLS signature against the validator pubkey
-      resolved from the `proposer_index` path parameter, and check that
-      `builder_pubkey` matches its own identity and that `slot` matches the
+      resolved from the `proposer_pubkey` path parameter, and check that
+      `builder_url` matches its own URL and that `slot` matches the
       requested slot. If absent, the builder MAY still serve a bid subject
       to its own policy.
     required: false
     content:
       application/json:
         schema:
-          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
+          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuthV1"
       application/octet-stream:
         schema:
-          description: "SSZ serialized `SignedRequestAuth` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body. The `Eth-Consensus-Version` header MUST also be set."
+          description: "SSZ serialized `SignedRequestAuthV1` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body. The `Eth-Consensus-Version` header MUST also be set."
   responses:
     "200":
       description: Success response.
       headers:
         Eth-Consensus-Version:
           $ref: "../../builder-oapi.yaml#/components/headers/Eth-Consensus-Version"
-          required: false
+          required: true
       content:
         application/json:
           schema:
@@ -165,10 +146,14 @@ post:
               value:
                 code: 400
                 message: "Unknown hash: missing parent hash"
-            InvalidAuth:
+            SlotMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuth: signature verification failed"
+                message: "Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot"
+            WrongBuilder:
+              value:
+                code: 400
+                message: "Invalid SignedRequestAuthV1: auth.message.builder_url does not match this builder's URL"
     "401":
       description: Authentication required.
       content:
@@ -179,7 +164,11 @@ post:
             MissingAuth:
               value:
                 code: 401
-                message: "Missing SignedRequestAuth: this builder requires authenticated requests"
+                message: "Missing SignedRequestAuthV1: this builder requires authenticated requests"
+            InvalidAuth:
+              value:
+                code: 401
+                message: "Invalid SignedRequestAuthV1: signature verification failed"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "415":

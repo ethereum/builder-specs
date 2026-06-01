@@ -35,5 +35,8 @@ Gloas
 gloas
 Gwei
 PTC
+BuilderPreferencesV
+RequestAuthV
+SignedRequestAuthV
 submitBlindedBlockV
 ValidatorRegistrationsV

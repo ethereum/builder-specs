@@ -53,7 +53,7 @@ paths:
     $ref: "./apis/builder/validators.yaml"
   /eth/v1/builder/header/{slot}/{parent_hash}/{pubkey}:
     $ref: "./apis/builder/header.yaml"
-  /eth/v1/builder/execution_payload_bid/{slot}/{parent_hash}/{parent_root}/{proposer_index}:
+  /eth/v1/builder/execution_payload_bid/{slot}/{parent_hash}/{parent_root}/{proposer_pubkey}:
     $ref: "./apis/builder/execution_payload_bid.yaml"
   /eth/v1/builder/beacon_block:
     $ref: "./apis/builder/beacon_block.yaml"
@@ -108,14 +108,14 @@ components:
       $ref: "./types/fulu/blobs_bundle.yaml#/Fulu/BlobsBundle"
     Fulu.ExecutionPayloadAndBlobsBundle:
       $ref: "./types/fulu/execution_payload_and_blobs_bundle.yaml#/Fulu/ExecutionPayloadAndBlobsBundle"
-    Gloas.RequestAuth:
-      $ref: "./types/gloas/request_auth.yaml#/Gloas/RequestAuth"
-    Gloas.SignedRequestAuth:
-      $ref: "./types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
-    Gloas.BuilderPreferences:
-      $ref: "./types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferences"
-    Gloas.BuilderPreferencesRequest:
-      $ref: "./types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesRequest"
+    Gloas.RequestAuthV1:
+      $ref: "./types/gloas/request_auth.yaml#/Gloas/RequestAuthV1"
+    Gloas.SignedRequestAuthV1:
+      $ref: "./types/gloas/request_auth.yaml#/Gloas/SignedRequestAuthV1"
+    Gloas.BuilderPreferencesV1:
+      $ref: "./types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesV1"
+    Gloas.BuilderPreferencesRequestV1:
+      $ref: "./types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesRequestV1"
   
   responses:
     InternalError:
@@ -165,5 +165,5 @@ components:
       $ref: "./examples/fulu/signed_blinded_beacon_block.json"
     Fulu.SignedBuilderBid:
       $ref: "./examples/fulu/signed_builder_bid.json"
-    Gloas.SignedRequestAuth:
+    Gloas.SignedRequestAuthV1:
       $ref: "./examples/gloas/signed_request_auth.json"
