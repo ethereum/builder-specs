@@ -10,7 +10,7 @@
       - [`SignedRequestAuth`](#signedrequestauth)
   - [Bid Request](#bid-request)
     - [Constructing the `RequestAuth`](#constructing-the-requestauth)
-    - [`max_trusted_bid`](#max_trusted_bid)
+    - [`max_execution_payment`](#max_execution_payment)
   - [Proposer Preferences](#proposer-preferences)
   - [Validating a `SignedExecutionPayloadBid`](#validating-a-signedexecutionpayloadbid)
   - [Block proposal](#block-proposal)
@@ -65,21 +65,17 @@ a single whitelisted builder. This includes:
   alongside the URL, it forms the builder's off-chain identity and is used to
   bind request authentication to a specific builder, preventing cross-builder
   replay attacks.
-- `max_trusted_bid`: The maximum value (in Gwei) the proposer is willing to
+- `max_execution_payment`: The maximum value (in Gwei) the proposer is willing to
   accept as a trusted execution layer payment from this builder. A value of `0`
   means the proposer does not accept any trusted payments from this builder,
   requiring all payments to use the on-chain trustless mechanism. A value of
   `MAX_TRUSTED_BID` means the proposer accepts any trusted payment amount.
   Proposers should adjust this based on their level of trust in the builder.
-- `bid_boost`: A multiplier factor (in basis points, where 10000 = 100%) applied
-  to this builder's bid score when comparing against bids from other builders.
-
 ```python
 class BuilderConfig(Container):
     url: ByteList[MAX_URL_BYTES]
     builder_pubkey: BLSPubkey
-    max_trusted_bid: uint64
-    bid_boost: uint64
+    max_execution_payment: uint64
 ```
 
 ### `GlobalPreferences`
@@ -113,7 +109,7 @@ class BuilderWhitelist(Container):
 
 When calling [`getExecutionPayloadBid`][get-execution-payload-bid-api], the
 validator MUST send the `X-Eth-Max-Trusted-Bid` header carrying a decimal
-`uint64` (in Gwei) expressing the per-builder `max_trusted_bid` configured in
+`uint64` (in Gwei) expressing the per-builder `max_execution_payment` configured in
 the [`BuilderConfig`](#builderconfig) for this builder. If the header is
 missing, the builder will not serve a bid for the proposer.
 
@@ -176,7 +172,7 @@ are also defined in the consensus specs.
 def validate_bid(
     state: BeaconState,
     proposer_preferences: ProposerPreferences,
-    max_trusted_bid: uint64,
+    max_execution_payment: uint64,
     signed_bid: SignedExecutionPayloadBid,
     fee_recipient: ExecutionAddress,
 ) -> bool:
@@ -194,7 +190,7 @@ def validate_bid(
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
     assert bid.gas_limit <= proposer_preferences.gas_limit
 
-    assert bid.execution_payment <= max_trusted_bid
+    assert bid.execution_payment <= max_execution_payment
 
     if bid.value > 0:
         assert can_builder_cover_bid(state, bid.builder_index, bid.value)
@@ -202,10 +198,10 @@ def validate_bid(
     return verify_execution_payload_bid_signature(state, signed_bid)
 ```
 
-`max_trusted_bid` is the value the validator sent in the `X-Eth-Max-Trusted-Bid`
+`max_execution_payment` is the value the validator sent in the `X-Eth-Max-Trusted-Bid`
 header of the corresponding
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] request. Validators
-MUST validate each bid against the `max_trusted_bid` they sent for that request.
+MUST validate each bid against the `max_execution_payment` they sent for that request.
 
 Note that, the fee recipient specified in `bid.fee_recipient` does not
 necessarily correspond to the fee recipient of the execution payload. Even if a

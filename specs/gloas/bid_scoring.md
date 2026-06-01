@@ -8,7 +8,7 @@ builder API, and a locally built block.
 
 Bids from the two sources are scored differently because offchain bids carry an
 `execution_payment` component that is conditionally trusted up to the
-`max_trusted_bid` the validator expressed for that request.
+`max_execution_payment` the validator expressed for that request.
 
 `min_bid` from `GlobalPreferences` applies equally to both p2p and offchain
 bids. There is no separate threshold per source.
@@ -19,7 +19,7 @@ bids. There is no separate threshold per source.
 
 P2P bids are scored solely by `bid.value`, the on-chain collateral commitment.
 `bid.execution_payment` is ignored for p2p bids because there is no per-request
-`max_trusted_bid` negotiation over gossip.
+`max_execution_payment` negotiation over gossip.
 
 A p2p bid is eligible only if `bid.value > min_bid`.
 
@@ -38,10 +38,10 @@ def select_best_p2p_bid(
 
 For bids received via the offchain builder API, the total bid score accounts for
 both the on-chain collateral commitment and the trusted execution layer payment,
-capped at the `max_trusted_bid` the validator advertised for that request:
+capped at the `max_execution_payment` the validator advertised for that request:
 
 ```
-bid_score = bid.value + min(bid.execution_payment, max_trusted_bid)
+bid_score = bid.value + min(bid.execution_payment, max_execution_payment)
 ```
 
 A bid is eligible only if `bid_score > min_bid`, the same threshold applied to
@@ -50,23 +50,23 @@ p2p bids.
 ```python
 def score_offchain_bid(
     bid: ExecutionPayloadBid,
-    max_trusted_bid: uint64,
+    max_execution_payment: uint64,
 ) -> uint64:
-    return bid.value + min(bid.execution_payment, max_trusted_bid)
+    return bid.value + min(bid.execution_payment, max_execution_payment)
 
 def select_best_offchain_bid(
     bids: List[Tuple[SignedExecutionPayloadBid, uint64]],
     min_bid: uint64,
 ) -> Optional[SignedExecutionPayloadBid]:
     """
-    `bids` is a list of (signed_bid, max_trusted_bid) pairs, where
-    max_trusted_bid is the value sent in the X-Eth-Max-Trusted-Bid header of
+    `bids` is a list of (signed_bid, max_execution_payment) pairs, where
+    max_execution_payment is the value sent in the X-Eth-Max-Trusted-Bid header of
     the corresponding getExecutionPayloadBid request.
     """
     eligible = [
-        (b, score_offchain_bid(b.message, max_trusted_bid))
-        for b, max_trusted_bid in bids
-        if score_offchain_bid(b.message, max_trusted_bid) > min_bid
+        (b, score_offchain_bid(b.message, max_execution_payment))
+        for b, max_execution_payment in bids
+        if score_offchain_bid(b.message, max_execution_payment) > min_bid
     ]
     if not eligible:
         return None
@@ -88,7 +88,7 @@ def select_best_bid(
     local_block_value: uint64,
     best_p2p_bid: Optional[SignedExecutionPayloadBid],
     best_offchain_bid: Optional[SignedExecutionPayloadBid],
-    max_trusted_bid_for_offchain: uint64,
+    max_execution_payment_for_offchain: uint64,
     global_preferences: GlobalPreferences,
 ) -> Optional[SignedExecutionPayloadBid]:
     boosted_local = local_block_value * global_preferences.local_block_boost // 10000
@@ -103,7 +103,7 @@ def select_best_bid(
             best_external_score = p2p_score
 
     if best_offchain_bid is not None:
-        offchain_score = score_offchain_bid(best_offchain_bid.message, max_trusted_bid_for_offchain)
+        offchain_score = score_offchain_bid(best_offchain_bid.message, max_execution_payment_for_offchain)
         if offchain_score > best_external_score:
             best_external = best_offchain_bid
             best_external_score = offchain_score

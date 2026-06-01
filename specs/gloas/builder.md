@@ -7,7 +7,7 @@
   - [Constants](#constants)
   - [Bidding](#bidding)
   - [Per-request Validator Inputs](#per-request-validator-inputs)
-    - [`max_trusted_bid`](#max_trusted_bid)
+    - [`max_execution_payment`](#max_execution_payment)
   - [Proposer Preferences (Deprecation of Validator Registrations)](#proposer-preferences-deprecation-of-validator-registrations)
   - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
   - [Constructing a `SignedExecutionPayloadEnvelope`](#constructing-a-signedexecutionpayloadenvelope)
@@ -81,7 +81,7 @@ Validators communicate per-request inputs to a builder on each
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] call:
 
 - The `X-Eth-Max-Trusted-Bid` header carrying a decimal `uint64` (in Gwei) with
-  the proposer's `max_trusted_bid` for this request. This header is
+  the proposer's `max_execution_payment` for this request. This header is
   **required**.
 - Optionally, a [`SignedRequestAuth`][signed-request-auth] in the request body
   used to authenticate the requesting validator. The body MAY be encoded as JSON
@@ -100,9 +100,9 @@ a 400 response.
 
 If the request body is absent, the builder MAY still serve a bid.
 
-### `max_trusted_bid`
+### `max_execution_payment`
 
-`max_trusted_bid` is the maximum value (in Gwei) that a proposer is willing to
+`max_execution_payment` is the maximum value (in Gwei) that a proposer is willing to
 accept as a trusted execution layer payment from this builder for this request.
 A value of `0` indicates that the proposer does not accept any trusted payments
 from the builder, requiring all payments to use the on-chain trustless payments
@@ -110,7 +110,7 @@ mechanism. A value of `MAX_TRUSTED_BID` indicates that the proposer will accept
 any trusted payment amount from the builder. Proposers may adjust this parameter
 based on their level of trust in the builder's reliability and reputation.
 
-`max_trusted_bid` is sent in the clear in the `X-Eth-Max-Trusted-Bid` header and
+`max_execution_payment` is sent in the clear in the `X-Eth-Max-Trusted-Bid` header and
 is **not** covered by the `RequestAuth` signature.
 
 ## Proposer Preferences (Deprecation of Validator Registrations)
@@ -138,7 +138,7 @@ MUST set `bid.value` to the amount they are committing to pay.
 
 If the builder intends to pay the proposer via an execution layer payment, they
 MUST set `bid.execution_payment`. This value MUST NOT exceed the
-`max_trusted_bid` received in the `X-Eth-Max-Trusted-Bid` header of the
+`max_execution_payment` received in the `X-Eth-Max-Trusted-Bid` header of the
 corresponding [`getExecutionPayloadBid`][get-execution-payload-bid-api] request.
 
 *Note*: `bid.value` and `bid.execution_payment` are not mutually exclusive.
