@@ -65,7 +65,9 @@ def is_eligible_for_bid(
     assert state.validators[validator_index].pubkey == proposer_pubkey
 
     # Verify the proposer is active
-    assert is_active_validator(state.validators[validator_index], get_current_epoch(state))
+    assert is_active_validator(
+        state.validators[validator_index], get_current_epoch(state)
+    )
 
     # Verify that proposer preferences have been received via the gossip topic
     assert validator_index in proposer_preferences.keys()
@@ -98,9 +100,9 @@ containing:
   - `max_execution_payment`: The maximum trusted execution layer payment the
     proposer will accept from this builder (in Gwei).
 - `auth`: A `SignedRequestAuthV1` authenticating the request. The builder MUST
-  check that `auth.message.builder_url` matches its own URL and MUST
-  verify the BLS signature against the `validator_pubkey` path parameter. If
-  either check fails, the builder MUST return a 400 response.
+  check that `auth.message.builder_url` matches its own URL and MUST verify the
+  BLS signature against the `validator_pubkey` path parameter. If either check
+  fails, the builder MUST return a 400 response.
 
 The builder SHOULD store the preferences for each proposer and apply the
 `max_execution_payment` constraint when constructing bids. If no preferences
@@ -136,8 +138,8 @@ treat `max_execution_payment` as `0`.
 
 If the request body is present, builders MAY verify the `SignedRequestAuthV1`
 signature against the `proposer_pubkey` path parameter, and check that
-`builder_url` matches their own URL and that `slot` matches the
-requested slot. If verification fails, the builder MAY return a 401 response.
+`builder_url` matches their own URL and that `slot` matches the requested slot.
+If verification fails, the builder MAY return a 401 response.
 
 ```python
 def verify_request_auth_signature(
