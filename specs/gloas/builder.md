@@ -107,7 +107,7 @@ containing:
 The builder SHOULD store the preferences for each proposer and apply the
 `max_execution_payment` constraint when constructing bids. If no preferences
 have been submitted for a proposer, the builder MUST treat the proposer's
-`max_execution_payment` as `0`.
+`max_execution_payment` as `0`. The builder can also choose to not serve the bid.
 
 ### `max_execution_payment`
 
