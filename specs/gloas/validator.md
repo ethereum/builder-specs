@@ -237,7 +237,9 @@ block on top of a beacon `state` must take the following actions:
    [Gloas validator specs][gloas-validator-specs] but with the best
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior
    step.
-3. The upstream block building software constructs the corresponding
+3. Broadcast the `SignedBeaconBlock` on the network.
+4. The upstream block building software listens to the `SignedBeaconBlock` on
+   the network and constructs the corresponding
    [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and
    broadcasts it to the PTC committee.
 
