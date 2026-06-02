@@ -49,20 +49,22 @@ We update `is_eligible_for_bid` below. *Note*: `hash_tree_root` and
 ```python
 def is_eligible_for_bid(
     state: BeaconState,
+    # [Removed in Gloas]
+    # registrations: Dict[BLSPubkey, ValidatorRegistrationV1]
+    # [New in Gloas]
     proposer_preferences: Dict[ValidatorIndex, ProposerPreferences],
     slot: Slot,
     parent_hash: Hash32,
     # [New in Gloas]
     parent_root: Root,
-    # [New in Gloas]
-    proposer_pubkey: BLSPubkey,
+    pubkey: BLSPubkey,
 ):
     # Verify slot
     assert slot == state.slot
 
     # Verify proposer pubkey matches the expected proposer for this slot
     validator_index = get_beacon_proposer_index(state)
-    assert state.validators[validator_index].pubkey == proposer_pubkey
+    assert state.validators[validator_index].pubkey == pubkey
 
     # Verify the proposer is active
     assert is_active_validator(
@@ -70,18 +72,19 @@ def is_eligible_for_bid(
     )
 
     # Verify that proposer preferences have been received via the gossip topic
+    # [New in Gloas:EIP7732]
     assert validator_index in proposer_preferences.keys()
 
     # Verify parent hash. The proposer could build on the FULL parent block or on the EMPTY parent block based on
     # their view of the chain.
-    # [Modified in Gloas:EIP7732]
+    # [New in Gloas:EIP7732]
     assert (
         parent_hash == state.latest_execution_payload_bid.block_hash
         or parent_hash == state.latest_block_hash
     )
 
     # Verify parent root
-    # [Modified in Gloas:EIP7732]
+    # [New in Gloas:EIP7732]
     assert parent_root == hash_tree_root(state.latest_block_header)
 ```
 
@@ -97,8 +100,8 @@ containing:
 - `validator_pubkey`: The BLS public key of the validator submitting these
   preferences, passed as a path parameter.
 - `preferences`: A `BuilderPreferencesV1` with:
-  - `max_execution_payment`: The maximum execution layer payment the
-    proposer will accept from this builder (in Gwei).
+  - `max_execution_payment`: The maximum execution layer payment the proposer
+    will accept from this builder (in Gwei).
 - `auth`: A `SignedRequestAuthV1` authenticating the request. The builder MUST
   check that `auth.message.builder_url` matches its own URL and MUST verify the
   BLS signature against the `validator_pubkey` path parameter. If either check
@@ -107,17 +110,18 @@ containing:
 The builder SHOULD store the preferences for each proposer and apply the
 `max_execution_payment` constraint when constructing bids. If no preferences
 have been submitted for a proposer, the builder MUST treat the proposer's
-`max_execution_payment` as `0`. The builder can also choose to not serve the bid.
+`max_execution_payment` as `0`. The builder can also choose to not serve the
+bid.
 
 ### `max_execution_payment`
 
 `max_execution_payment` is the maximum value (in Gwei) that a proposer is
-willing to accept as an execution layer payment from this builder. A
-value of `0` indicates that the proposer does not accept any execution payments
-from the builder, requiring all payments to use the on-chain trustless payments
+willing to accept as an execution layer payment from this builder. A value of
+`0` indicates that the proposer does not accept any execution payments from the
+builder, requiring all payments to use the on-chain trustless payments
 mechanism. A value of `MAX_EXECUTION_PAYMENT` indicates that the proposer will
-accept any execution layer payment amount from the builder. Proposers may adjust this
-parameter based on their level of trust in the builder's reliability and
+accept any execution layer payment amount from the builder. Proposers may adjust
+this parameter based on their level of trust in the builder's reliability and
 reputation.
 
 ## Per-request Validator Inputs

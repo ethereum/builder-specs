@@ -9,6 +9,10 @@ post:
     must return an error response (400) with a description of the validation
     failure.
 
+    After receiving 202, the proposer takes no further action on the block; the 
+    builder is responsible for publishing the execution payload envelope. The proposer 
+    MAY observe PTC votes to monitor the timely reveal of the execution payload envelope.
+
     This API is applicable from Gloas fork onwards.
   tags:
     - Builder

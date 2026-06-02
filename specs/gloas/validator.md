@@ -82,13 +82,13 @@ The validator MAY submit its
 [`BuilderPreferencesRequestV1`](#builderpreferencesrequestv1) to each builder
 via the [`submitBuilderPreferences`][submit-builder-preferences-api] API call in
 the epoch prior to the epoch in which they will be proposing, as determined from
-`state.lookahead`. This ensures builders have the preferences before the bid
-request arrives.
+`state.proposer_lookahead`. This ensures builders have the preferences before
+the bid request arrives.
 
 The validator constructs a `BuilderPreferencesV1` with:
 
-- `max_execution_payment`: The maximum execution layer payment the
-  proposer will accept from this builder. See
+- `max_execution_payment`: The maximum execution layer payment the proposer will
+  accept from this builder. See
   [`max_execution_payment`](#max_execution_payment).
 
 The validator's BLS public key is passed as the `validator_pubkey` path
@@ -110,12 +110,12 @@ If no preferences have been submitted, the builder MUST treat the proposer's
 ### `max_execution_payment`
 
 `max_execution_payment` is the maximum value (in Gwei) that the proposer is
-willing to accept as an execution layer payment from this builder. A
-value of `0` means the proposer does not accept any execution payments from this
-builder, requiring all payments to go through the on-chain trustless payments
-mechanism. A value of `MAX_EXECUTION_PAYMENT` means the proposer will accept any
-execution payment amount from the builder. Proposers may adjust this parameter
-based on their level of trust in the builder's reliability and reputation.
+willing to accept as an execution layer payment from this builder. A value of
+`0` means the proposer does not accept any execution payments from this builder,
+requiring all payments to go through the on-chain trustless payments mechanism.
+A value of `MAX_EXECUTION_PAYMENT` means the proposer will accept any execution
+payment amount from the builder. Proposers may adjust this parameter based on
+their level of trust in the builder's reliability and reputation.
 
 `max_execution_payment` is communicated exclusively via the
 [`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
