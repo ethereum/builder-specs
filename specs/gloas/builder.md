@@ -29,7 +29,7 @@ describes how builders consume per-request inputs from validators and construct
 | Name                    | Value                      |
 | ----------------------- | -------------------------- |
 | `MAX_EXECUTION_PAYMENT` | `2**64 - 1`                |
-| `MAX_URL_SIZE`          | `4096`                     |
+| `MAX_DATA_SIZE`         | `4096`                     |
 | `DOMAIN_REQUEST_AUTH`   | `DomainType('0x0B000001')` |
 
 ## Bidding

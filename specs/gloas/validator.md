@@ -46,7 +46,7 @@ that other builders do not DDOS or run replay attacks on the builder.
 
 ```python
 class RequestAuthV1(Container):
-    data: ByteList[MAX_URL_SIZE]
+    data: ByteList[MAX_DATA_SIZE]
     slot: Slot
 ```
 
