@@ -29,7 +29,7 @@ describes how builders consume per-request inputs from validators and construct
 | Name                    | Value                      |
 | ----------------------- | -------------------------- |
 | `MAX_EXECUTION_PAYMENT` | `2**64 - 1`                |
-| `MAX_URL_SIZE`          | `2048`                     |
+| `MAX_URL_SIZE`          | `4096`                     |
 | `DOMAIN_REQUEST_AUTH`   | `DomainType('0x0B000001')` |
 
 ## Bidding
@@ -94,7 +94,7 @@ Validators MAY communicate their per-builder preferences ahead of the bid
 request by calling the
 [`submitBuilderPreferences`][submit-builder-preferences-api] API in the epoch
 prior to the epoch in which they will be proposing, as determined from
-`state.lookahead`. The builder receives a `BuilderPreferencesRequestV1` object
+`state.proposer_lookahead`. The builder receives a `BuilderPreferencesRequestV1` object
 containing:
 
 - `validator_pubkey`: The BLS public key of the validator submitting these
@@ -103,7 +103,7 @@ containing:
   - `max_execution_payment`: The maximum execution layer payment the proposer
     will accept from this builder (in Gwei).
 - `auth`: A `SignedRequestAuthV1` authenticating the request. The builder MUST
-  check that `auth.message.builder_url` matches its own URL and MUST verify the
+  check that `auth.message.data` matches its own URL and MUST verify the
   BLS signature against the `validator_pubkey` path parameter. If either check
   fails, the builder MUST return a 400 response.
 
@@ -138,11 +138,11 @@ Validators communicate per-request inputs to a builder on each
 The proposer's `max_execution_payment` is communicated exclusively via the
 [`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
 `BuilderPreferencesV1` have been submitted for the proposer, the builder MUST
-treat `max_execution_payment` as `0`.
+treat `max_execution_payment` as `0` or can choose to not serve the bid.
 
 If the request body is present, builders MAY verify the `SignedRequestAuthV1`
 signature against the `proposer_pubkey` path parameter, and check that
-`builder_url` matches their own URL and that `slot` matches the requested slot.
+`data` matches their own URL and that `slot` matches the requested slot.
 If verification fails, the builder MAY return a 401 response.
 
 ```python

@@ -46,7 +46,7 @@ that other builders do not DDOS or run replay attacks on the builder.
 
 ```python
 class RequestAuthV1(Container):
-    builder_url: ByteList[MAX_URL_SIZE]
+    data: ByteList[MAX_URL_SIZE]
     slot: Slot
 ```
 
@@ -99,9 +99,9 @@ The validator then constructs a `BuilderPreferencesRequestV1` with the
 `BuilderPreferencesV1` as `preferences` and a `SignedRequestAuthV1` as `auth`.
 The `SignedRequestAuthV1` is constructed as described in
 [Constructing the `RequestAuthV1`](#constructing-the-requestauthv1); its
-`auth.message.builder_url` identifies the intended builder. The builder MUST
+`auth.message.data` identifies the intended builder. The builder MUST
 verify the `auth` signature against the `validator_pubkey` path parameter and
-MUST reject the request with a 400 response if `auth.message.builder_url` does
+MUST reject the request with a 400 response if `auth.message.data` does
 not match its own URL.
 
 If no preferences have been submitted, the builder MUST treat the proposer's
@@ -137,7 +137,7 @@ builder MAY still serve a bid.
 If the validator chooses to authenticate its request, it constructs a
 `RequestAuthV1` with the following fields:
 
-- `builder_url`: The URL of the builder the request is intended for.
+- `data`: MUST be set to the URL of the builder the request is intended for.
 - `slot`: The slot for which the request is being sent.
 
 The proposer's public key is already carried as a path parameter in the relevant
