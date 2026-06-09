@@ -79,9 +79,6 @@ post:
       required: false
       description: |
         Optional header containing the proposer's timeout for the request in milliseconds.
-        Builders should use this header to adjust the amount of time by which they delay the
-        requests to maximise block rewards. Otherwise, requests will timeout and the proposer
-        will not receive the header in time.
       schema:
         type: integer
         format: int64
