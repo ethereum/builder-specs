@@ -237,10 +237,9 @@ block on top of a beacon `state` must take the following actions:
    [Gloas validator specs][gloas-validator-specs] but with the best
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior
    step.
-3. The proposer returns the `SignedBeaconBlock` back to the upstream block
-   building software via [`submitSignedBeaconBlock`][submit-signed-beacon-block]
-   API call.
-4. The upstream block building software constructs the corresponding
+3. Broadcast the `SignedBeaconBlock` on the network.
+4. The upstream block building software listens to the `SignedBeaconBlock` on
+   the network and constructs the corresponding
    [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and
    broadcasts it to the PTC committee.
 
@@ -254,5 +253,4 @@ block on top of a beacon `state` must take the following actions:
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml
-[submit-signed-beacon-block]: ./../../apis/builder/beacon_block.yaml
 [verify-execution-payload-bid-signature]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#verify_execution_payload_bid_signature
