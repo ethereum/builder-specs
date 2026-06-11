@@ -7,7 +7,7 @@ post:
     builder, authenticated via a `SignedRequestAuthV1`.
 
     Validators MAY call this endpoint in the epoch prior to the epoch in
-    which they will be proposing, as determined from `state.lookahead`, so that
+    which they will be proposing, as determined from `state.proposer_lookahead`, so that
     builders have the preferences before the bid request arrives.
 
     The builder MUST verify the BLS signature in `auth` against
@@ -32,7 +32,7 @@ post:
         $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
     - name: Eth-Consensus-Version
       in: header
-      required: false
+      required: true
       description: "The active consensus version to which the request body belongs. Required if the request body is SSZ encoded."
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
@@ -43,6 +43,9 @@ post:
       application/json:
         schema:
           $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesRequestV1"
+        examples:
+          BuilderPreferencesRequestV1:
+            $ref: "../../builder-oapi.yaml#/components/examples/Gloas.BuilderPreferencesRequestV1"
       application/octet-stream:
         schema:
           description: "SSZ serialized `BuilderPreferencesRequestV1` bytes. Use content type header to indicate that SSZ data is contained in the request body."

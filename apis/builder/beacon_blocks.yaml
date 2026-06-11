@@ -10,8 +10,7 @@ post:
     failure.
 
     After receiving 202, the proposer takes no further action on the block; the 
-    builder is responsible for publishing the execution payload envelope. The proposer 
-    MAY observe PTC votes to monitor the timely reveal of the execution payload envelope.
+    builder is responsible for publishing the execution payload envelope.
 
     This API is applicable from Gloas fork onwards.
   tags:
@@ -20,9 +19,9 @@ post:
     - in: header
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
-      required: false
+      required: true
       name: Eth-Consensus-Version
-      description: "The active consensus version to which the block being submitted belongs. Required if request is SSZ encoded."
+      description: "The active consensus version to which the block being submitted belongs."
   requestBody:
     description: A `SignedBeaconBlock`.
     required: true

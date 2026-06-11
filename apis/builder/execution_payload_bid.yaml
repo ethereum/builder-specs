@@ -11,15 +11,12 @@ post:
     - The root of the beacon block the proposer will build on.
     - The index of the proposer.
     - Optionally, a `SignedRequestAuthV1` in the request body that
-      authenticates the request. The body MAY be encoded as JSON
-      (`Content-Type: application/json`) or SSZ
-      (`Content-Type: application/octet-stream`).
+      authenticates the request. The body MAY be encoded as JSON or SSZ.
 
     The proposer's `max_execution_payment` is communicated exclusively via the
-    [`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
-    `BuilderPreferencesV1` have been submitted for the proposer, the builder MUST
-    treat `max_execution_payment` as `0` and MUST NOT include an execution layer
-    payment in the bid.
+    `submitBuilderPreferences` endpoint. If no `BuilderPreferencesV1` have been 
+    submitted for the proposer, the builder MUST treat `max_execution_payment` as `0` 
+    and MUST NOT include an execution layer payment in the bid.
 
     The `SignedRequestAuthV1` body is optional. If it is present but malformed
     or fails signature verification, the builder MAY return a 401 response.
@@ -85,7 +82,7 @@ post:
         example: 10000
     - name: Eth-Consensus-Version
       in: header
-      required: false
+      required: true
       description: |
         The active consensus version to which the `SignedRequestAuthV1` in the
         request body belongs. Required if the request body is SSZ encoded.
@@ -106,7 +103,7 @@ post:
           $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuthV1"
       application/octet-stream:
         schema:
-          description: "SSZ serialized `SignedRequestAuthV1` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body. The `Eth-Consensus-Version` header MUST also be set."
+          description: "SSZ serialized `SignedRequestAuthV1` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body."
   responses:
     "200":
       description: Success response.

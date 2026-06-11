@@ -55,8 +55,8 @@ paths:
     $ref: "./apis/builder/header.yaml"
   /eth/v1/builder/execution_payload_bid/{slot}/{parent_hash}/{parent_root}/{proposer_pubkey}:
     $ref: "./apis/builder/execution_payload_bid.yaml"
-  /eth/v1/builder/beacon_block:
-    $ref: "./apis/builder/beacon_block.yaml"
+  /eth/v1/builder/beacon_blocks:
+    $ref: "./apis/builder/beacon_blocks.yaml"
   /eth/v1/builder/blinded_blocks:
     $ref: "./apis/builder/blinded_blocks.yaml"
   /eth/v2/builder/blinded_blocks:
@@ -167,3 +167,7 @@ components:
       $ref: "./examples/fulu/signed_builder_bid.json"
     Gloas.SignedRequestAuthV1:
       $ref: "./examples/gloas/signed_request_auth.json"
+    Gloas.BuilderPreferencesV1:
+      $ref: "./examples/gloas/builder_preferences.json"
+    Gloas.BuilderPreferencesRequestV1:
+      $ref: "./examples/gloas/builder_preferences_request.json"
