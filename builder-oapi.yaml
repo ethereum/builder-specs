@@ -278,6 +278,7 @@ paths:
                   - deneb
                   - electra
                   - fulu
+                  - gloas
                 example: bellatrix
                 type: string
           content:
@@ -1181,6 +1182,1231 @@ paths:
               example:
                 code: 500
                 message: Internal server error
+  '/eth/v1/builder/execution_payload_bid/{slot}/{parent_hash}/{parent_root}/{proposer_pubkey}':
+    post:
+      operationId: getExecutionPayloadBid
+      summary: Get an execution payload bid.
+      description: |
+        Requests a builder node to produce a valid execution payload bid, which
+        can be integrated into a beacon block and signed.
+
+        The proposer sends a POST request to the builder with the following information:
+        - The slot for which the block should be proposed.
+        - The hash of the execution layer block the proposer will build on.
+        - The root of the beacon block the proposer will build on.
+        - The index of the proposer.
+        - Optionally, a `SignedRequestAuthV1` in the request body that
+          authenticates the request. The body MAY be encoded as JSON or SSZ.
+
+        The proposer's `max_execution_payment` is communicated exclusively via the
+        `submitBuilderPreferences` endpoint. If no `BuilderPreferencesV1` have been 
+        submitted for the proposer, the builder MUST treat `max_execution_payment` as `0` 
+        and MUST NOT include an execution layer payment in the bid.
+
+        The `SignedRequestAuthV1` body is optional. If it is present but malformed
+        or fails signature verification, the builder MAY return a 401 response.
+        If it is absent, the builder MAY still serve a bid, but builders MAY
+        use the presence and validity of the `SignedRequestAuthV1` to apply
+        per-validator policy (e.g. rate-limiting, prioritization, or refusing
+        unauthenticated requests).
+
+        The builder responds with a 200 response containing an execution payload bid if it can provide one.
+
+        If the builder is unable to produce a valid execution payload bid, then
+        the builder MUST return a 204 response. If the request is invalid, then the
+        builder MUST return an error response (400) with a description of the
+        validation failure.
+
+        This API is applicable from Gloas fork onwards.
+      tags:
+        - Builder
+      parameters:
+        - name: slot
+          in: path
+          required: true
+          description: The slot for which the block should be proposed.
+          schema:
+            type: string
+            example: '1'
+        - name: parent_hash
+          in: path
+          required: true
+          description: Hash of execution layer block the proposer will build on.
+          schema:
+            type: string
+            format: hex
+            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+            pattern: '^0x[a-fA-F0-9]{64}$'
+        - name: parent_root
+          in: path
+          required: true
+          description: Root of the beacon block the proposer will build on.
+          schema:
+            type: string
+            format: hex
+            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+            pattern: '^0x[a-fA-F0-9]{64}$'
+        - name: proposer_pubkey
+          in: path
+          required: true
+          description: BLS public key of the proposer.
+          schema:
+            type: string
+            format: hex
+            pattern: '^0x[a-fA-F0-9]{96}$'
+            description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
+            example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
+        - name: Date-Milliseconds
+          in: header
+          required: false
+          description: |
+            Optional header containing a Unix timestamp in milliseconds representing
+            the point-in-time the request was sent. This header can be used to measure
+            latency.
+          schema:
+            type: integer
+            format: int64
+            example: 1710338135000
+        - name: X-Timeout-Ms
+          in: header
+          required: false
+          description: |
+            Optional header containing the proposer's timeout for the request in milliseconds.
+          schema:
+            type: integer
+            format: int64
+            example: 10000
+        - name: Eth-Consensus-Version
+          in: header
+          required: true
+          description: |
+            The active consensus version to which the `SignedRequestAuthV1` in the
+            request body belongs. Required if the request body is SSZ encoded.
+          schema:
+            enum:
+              - bellatrix
+              - capella
+              - deneb
+              - electra
+              - fulu
+              - gloas
+            example: bellatrix
+            type: string
+      requestBody:
+        description: |
+          Optional `SignedRequestAuthV1` authenticating the request. If provided,
+          the builder MAY verify the BLS signature against the validator pubkey
+          resolved from the `proposer_pubkey` path parameter, and check that
+          `data` matches its own URL and that `slot` matches the
+          requested slot. If absent, the builder MAY still serve a bid subject
+          to its own policy.
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - signature
+              properties:
+                message:
+                  type: object
+                  required:
+                    - data
+                    - slot
+                  properties:
+                    data:
+                      type: string
+                      format: hex
+                      description: 'Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for.'
+                      example: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+                      pattern: '^0x[a-fA-F0-9]{0,8192}$'
+                    slot:
+                      type: string
+                      example: '1'
+                      description: The slot for which the bid is being requested.
+                signature:
+                  type: string
+                  format: hex
+                  pattern: '^0x[a-fA-F0-9]{192}$'
+                  example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+          application/octet-stream:
+            schema:
+              description: SSZ serialized `SignedRequestAuthV1` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body.
+      responses:
+        '200':
+          description: Success response.
+          headers:
+            Eth-Consensus-Version:
+              required: true
+              description: The active consensus version to which the data belongs. Required if response is SSZ encoded.
+              schema:
+                enum:
+                  - bellatrix
+                  - capella
+                  - deneb
+                  - electra
+                  - fulu
+                  - gloas
+                example: bellatrix
+                type: string
+          content:
+            application/json:
+              schema:
+                title: GetExecutionPayloadBidResponse
+                type: object
+                required:
+                  - version
+                  - data
+                properties:
+                  version:
+                    type: string
+                    enum:
+                      - gloas
+                    example: gloas
+                  data:
+                    type: object
+                    description: 'The [`SignedExecutionPayloadBid`](https://github.com/ethereum/consensus-specs/blob/00d531949b1f30516979b60ddd2a411e7f388299/specs/gloas/beacon-chain.md#signedexecutionpayloadbid) object from the CL Gloas spec.'
+                    required:
+                      - message
+                      - signature
+                    properties:
+                      message:
+                        type: object
+                        description: 'The [`ExecutionPayloadBid`](https://github.com/ethereum/consensus-specs/blob/00d531949b1f30516979b60ddd2a411e7f388299/specs/gloas/beacon-chain.md#executionpayloadbid) object from the CL Gloas spec.'
+                        required:
+                          - parent_block_hash
+                          - parent_block_root
+                          - block_hash
+                          - prev_randao
+                          - fee_recipient
+                          - gas_limit
+                          - builder_index
+                          - slot
+                          - value
+                          - execution_payment
+                          - blob_kzg_commitments_root
+                        properties:
+                          parent_block_hash:
+                            type: string
+                            format: hex
+                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                            pattern: '^0x[a-fA-F0-9]{64}$'
+                          parent_block_root:
+                            type: string
+                            format: hex
+                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                            pattern: '^0x[a-fA-F0-9]{64}$'
+                          block_hash:
+                            type: string
+                            format: hex
+                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                            pattern: '^0x[a-fA-F0-9]{64}$'
+                          prev_randao:
+                            type: string
+                            format: hex
+                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                            pattern: '^0x[a-fA-F0-9]{64}$'
+                          fee_recipient:
+                            type: string
+                            format: hex
+                            description: An address on the execution (Ethereum 1) network.
+                            example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
+                            pattern: '^0x[a-fA-F0-9]{40}$'
+                          gas_limit:
+                            type: string
+                            example: '1'
+                          builder_index:
+                            type: string
+                            example: '1'
+                          slot:
+                            type: string
+                            example: '1'
+                          value:
+                            type: string
+                            example: '1'
+                          execution_payment:
+                            type: string
+                            example: '1'
+                          blob_kzg_commitments_root:
+                            type: string
+                            format: hex
+                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                            pattern: '^0x[a-fA-F0-9]{64}$'
+                      signature:
+                        type: string
+                        format: hex
+                        pattern: '^0x[a-fA-F0-9]{192}$'
+                        example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+            application/octet-stream:
+              schema:
+                description: SSZ serialized `SignedExecutionPayloadBid` bytes. Use Accept header to choose this response type
+        '204':
+          description: No bid is available.
+        '400':
+          description: Error response.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: Either specific error code in case of invalid request or http status code
+                    type: number
+                    example: 404
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              examples:
+                InvalidHash:
+                  value:
+                    code: 400
+                    message: 'Unknown hash: missing parent hash'
+                SlotMismatch:
+                  value:
+                    code: 400
+                    message: 'Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot'
+                WrongBuilder:
+                  value:
+                    code: 400
+                    message: 'Invalid SignedRequestAuthV1: auth.message.data does not match this builder''s URL'
+        '401':
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: Either specific error code in case of invalid request or http status code
+                    type: number
+                    example: 404
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              examples:
+                MissingAuth:
+                  value:
+                    code: 401
+                    message: 'Missing SignedRequestAuthV1: this builder requires authenticated requests'
+                InvalidAuth:
+                  value:
+                    code: 401
+                    message: 'Invalid SignedRequestAuthV1: signature verification failed'
+        '406':
+          description: Accepted media type is not supported.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: 'The media type in "Accept" header is unsupported, and the request has been rejected. This occurs when the server cannot produce a response in the format accepted by the client.'
+                    type: number
+                    example: 406
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 406
+                message: Accepted media type not supported
+        '415':
+          description: Supplied content-type is not supported.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: 'The media type in "Content-Type" header is unsupported, and the request has been rejected. This occurs when a HTTP request supplies a payload in a content-type that the server is not able to handle.'
+                    type: number
+                    example: 415
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 415
+                message: Cannot read the supplied content type.
+        '500':
+          description: Builder node internal error.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: Either specific error code in case of invalid request or http status code
+                    type: number
+                    example: 404
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 500
+                message: Internal server error
+  /eth/v1/builder/beacon_blocks:
+    post:
+      operationId: submitSignedBeaconBlock
+      summary: Submit a signed beacon block with the execution payload bid.
+      description: |
+        Submits a `SignedBeaconBlock` to the builder, binding the proposer to the block. 
+
+        A success response (202) indicates that the signed beacon block was
+        valid. If the signed beacon block was invalid, then the builder
+        must return an error response (400) with a description of the validation
+        failure.
+
+        After receiving 202, the proposer takes no further action on the block; the 
+        builder is responsible for publishing the execution payload envelope.
+
+        This API is applicable from Gloas fork onwards.
+      tags:
+        - Builder
+      parameters:
+        - in: header
+          schema:
+            enum:
+              - bellatrix
+              - capella
+              - deneb
+              - electra
+              - fulu
+              - gloas
+            example: bellatrix
+            type: string
+          required: true
+          name: Eth-Consensus-Version
+          description: The active consensus version to which the block being submitted belongs.
+      requestBody:
+        description: A `SignedBeaconBlock`.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: 'The [`SignedBeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.5.0/specs/phase0/beacon-chain.md#signedbeaconblock) object envelope from the CL Gloas spec.'
+              required:
+                - message
+                - signature
+              properties:
+                message:
+                  description: 'The [`BeaconBlock`](https://github.com/ethereum/consensus-specs/blob/v1.5.0/specs/phase0/beacon-chain.md#beaconblock) object from the CL Gloas spec.'
+                  allOf:
+                    - type: object
+                      required:
+                        - slot
+                        - proposer_index
+                        - parent_root
+                        - state_root
+                      properties:
+                        slot:
+                          type: string
+                          example: '1'
+                          description: The slot to which this block corresponds.
+                        proposer_index:
+                          type: string
+                          example: '1'
+                          description: Index of validator in validator registry.
+                        parent_root:
+                          type: string
+                          format: hex
+                          example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                          pattern: '^0x[a-fA-F0-9]{64}$'
+                          description: The signing Merkle root of the parent `BeaconBlock`.
+                        state_root:
+                          type: string
+                          format: hex
+                          example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                          pattern: '^0x[a-fA-F0-9]{64}$'
+                          description: The tree hash Merkle root of the `BeaconState` for the `BeaconBlock`.
+                    - type: object
+                      required:
+                        - body
+                      properties:
+                        body:
+                          type: object
+                          description: 'The [`BeaconBlockBody`](https://github.com/ethereum/consensus-specs/blob/00d531949b1f30516979b60ddd2a411e7f388299/specs/gloas/beacon-chain.md#beaconblockbody) object from the CL Gloas spec.'
+                          required:
+                            - randao_reveal
+                            - eth1_data
+                            - graffiti
+                            - proposer_slashings
+                            - attester_slashings
+                            - attestations
+                            - deposits
+                            - voluntary_exits
+                            - sync_aggregate
+                            - bls_to_execution_changes
+                            - signed_execution_payload_bid
+                            - payload_attestations
+                          properties:
+                            randao_reveal:
+                              type: string
+                              format: hex
+                              pattern: '^0x[a-fA-F0-9]{192}$'
+                              example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                              description: The RANDAO reveal value provided by the validator.
+                            eth1_data:
+                              type: object
+                              description: 'The [`Eth1Data`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#eth1data) object from the CL spec.'
+                              required:
+                                - deposit_root
+                                - deposit_count
+                                - block_hash
+                              properties:
+                                deposit_root:
+                                  type: string
+                                  format: hex
+                                  example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                  pattern: '^0x[a-fA-F0-9]{64}$'
+                                  description: Root of the deposit tree.
+                                deposit_count:
+                                  type: string
+                                  example: '1'
+                                  description: Total number of deposits.
+                                block_hash:
+                                  type: string
+                                  format: hex
+                                  example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                  pattern: '^0x[a-fA-F0-9]{64}$'
+                                  description: Ethereum 1.x block hash.
+                            graffiti:
+                              type: string
+                              format: hex
+                              example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                              pattern: '^0x[a-fA-F0-9]{64}$'
+                            proposer_slashings:
+                              type: array
+                              items:
+                                type: object
+                                description: 'The [`ProposerSlashing`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#proposerslashing) object from the CL spec.'
+                                required:
+                                  - signed_header_1
+                                  - signed_header_2
+                                properties:
+                                  signed_header_1:
+                                    type: object
+                                    description: 'The [`SignedBeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#signedbeaconblockheader) object envelope from the CL spec.'
+                                    required:
+                                      - message
+                                      - signature
+                                    properties:
+                                      message:
+                                        description: 'The [`BeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#beaconblockheader) object from the CL spec.'
+                                        allOf:
+                                          - type: object
+                                            required:
+                                              - slot
+                                              - proposer_index
+                                              - parent_root
+                                              - state_root
+                                            properties:
+                                              slot:
+                                                type: string
+                                                example: '1'
+                                                description: The slot to which this block corresponds.
+                                              proposer_index:
+                                                type: string
+                                                example: '1'
+                                                description: Index of validator in validator registry.
+                                              parent_root:
+                                                type: string
+                                                format: hex
+                                                example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The signing merkle root of the parent `BeaconBlock`.
+                                              state_root:
+                                                type: string
+                                                format: hex
+                                                example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
+                                          - type: object
+                                            required:
+                                              - body_root
+                                            properties:
+                                              body_root:
+                                                type: string
+                                                format: hex
+                                                example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
+                                      signature:
+                                        type: string
+                                        format: hex
+                                        pattern: '^0x[a-fA-F0-9]{192}$'
+                                        example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                  signed_header_2:
+                                    type: object
+                                    description: 'The [`SignedBeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#signedbeaconblockheader) object envelope from the CL spec.'
+                                    required:
+                                      - message
+                                      - signature
+                                    properties:
+                                      message:
+                                        description: 'The [`BeaconBlockHeader`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#beaconblockheader) object from the CL spec.'
+                                        allOf:
+                                          - type: object
+                                            required:
+                                              - slot
+                                              - proposer_index
+                                              - parent_root
+                                              - state_root
+                                            properties:
+                                              slot:
+                                                type: string
+                                                example: '1'
+                                                description: The slot to which this block corresponds.
+                                              proposer_index:
+                                                type: string
+                                                example: '1'
+                                                description: Index of validator in validator registry.
+                                              parent_root:
+                                                type: string
+                                                format: hex
+                                                example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The signing merkle root of the parent `BeaconBlock`.
+                                              state_root:
+                                                type: string
+                                                format: hex
+                                                example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The tree hash merkle root of the `BeaconState` for the `BeaconBlock`.
+                                          - type: object
+                                            required:
+                                              - body_root
+                                            properties:
+                                              body_root:
+                                                type: string
+                                                format: hex
+                                                example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                pattern: '^0x[a-fA-F0-9]{64}$'
+                                                description: The tree hash merkle root of the `BeaconBlockBody` for the `BeaconBlock`
+                                      signature:
+                                        type: string
+                                        format: hex
+                                        pattern: '^0x[a-fA-F0-9]{192}$'
+                                        example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                            attester_slashings:
+                              type: array
+                              items:
+                                type: object
+                                description: 'The [`AttesterSlashing`](https://github.com/ethereum/consensus-specs/blob/v1.5.0/specs/electra/beacon-chain.md#attesterslashing) object from the CL spec.'
+                                required:
+                                  - attestation_1
+                                  - attestation_2
+                                properties:
+                                  attestation_1:
+                                    type: object
+                                    description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.5.0/specs/electra/beacon-chain.md#indexedattestation) object from the CL spec.'
+                                    required:
+                                      - attesting_indices
+                                      - data
+                                      - signature
+                                    properties:
+                                      attesting_indices:
+                                        type: array
+                                        maxItems: 131072
+                                        description: Attesting validator indices
+                                        items:
+                                          type: string
+                                          example: '1'
+                                      data:
+                                        type: object
+                                        description: 'The [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#attestationdata) object from the CL spec.'
+                                        required:
+                                          - slot
+                                          - index
+                                          - beacon_block_root
+                                          - source
+                                          - target
+                                        properties:
+                                          slot:
+                                            type: string
+                                            example: '1'
+                                          index:
+                                            type: string
+                                            example: '1'
+                                          beacon_block_root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: LMD GHOST vote.
+                                          source:
+                                            type: object
+                                            description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint) object from the CL spec.'
+                                            required:
+                                              - epoch
+                                              - root
+                                            properties:
+                                              epoch:
+                                                type: string
+                                                example: '1'
+                                              root:
+                                                type: string
+                                                format: hex
+                                                example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                pattern: '^0x[a-fA-F0-9]{64}$'
+                                          target:
+                                            type: object
+                                            description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint) object from the CL spec.'
+                                            required:
+                                              - epoch
+                                              - root
+                                            properties:
+                                              epoch:
+                                                type: string
+                                                example: '1'
+                                              root:
+                                                type: string
+                                                format: hex
+                                                example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                pattern: '^0x[a-fA-F0-9]{64}$'
+                                      signature:
+                                        type: string
+                                        format: hex
+                                        pattern: '^0x[a-fA-F0-9]{192}$'
+                                        example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                        description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
+                                  attestation_2:
+                                    type: object
+                                    description: 'The [`IndexedAttestation`](https://github.com/ethereum/consensus-specs/blob/v1.5.0/specs/electra/beacon-chain.md#indexedattestation) object from the CL spec.'
+                                    required:
+                                      - attesting_indices
+                                      - data
+                                      - signature
+                                    properties:
+                                      attesting_indices:
+                                        type: array
+                                        maxItems: 131072
+                                        description: Attesting validator indices
+                                        items:
+                                          type: string
+                                          example: '1'
+                                      data:
+                                        type: object
+                                        description: 'The [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#attestationdata) object from the CL spec.'
+                                        required:
+                                          - slot
+                                          - index
+                                          - beacon_block_root
+                                          - source
+                                          - target
+                                        properties:
+                                          slot:
+                                            type: string
+                                            example: '1'
+                                          index:
+                                            type: string
+                                            example: '1'
+                                          beacon_block_root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
+                                            description: LMD GHOST vote.
+                                          source:
+                                            type: object
+                                            description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint) object from the CL spec.'
+                                            required:
+                                              - epoch
+                                              - root
+                                            properties:
+                                              epoch:
+                                                type: string
+                                                example: '1'
+                                              root:
+                                                type: string
+                                                format: hex
+                                                example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                pattern: '^0x[a-fA-F0-9]{64}$'
+                                          target:
+                                            type: object
+                                            description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint) object from the CL spec.'
+                                            required:
+                                              - epoch
+                                              - root
+                                            properties:
+                                              epoch:
+                                                type: string
+                                                example: '1'
+                                              root:
+                                                type: string
+                                                format: hex
+                                                example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                                pattern: '^0x[a-fA-F0-9]{64}$'
+                                      signature:
+                                        type: string
+                                        format: hex
+                                        pattern: '^0x[a-fA-F0-9]{192}$'
+                                        example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                        description: 'The BLS signature of the `IndexedAttestation`, created by the validator of the attestation.'
+                            attestations:
+                              type: array
+                              items:
+                                type: object
+                                description: 'The [`Attestation`](https://github.com/ethereum/consensus-specs/blob/v1.5.0/specs/electra/beacon-chain.md#attestation) object from the CL spec.'
+                                required:
+                                  - aggregation_bits
+                                  - data
+                                  - signature
+                                  - committee_bits
+                                properties:
+                                  aggregation_bits:
+                                    description: Attester aggregation bits.
+                                    type: string
+                                    format: hex
+                                    example: '0x01'
+                                    pattern: '^0x[a-fA-F0-9]{2,}$'
+                                  data:
+                                    type: object
+                                    description: 'The [`AttestationData`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#attestationdata) object from the CL spec.'
+                                    required:
+                                      - slot
+                                      - index
+                                      - beacon_block_root
+                                      - source
+                                      - target
+                                    properties:
+                                      slot:
+                                        type: string
+                                        example: '1'
+                                      index:
+                                        type: string
+                                        example: '1'
+                                      beacon_block_root:
+                                        type: string
+                                        format: hex
+                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                        pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: LMD GHOST vote.
+                                      source:
+                                        type: object
+                                        description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint) object from the CL spec.'
+                                        required:
+                                          - epoch
+                                          - root
+                                        properties:
+                                          epoch:
+                                            type: string
+                                            example: '1'
+                                          root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
+                                      target:
+                                        type: object
+                                        description: 'The [`Checkpoint`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#checkpoint) object from the CL spec.'
+                                        required:
+                                          - epoch
+                                          - root
+                                        properties:
+                                          epoch:
+                                            type: string
+                                            example: '1'
+                                          root:
+                                            type: string
+                                            format: hex
+                                            example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                            pattern: '^0x[a-fA-F0-9]{64}$'
+                                  signature:
+                                    type: string
+                                    format: hex
+                                    pattern: '^0x[a-fA-F0-9]{192}$'
+                                    example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                    description: BLS aggregate signature.
+                                  committee_bits:
+                                    description: Committee bits.
+                                    example: '0x0000000000000001'
+                                    type: string
+                                    format: hex
+                                    pattern: '^0x[a-fA-F0-9]{2,}$'
+                            deposits:
+                              type: array
+                              items:
+                                type: object
+                                description: 'The [`Deposit`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#deposit) object from the CL spec.'
+                                required:
+                                  - proof
+                                  - data
+                                properties:
+                                  proof:
+                                    type: array
+                                    description: Branch in the deposit tree.
+                                    items:
+                                      type: string
+                                      format: hex
+                                      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                      pattern: '^0x[a-fA-F0-9]{64}$'
+                                    minItems: 33
+                                    maxItems: 33
+                                  data:
+                                    type: object
+                                    description: 'The [`DepositData`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#depositdata) object from the CL spec.'
+                                    required:
+                                      - pubkey
+                                      - withdrawal_credentials
+                                      - amount
+                                      - signature
+                                    properties:
+                                      pubkey:
+                                        type: string
+                                        format: hex
+                                        pattern: '^0x[a-fA-F0-9]{96}$'
+                                        description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
+                                        example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
+                                      withdrawal_credentials:
+                                        type: string
+                                        format: hex
+                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                        pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: The withdrawal credentials.
+                                      amount:
+                                        type: string
+                                        example: '1'
+                                        description: Amount in Gwei.
+                                      signature:
+                                        type: string
+                                        format: hex
+                                        pattern: '^0x[a-fA-F0-9]{192}$'
+                                        example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                                        description: Container self-signature.
+                            voluntary_exits:
+                              type: array
+                              items:
+                                type: object
+                                description: 'The [`SignedVoluntaryExit`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#signedvoluntaryexit) object from the CL spec.'
+                                required:
+                                  - message
+                                  - signature
+                                properties:
+                                  message:
+                                    type: object
+                                    description: 'The [`VoluntaryExit`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/phase0/beacon-chain.md#voluntaryexit) object from the CL spec.'
+                                    required:
+                                      - epoch
+                                      - validator_index
+                                    properties:
+                                      epoch:
+                                        type: string
+                                        example: '1'
+                                        description: Minimum epoch for processing exit.
+                                      validator_index:
+                                        type: string
+                                        example: '1'
+                                        description: Index of the exiting validator.
+                                  signature:
+                                    type: string
+                                    format: hex
+                                    pattern: '^0x[a-fA-F0-9]{192}$'
+                                    example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                            sync_aggregate:
+                              type: object
+                              description: 'The [`SyncAggregate`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/altair/beacon-chain.md#syncaggregate) object from the CL Altair spec.'
+                              required:
+                                - sync_committee_bits
+                                - sync_committee_signature
+                              properties:
+                                sync_committee_bits:
+                                  description: Aggregation bits of sync
+                                  type: string
+                                  format: hex
+                                  example: '0x01'
+                                  pattern: '^0x[a-fA-F0-9]{2,}$'
+                                sync_committee_signature:
+                                  type: string
+                                  format: hex
+                                  pattern: '^0x[a-fA-F0-9]{192}$'
+                                  example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                            bls_to_execution_changes:
+                              type: array
+                              items:
+                                type: object
+                                description: 'The [`SignedBLSToExecutionChange`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/capella/beacon-chain.md#signedblstoexecutionchange) object from the CL spec.'
+                                required:
+                                  - message
+                                  - signature
+                                properties:
+                                  message:
+                                    type: object
+                                    description: 'The [`BLSToExecutionChange`](https://github.com/ethereum/consensus-specs/blob/v1.3.0/specs/capella/beacon-chain.md#blstoexecutionchange) object from the CL spec.'
+                                    required:
+                                      - validator_index
+                                      - from_bls_pubkey
+                                      - to_execution_address
+                                    properties:
+                                      validator_index:
+                                        type: string
+                                        example: '1'
+                                        description: Index of the validator for which credentials will be changed.
+                                      from_bls_pubkey:
+                                        type: string
+                                        format: hex
+                                        pattern: '^0x[a-fA-F0-9]{96}$'
+                                        description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
+                                        example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
+                                      to_execution_address:
+                                        type: string
+                                        format: hex
+                                        description: An address on the execution (Ethereum 1) network.
+                                        example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
+                                        pattern: '^0x[a-fA-F0-9]{40}$'
+                                  signature:
+                                    type: string
+                                    format: hex
+                                    pattern: '^0x[a-fA-F0-9]{192}$'
+                                    example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                            signed_execution_payload_bid:
+                              type: object
+                              description: 'The [`SignedExecutionPayloadBid`](https://github.com/ethereum/consensus-specs/blob/00d531949b1f30516979b60ddd2a411e7f388299/specs/gloas/beacon-chain.md#signedexecutionpayloadbid) object from the CL Gloas spec.'
+                              required:
+                                - message
+                                - signature
+                              properties:
+                                message:
+                                  type: object
+                                  description: 'The [`ExecutionPayloadBid`](https://github.com/ethereum/consensus-specs/blob/00d531949b1f30516979b60ddd2a411e7f388299/specs/gloas/beacon-chain.md#executionpayloadbid) object from the CL Gloas spec.'
+                                  required:
+                                    - parent_block_hash
+                                    - parent_block_root
+                                    - block_hash
+                                    - prev_randao
+                                    - fee_recipient
+                                    - gas_limit
+                                    - builder_index
+                                    - slot
+                                    - value
+                                    - execution_payment
+                                    - blob_kzg_commitments_root
+                                  properties:
+                                    parent_block_hash:
+                                      type: string
+                                      format: hex
+                                      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                      pattern: '^0x[a-fA-F0-9]{64}$'
+                                    parent_block_root:
+                                      type: string
+                                      format: hex
+                                      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                      pattern: '^0x[a-fA-F0-9]{64}$'
+                                    block_hash:
+                                      type: string
+                                      format: hex
+                                      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                      pattern: '^0x[a-fA-F0-9]{64}$'
+                                    prev_randao:
+                                      type: string
+                                      format: hex
+                                      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                      pattern: '^0x[a-fA-F0-9]{64}$'
+                                    fee_recipient:
+                                      type: string
+                                      format: hex
+                                      description: An address on the execution (Ethereum 1) network.
+                                      example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
+                                      pattern: '^0x[a-fA-F0-9]{40}$'
+                                    gas_limit:
+                                      type: string
+                                      example: '1'
+                                    builder_index:
+                                      type: string
+                                      example: '1'
+                                    slot:
+                                      type: string
+                                      example: '1'
+                                    value:
+                                      type: string
+                                      example: '1'
+                                    execution_payment:
+                                      type: string
+                                      example: '1'
+                                    blob_kzg_commitments_root:
+                                      type: string
+                                      format: hex
+                                      example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                      pattern: '^0x[a-fA-F0-9]{64}$'
+                                signature:
+                                  type: string
+                                  format: hex
+                                  pattern: '^0x[a-fA-F0-9]{192}$'
+                                  example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                            payload_attestations:
+                              type: array
+                              description: Array of payload attestations from gloas.
+                              items:
+                                type: object
+                                description: 'The [`PayloadAttestation`](https://github.com/ethereum/consensus-specs/blob/00d531949b1f30516979b60ddd2a411e7f388299/specs/gloas/beacon-chain.md#payloadattestation) object from the CL Gloas spec.'
+                                required:
+                                  - aggregation_bits
+                                  - data
+                                  - signature
+                                properties:
+                                  aggregation_bits:
+                                    type: string
+                                    format: hex
+                                    example: '0x01'
+                                    pattern: '^0x[a-fA-F0-9]{2,}$'
+                                  data:
+                                    type: object
+                                    description: 'The [`PayloadAttestationData`](https://github.com/ethereum/consensus-specs/blob/00d531949b1f30516979b60ddd2a411e7f388299/specs/gloas/beacon-chain.md#payloadattestationdata) object from the CL Gloas spec.'
+                                    required:
+                                      - beacon_block_root
+                                      - slot
+                                      - payload_present
+                                      - blob_data_available
+                                    properties:
+                                      beacon_block_root:
+                                        type: string
+                                        format: hex
+                                        example: '0xcf8e0d4e9587369b2301d0790347320302cc0943d5a1884560367e8208d920f2'
+                                        pattern: '^0x[a-fA-F0-9]{64}$'
+                                        description: Hash tree root of the beacon block associated with this ptc attestation
+                                      slot:
+                                        type: string
+                                        example: '1'
+                                        description: The slot for which the payload attestation is being made
+                                      payload_present:
+                                        type: boolean
+                                        description: True if a SignedExecutionPayloadEnvelope has been seen referencing this block
+                                      blob_data_available:
+                                        type: boolean
+                                        description: True if blob data is available for this block
+                                  signature:
+                                    type: string
+                                    format: hex
+                                    pattern: '^0x[a-fA-F0-9]{192}$'
+                                    example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+                              minItems: 0
+                              maxItems: 4
+                signature:
+                  type: string
+                  format: hex
+                  pattern: '^0x[a-fA-F0-9]{192}$'
+                  example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+          application/octet-stream:
+            schema:
+              description: SSZ serialized `SignedBeaconBlock` bytes. Use content type header to indicate that SSZ data is contained in the request body.
+      responses:
+        '202':
+          description: Success response.
+        '400':
+          description: Error response.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: Either specific error code in case of invalid request or http status code
+                    type: number
+                    example: 404
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 400
+                message: 'Invalid signed beacon block: missing signature'
+        '415':
+          description: Supplied content-type is not supported.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: 'The media type in "Content-Type" header is unsupported, and the request has been rejected. This occurs when a HTTP request supplies a payload in a content-type that the server is not able to handle.'
+                    type: number
+                    example: 415
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 415
+                message: Cannot read the supplied content type.
+        '500':
+          description: Builder node internal error.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: Either specific error code in case of invalid request or http status code
+                    type: number
+                    example: 404
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 500
+                message: Internal server error
   /eth/v1/builder/blinded_blocks:
     post:
       operationId: submitBlindedBlock
@@ -1212,6 +2438,7 @@ paths:
               - deneb
               - electra
               - fulu
+              - gloas
             example: bellatrix
             type: string
           required: false
@@ -1698,9 +2925,9 @@ paths:
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
                                                 description: The withdrawal credentials.
                                               amount:
-                                                description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
+                                                description: Amount in Gwei.
                                               signature:
                                                 type: string
                                                 format: hex
@@ -2324,9 +3551,9 @@ paths:
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
                                                 description: The withdrawal credentials.
                                               amount:
-                                                description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
+                                                description: Amount in Gwei.
                                               signature:
                                                 type: string
                                                 format: hex
@@ -2996,9 +4223,9 @@ paths:
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
                                                 description: The withdrawal credentials.
                                               amount:
-                                                description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
+                                                description: Amount in Gwei.
                                               signature:
                                                 type: string
                                                 format: hex
@@ -3691,9 +4918,9 @@ paths:
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
                                                 description: The withdrawal credentials.
                                               amount:
-                                                description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
+                                                description: Amount in Gwei.
                                               signature:
                                                 type: string
                                                 format: hex
@@ -4780,6 +6007,7 @@ paths:
                   - deneb
                   - electra
                   - fulu
+                  - gloas
                 example: bellatrix
                 type: string
           content:
@@ -5004,9 +6232,9 @@ paths:
                                       example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                       pattern: '^0x[a-fA-F0-9]{40}$'
                                     amount:
-                                      description: The value withdrawn (gwei).
                                       type: string
                                       example: '1'
+                                      description: The value withdrawn (gwei).
                                 maxItems: 16
                       - type: object
                         description: A wrapper object containing the ExecutionPayload and the BlobsBundle
@@ -5137,9 +6365,9 @@ paths:
                                           example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                           pattern: '^0x[a-fA-F0-9]{40}$'
                                         amount:
-                                          description: The value withdrawn (gwei).
                                           type: string
                                           example: '1'
+                                          description: The value withdrawn (gwei).
                                     maxItems: 16
                           blobs_bundle:
                             type: object
@@ -5306,9 +6534,9 @@ paths:
                                           example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                                           pattern: '^0x[a-fA-F0-9]{40}$'
                                         amount:
-                                          description: The value withdrawn (gwei).
                                           type: string
                                           example: '1'
+                                          description: The value withdrawn (gwei).
                                     maxItems: 16
                           blobs_bundle:
                             type: object
@@ -5750,6 +6978,7 @@ paths:
               - deneb
               - electra
               - fulu
+              - gloas
             example: bellatrix
             type: string
           required: false
@@ -6236,9 +7465,9 @@ paths:
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
                                                 description: The withdrawal credentials.
                                               amount:
-                                                description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
+                                                description: Amount in Gwei.
                                               signature:
                                                 type: string
                                                 format: hex
@@ -6862,9 +8091,9 @@ paths:
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
                                                 description: The withdrawal credentials.
                                               amount:
-                                                description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
+                                                description: Amount in Gwei.
                                               signature:
                                                 type: string
                                                 format: hex
@@ -7534,9 +8763,9 @@ paths:
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
                                                 description: The withdrawal credentials.
                                               amount:
-                                                description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
+                                                description: Amount in Gwei.
                                               signature:
                                                 type: string
                                                 format: hex
@@ -8229,9 +9458,9 @@ paths:
                                                 pattern: '^0x[a-fA-F0-9]{64}$'
                                                 description: The withdrawal credentials.
                                               amount:
-                                                description: Amount in Gwei.
                                                 type: string
                                                 example: '1'
+                                                description: Amount in Gwei.
                                               signature:
                                                 type: string
                                                 format: hex
@@ -9382,6 +10611,209 @@ paths:
               example:
                 code: 500
                 message: Internal server error
+  '/eth/v1/builder/builder_preferences/{validator_pubkey}':
+    post:
+      operationId: submitBuilderPreferences
+      summary: Submit builder preferences for a proposer.
+      description: |
+        Submits a proposer's `BuilderPreferencesRequestV1` to the builder, including
+        the `max_execution_payment` that the proposer is willing to accept from this
+        builder, authenticated via a `SignedRequestAuthV1`.
+
+        Validators MAY call this endpoint in the epoch prior to the epoch in
+        which they will be proposing, as determined from `state.proposer_lookahead`, so that
+        builders have the preferences before the bid request arrives.
+
+        The builder MUST verify the BLS signature in `auth` against
+        `validator_pubkey`, and check that `auth.message.data`
+        matches its own URL. If the signature check fails, the builder MUST
+        return a 401 response. If the URL or slot check fails, the builder MUST
+        return a 400 response.
+
+        A success response (202) indicates that the preferences were accepted. If
+        the preferences are invalid, then the builder MUST return an error response
+        (400) with a description of the validation failure.
+
+        This API is applicable from Gloas fork onwards.
+      tags:
+        - Builder
+      parameters:
+        - name: validator_pubkey
+          in: path
+          required: true
+          description: The BLS public key of the validator expressing these preferences.
+          schema:
+            type: string
+            format: hex
+            pattern: '^0x[a-fA-F0-9]{96}$'
+            description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
+            example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
+        - name: Eth-Consensus-Version
+          in: header
+          required: true
+          description: The active consensus version to which the request body belongs. Required if the request body is SSZ encoded.
+          schema:
+            enum:
+              - bellatrix
+              - capella
+              - deneb
+              - electra
+              - fulu
+              - gloas
+            example: bellatrix
+            type: string
+      requestBody:
+        description: A `BuilderPreferencesRequestV1` containing the proposer's preferences and a `SignedRequestAuthV1` for authentication.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: A builder preferences submission containing the proposer's preferences and a signed request authentication.
+              required:
+                - preferences
+                - auth
+              properties:
+                preferences:
+                  type: object
+                  description: Per-builder preferences that a proposer can express.
+                  required:
+                    - max_execution_payment
+                  properties:
+                    max_execution_payment:
+                      type: string
+                      example: '1'
+                      description: Indicates the maximum amount that a proposer is willing to accept as an execution payment from the builder.
+                auth:
+                  type: object
+                  required:
+                    - message
+                    - signature
+                  properties:
+                    message:
+                      type: object
+                      required:
+                        - data
+                        - slot
+                      properties:
+                        data:
+                          type: string
+                          format: hex
+                          description: 'Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for.'
+                          example: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+                          pattern: '^0x[a-fA-F0-9]{0,8192}$'
+                        slot:
+                          type: string
+                          example: '1'
+                          description: The slot for which the bid is being requested.
+                    signature:
+                      type: string
+                      format: hex
+                      pattern: '^0x[a-fA-F0-9]{192}$'
+                      example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+            examples:
+              BuilderPreferencesRequestV1:
+                value:
+                  preferences:
+                    max_execution_payment: '1000000000'
+                  auth:
+                    message:
+                      data: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+                      slot: '1'
+                    signature: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+          application/octet-stream:
+            schema:
+              description: SSZ serialized `BuilderPreferencesRequestV1` bytes. Use content type header to indicate that SSZ data is contained in the request body.
+      responses:
+        '202':
+          description: Success response.
+        '400':
+          description: Error response.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: Either specific error code in case of invalid request or http status code
+                    type: number
+                    example: 404
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              examples:
+                SlotMismatch:
+                  value:
+                    code: 400
+                    message: 'Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot'
+                WrongBuilder:
+                  value:
+                    code: 400
+                    message: auth.message.data does not match this builder's URL
+                InvalidPreferences:
+                  value:
+                    code: 400
+                    message: 'Invalid builder preferences: max_execution_payment malformed'
+        '401':
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: Either specific error code in case of invalid request or http status code
+                    type: number
+                    example: 404
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              examples:
+                SignatureVerificationFailed:
+                  value:
+                    code: 401
+                    message: 'Invalid SignedRequestAuthV1: signature verification failed'
+        '500':
+          description: Builder node internal error.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: Either specific error code in case of invalid request or http status code
+                    type: number
+                    example: 404
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 500
+                message: Internal server error
   /eth/v1/builder/status:
     get:
       operationId: status
@@ -9458,6 +10890,7 @@ components:
         - deneb
         - electra
         - fulu
+        - gloas
       example: bellatrix
       type: string
     Bellatrix.ExecutionPayload:
@@ -10024,9 +11457,9 @@ components:
                                     pattern: '^0x[a-fA-F0-9]{64}$'
                                     description: The withdrawal credentials.
                                   amount:
-                                    description: Amount in Gwei.
                                     type: string
                                     example: '1'
+                                    description: Amount in Gwei.
                                   signature:
                                     type: string
                                     format: hex
@@ -10410,9 +11843,9 @@ components:
                     example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                     pattern: '^0x[a-fA-F0-9]{40}$'
                   amount:
-                    description: The value withdrawn (gwei).
                     type: string
                     example: '1'
+                    description: The value withdrawn (gwei).
               maxItems: 16
     Capella.SignedBlindedBeaconBlock:
       type: object
@@ -10890,9 +12323,9 @@ components:
                                     pattern: '^0x[a-fA-F0-9]{64}$'
                                     description: The withdrawal credentials.
                                   amount:
-                                    description: Amount in Gwei.
                                     type: string
                                     example: '1'
+                                    description: Amount in Gwei.
                                   signature:
                                     type: string
                                     format: hex
@@ -11689,9 +13122,9 @@ components:
                                     pattern: '^0x[a-fA-F0-9]{64}$'
                                     description: The withdrawal credentials.
                                   amount:
-                                    description: Amount in Gwei.
                                     type: string
                                     example: '1'
+                                    description: Amount in Gwei.
                                   signature:
                                     type: string
                                     format: hex
@@ -12176,9 +13609,9 @@ components:
                         example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                         pattern: '^0x[a-fA-F0-9]{40}$'
                       amount:
-                        description: The value withdrawn (gwei).
                         type: string
                         example: '1'
+                        description: The value withdrawn (gwei).
                   maxItems: 16
         blobs_bundle:
           type: object
@@ -12742,9 +14175,9 @@ components:
                                     pattern: '^0x[a-fA-F0-9]{64}$'
                                     description: The withdrawal credentials.
                                   amount:
-                                    description: Amount in Gwei.
                                     type: string
                                     example: '1'
+                                    description: Amount in Gwei.
                                   signature:
                                     type: string
                                     format: hex
@@ -13471,9 +14904,9 @@ components:
                         example: '0xAbcF8e0d4e9587369b2301D0790347320302cc09'
                         pattern: '^0x[a-fA-F0-9]{40}$'
                       amount:
-                        description: The value withdrawn (gwei).
                         type: string
                         example: '1'
+                        description: The value withdrawn (gwei).
                   maxItems: 16
         blobs_bundle:
           type: object
@@ -13511,6 +14944,103 @@ components:
                 description: A G1 curve point. Used for verifying that the `KZGCommitment` for a given `Blob` is correct.
               minItems: 0
               maxItems: 33554432
+    Gloas.RequestAuthV1:
+      type: object
+      required:
+        - data
+        - slot
+      properties:
+        data:
+          type: string
+          format: hex
+          description: 'Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for.'
+          example: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+          pattern: '^0x[a-fA-F0-9]{0,8192}$'
+        slot:
+          type: string
+          example: '1'
+          description: The slot for which the bid is being requested.
+    Gloas.SignedRequestAuthV1:
+      type: object
+      required:
+        - message
+        - signature
+      properties:
+        message:
+          type: object
+          required:
+            - data
+            - slot
+          properties:
+            data:
+              type: string
+              format: hex
+              description: 'Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for.'
+              example: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+              pattern: '^0x[a-fA-F0-9]{0,8192}$'
+            slot:
+              type: string
+              example: '1'
+              description: The slot for which the bid is being requested.
+        signature:
+          type: string
+          format: hex
+          pattern: '^0x[a-fA-F0-9]{192}$'
+          example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+    Gloas.BuilderPreferencesV1:
+      type: object
+      description: Per-builder preferences that a proposer can express.
+      required:
+        - max_execution_payment
+      properties:
+        max_execution_payment:
+          type: string
+          example: '1'
+          description: Indicates the maximum amount that a proposer is willing to accept as an execution payment from the builder.
+    Gloas.BuilderPreferencesRequestV1:
+      type: object
+      description: A builder preferences submission containing the proposer's preferences and a signed request authentication.
+      required:
+        - preferences
+        - auth
+      properties:
+        preferences:
+          type: object
+          description: Per-builder preferences that a proposer can express.
+          required:
+            - max_execution_payment
+          properties:
+            max_execution_payment:
+              type: string
+              example: '1'
+              description: Indicates the maximum amount that a proposer is willing to accept as an execution payment from the builder.
+        auth:
+          type: object
+          required:
+            - message
+            - signature
+          properties:
+            message:
+              type: object
+              required:
+                - data
+                - slot
+              properties:
+                data:
+                  type: string
+                  format: hex
+                  description: 'Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for.'
+                  example: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+                  pattern: '^0x[a-fA-F0-9]{0,8192}$'
+                slot:
+                  type: string
+                  example: '1'
+                  description: The slot for which the bid is being requested.
+            signature:
+              type: string
+              format: hex
+              pattern: '^0x[a-fA-F0-9]{192}$'
+              example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
   responses:
     InternalError:
       description: Builder node internal error.
@@ -13600,7 +15130,8 @@ components:
           - deneb
           - electra
           - fulu
-        example: fulu
+          - gloas
+        example: gloas
       required: true
   examples:
     SignedValidatorRegistrations:
@@ -14800,4 +16331,22 @@ components:
                   target_pubkey: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
             value: '1'
             pubkey: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
+          signature: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+    Gloas.SignedRequestAuthV1:
+      value:
+        message:
+          data: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+          slot: '1'
+        signature: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
+    Gloas.BuilderPreferencesV1:
+      value:
+        max_execution_payment: '1000000000'
+    Gloas.BuilderPreferencesRequestV1:
+      value:
+        preferences:
+          max_execution_payment: '1000000000'
+        auth:
+          message:
+            data: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+            slot: '1'
           signature: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
