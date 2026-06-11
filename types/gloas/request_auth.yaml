@@ -1,0 +1,22 @@
+Gloas:
+  RequestAuthV1:
+    type: object
+    required: [data, slot]
+    properties:
+      data:
+        type: string
+        format: hex
+        description: "Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for."
+        example: "0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d"
+        pattern: "^0x[a-fA-F0-9]{0,8192}$"
+      slot:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
+        description: "The slot for which the bid is being requested."
+  SignedRequestAuthV1:
+    type: object
+    required: [message, signature]
+    properties:
+      message:
+        $ref: "#/Gloas/RequestAuthV1"
+      signature:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Signature"

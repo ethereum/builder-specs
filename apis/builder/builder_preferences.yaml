@@ -1,0 +1,86 @@
+post:
+  operationId: "submitBuilderPreferences"
+  summary: Submit builder preferences for a proposer.
+  description: |
+    Submits a proposer's `BuilderPreferencesRequestV1` to the builder, including
+    the `max_execution_payment` that the proposer is willing to accept from this
+    builder, authenticated via a `SignedRequestAuthV1`.
+
+    Validators MAY call this endpoint in the epoch prior to the epoch in
+    which they will be proposing, as determined from `state.proposer_lookahead`, so that
+    builders have the preferences before the bid request arrives.
+
+    The builder MUST verify the BLS signature in `auth` against
+    `validator_pubkey`, and check that `auth.message.data`
+    matches its own URL. If the signature check fails, the builder MUST
+    return a 401 response. If the URL or slot check fails, the builder MUST
+    return a 400 response.
+
+    A success response (202) indicates that the preferences were accepted. If
+    the preferences are invalid, then the builder MUST return an error response
+    (400) with a description of the validation failure.
+
+    This API is applicable from Gloas fork onwards.
+  tags:
+    - Builder
+  parameters:
+    - name: validator_pubkey
+      in: path
+      required: true
+      description: "The BLS public key of the validator expressing these preferences."
+      schema:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
+    - name: Eth-Consensus-Version
+      in: header
+      required: true
+      description: "The active consensus version to which the request body belongs. Required if the request body is SSZ encoded."
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
+  requestBody:
+    description: A `BuilderPreferencesRequestV1` containing the proposer's preferences and a `SignedRequestAuthV1` for authentication.
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferencesRequestV1"
+        examples:
+          BuilderPreferencesRequestV1:
+            $ref: "../../builder-oapi.yaml#/components/examples/Gloas.BuilderPreferencesRequestV1"
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `BuilderPreferencesRequestV1` bytes. Use content type header to indicate that SSZ data is contained in the request body."
+  responses:
+    "202":
+      description: Success response.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            SlotMismatch:
+              value:
+                code: 400
+                message: "Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot"
+            WrongBuilder:
+              value:
+                code: 400
+                message: "auth.message.data does not match this builder's URL"
+            InvalidPreferences:
+              value:
+                code: 400
+                message: "Invalid builder preferences: max_execution_payment malformed"
+    "401":
+      description: Authentication required.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            SignatureVerificationFailed:
+              value:
+                code: 401
+                message: "Invalid SignedRequestAuthV1: signature verification failed"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

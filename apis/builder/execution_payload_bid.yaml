@@ -1,0 +1,171 @@
+post:
+  operationId: "getExecutionPayloadBid"
+  summary: Get an execution payload bid.
+  description: |
+    Requests a builder node to produce a valid execution payload bid, which
+    can be integrated into a beacon block and signed.
+
+    The proposer sends a POST request to the builder with the following information:
+    - The slot for which the block should be proposed.
+    - The hash of the execution layer block the proposer will build on.
+    - The root of the beacon block the proposer will build on.
+    - The index of the proposer.
+    - Optionally, a `SignedRequestAuthV1` in the request body that
+      authenticates the request. The body MAY be encoded as JSON or SSZ.
+
+    The proposer's `max_execution_payment` is communicated exclusively via the
+    `submitBuilderPreferences` endpoint. If no `BuilderPreferencesV1` have been 
+    submitted for the proposer, the builder MUST treat `max_execution_payment` as `0` 
+    and MUST NOT include an execution layer payment in the bid.
+
+    The `SignedRequestAuthV1` body is optional. If it is present but malformed
+    or fails signature verification, the builder MAY return a 401 response.
+    If it is absent, the builder MAY still serve a bid, but builders MAY
+    use the presence and validity of the `SignedRequestAuthV1` to apply
+    per-validator policy (e.g. rate-limiting, prioritization, or refusing
+    unauthenticated requests).
+
+    The builder responds with a 200 response containing an execution payload bid if it can provide one.
+
+    If the builder is unable to produce a valid execution payload bid, then
+    the builder MUST return a 204 response. If the request is invalid, then the
+    builder MUST return an error response (400) with a description of the
+    validation failure.
+
+    This API is applicable from Gloas fork onwards.
+  tags:
+    - Builder
+  parameters:
+    - name: slot
+      in: path
+      required: true
+      description: The slot for which the block should be proposed.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Uint64"
+    - name: parent_hash
+      in: path
+      required: true
+      description: Hash of execution layer block the proposer will build on.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Root"
+    - name: parent_root
+      in: path
+      required: true
+      description: Root of the beacon block the proposer will build on.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/Root"
+    - name: proposer_pubkey
+      in: path
+      required: true
+      description: BLS public key of the proposer.
+      schema:
+        $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
+    - name: Date-Milliseconds
+      in: header
+      required: false
+      description: |
+        Optional header containing a Unix timestamp in milliseconds representing
+        the point-in-time the request was sent. This header can be used to measure
+        latency.
+      schema:
+        type: integer
+        format: int64
+        example: 1710338135000
+    - name: X-Timeout-Ms
+      in: header
+      required: false
+      description: |
+        Optional header containing the proposer's timeout for the request in milliseconds.
+      schema:
+        type: integer
+        format: int64
+        example: 10000
+    - name: Eth-Consensus-Version
+      in: header
+      required: true
+      description: |
+        The active consensus version to which the `SignedRequestAuthV1` in the
+        request body belongs. Required if the request body is SSZ encoded.
+      schema:
+        $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
+  requestBody:
+    description: |
+      Optional `SignedRequestAuthV1` authenticating the request. If provided,
+      the builder MAY verify the BLS signature against the validator pubkey
+      resolved from the `proposer_pubkey` path parameter, and check that
+      `data` matches its own URL and that `slot` matches the
+      requested slot. If absent, the builder MAY still serve a bid subject
+      to its own policy.
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuthV1"
+      application/octet-stream:
+        schema:
+          description: "SSZ serialized `SignedRequestAuthV1` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body."
+  responses:
+    "200":
+      description: Success response.
+      headers:
+        Eth-Consensus-Version:
+          $ref: "../../builder-oapi.yaml#/components/headers/Eth-Consensus-Version"
+          required: true
+      content:
+        application/json:
+          schema:
+            title: GetExecutionPayloadBidResponse
+            type: object
+            required: [version, data]
+            properties:
+              version:
+                type: string
+                enum: [ gloas ]
+                example: "gloas"
+              data:
+                $ref: "../../beacon-apis/types/gloas/execution_payload_bid.yaml#/Gloas/SignedExecutionPayloadBid"
+        application/octet-stream:
+          schema:
+            description: "SSZ serialized `SignedExecutionPayloadBid` bytes. Use Accept header to choose this response type"
+    "204":
+      description: No bid is available.
+    "400":
+      description: Error response.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            InvalidHash:
+              value:
+                code: 400
+                message: "Unknown hash: missing parent hash"
+            SlotMismatch:
+              value:
+                code: 400
+                message: "Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot"
+            WrongBuilder:
+              value:
+                code: 400
+                message: "Invalid SignedRequestAuthV1: auth.message.data does not match this builder's URL"
+    "401":
+      description: Authentication required.
+      content:
+        application/json:
+          schema:
+            $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
+          examples:
+            MissingAuth:
+              value:
+                code: 401
+                message: "Missing SignedRequestAuthV1: this builder requires authenticated requests"
+            InvalidAuth:
+              value:
+                code: 401
+                message: "Invalid SignedRequestAuthV1: signature verification failed"
+    "406":
+      $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
+    "415":
+      $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
+    "500":
+      $ref: "../../builder-oapi.yaml#/components/responses/InternalError"
