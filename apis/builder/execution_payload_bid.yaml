@@ -9,13 +9,13 @@ post:
     - The slot for which the block should be proposed.
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
-    - The index of the proposer.
+    - The public key of the proposer.
     - Optionally, a `SignedRequestAuthV1` in the request body that
       authenticates the request. The body MAY be encoded as JSON or SSZ.
 
     The proposer's `max_execution_payment` is communicated exclusively via the
-    `submitBuilderPreferences` endpoint. If no `BuilderPreferencesV1` have been 
-    submitted for the proposer, the builder MUST treat `max_execution_payment` as `0` 
+    `submitBuilderPreferences` endpoint. If no `BuilderPreferencesV1` have been
+    submitted for the proposer, the builder MUST treat `max_execution_payment` as `0`
     and MUST NOT include an execution layer payment in the bid.
 
     The `SignedRequestAuthV1` body is optional. If it is present but malformed
