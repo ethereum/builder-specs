@@ -93,9 +93,9 @@ post:
       Optional `SignedRequestAuthV1` authenticating the request. If provided,
       the builder MAY verify the BLS signature against the validator pubkey
       resolved from the `proposer_pubkey` path parameter, and check that
-      `data` matches its own URL and that `slot` matches the
-      requested slot. If absent, the builder MAY still serve a bid subject
-      to its own policy.
+      `data` matches its own URL and that `auth.message.slot` matches the
+      `slot` path parameter (the proposal slot). If absent, the builder MAY
+      still serve a bid subject to its own policy.
     required: false
     content:
       application/json:
@@ -143,7 +143,7 @@ post:
             SlotMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot"
+                message: "Invalid SignedRequestAuthV1: auth.message.slot does not match the proposal slot in the request path"
             WrongBuilder:
               value:
                 code: 400

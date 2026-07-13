@@ -102,10 +102,13 @@ containing:
 - `preferences`: A `BuilderPreferencesV1` with:
   - `max_execution_payment`: The maximum execution layer payment the proposer
     will accept from this builder (in Gwei).
-- `auth`: A `SignedRequestAuthV1` authenticating the request. The builder MUST
-  check that `auth.message.data` matches its own URL and MUST verify the
-  BLS signature against the `validator_pubkey` path parameter. If either check
-  fails, the builder MUST return a 400 response.
+- `auth`: A `SignedRequestAuthV1` authenticating the request.
+  `auth.message.slot` is the proposal slot the preferences apply to. The
+  builder MUST check that `auth.message.data` matches its own URL and MUST
+  verify the BLS signature against the `validator_pubkey` path parameter. If
+  either check fails, the builder MUST return a 400 response. The builder MUST
+  reject preferences whose `auth.message.slot` has already passed, so that a
+  replayed request cannot roll preferences back to a stale value.
 
 The builder SHOULD store the preferences for each proposer and apply the
 `max_execution_payment` constraint when constructing bids. If no preferences
@@ -142,7 +145,8 @@ treat `max_execution_payment` as `0` or can choose to not serve the bid.
 
 If the request body is present, builders MAY verify the `SignedRequestAuthV1`
 signature against the `proposer_pubkey` path parameter, and check that
-`data` matches their own URL and that `slot` matches the requested slot.
+`data` matches their own URL and that `auth.message.slot` matches the proposal `slot`
+path parameter (see [Constructing the `RequestAuthV1`][signed-request-auth]).
 If verification fails, the builder MAY return a 401 response.
 
 ```python

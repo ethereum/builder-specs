@@ -12,7 +12,9 @@ post:
 
     The builder MUST verify the BLS signature in `auth` against
     `validator_pubkey`, and check that `auth.message.data`
-    matches its own URL. If the signature check fails, the builder MUST
+    matches its own URL. `auth.message.slot` is the proposal slot the
+    preferences apply to; the builder MUST reject preferences whose slot has
+    already passed. If the signature check fails, the builder MUST
     return a 401 response. If the URL or slot check fails, the builder MUST
     return a 400 response.
 
@@ -62,7 +64,7 @@ post:
             SlotMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot"
+                message: "Invalid SignedRequestAuthV1: auth.message.slot has already passed"
             WrongBuilder:
               value:
                 code: 400

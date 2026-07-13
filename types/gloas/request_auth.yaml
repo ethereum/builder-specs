@@ -11,7 +11,7 @@ Gloas:
         pattern: "^0x[a-fA-F0-9]{0,8192}$"
       slot:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
-        description: "The slot for which the bid is being requested."
+        description: "The proposal slot this request is authorized for."
   SignedRequestAuthV1:
     type: object
     required: [message, signature]
