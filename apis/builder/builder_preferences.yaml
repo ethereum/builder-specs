@@ -12,7 +12,10 @@ post:
 
     The builder MUST verify the BLS signature in `auth` against
     `validator_pubkey`, and check that `auth.message.data`
-    matches its own URL. `auth.message.slot` is the proposal slot the
+    matches the canonical form of its own URL (the lowercased scheme and
+    host only; no port, path, query, fragment, or userinfo), with both
+    sides applying the same canonicalization before comparison.
+    `auth.message.slot` is the proposal slot the
     preferences apply to; the builder MUST reject preferences whose slot has
     already passed. If the signature check fails, the builder MUST
     return a 401 response. If the URL or slot check fails, the builder MUST

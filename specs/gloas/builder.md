@@ -94,8 +94,8 @@ Validators MAY communicate their per-builder preferences ahead of the bid
 request by calling the
 [`submitBuilderPreferences`][submit-builder-preferences-api] API in the epoch
 prior to the epoch in which they will be proposing, as determined from
-`state.proposer_lookahead`. The builder receives a `BuilderPreferencesRequestV1` object
-containing:
+`state.proposer_lookahead`. The builder receives a `BuilderPreferencesRequestV1`
+object containing:
 
 - `validator_pubkey`: The BLS public key of the validator submitting these
   preferences, passed as a path parameter.
@@ -103,12 +103,13 @@ containing:
   - `max_execution_payment`: The maximum execution layer payment the proposer
     will accept from this builder (in Gwei).
 - `auth`: A `SignedRequestAuthV1` authenticating the request.
-  `auth.message.slot` is the proposal slot the preferences apply to. The
-  builder MUST check that `auth.message.data` matches its own URL and MUST
-  verify the BLS signature against the `validator_pubkey` path parameter. If
-  either check fails, the builder MUST return a 400 response. The builder MUST
-  reject preferences whose `auth.message.slot` has already passed, so that a
-  replayed request cannot roll preferences back to a stale value.
+  `auth.message.slot` is the proposal slot the preferences apply to. The builder
+  MUST check that `auth.message.data` matches the canonical form of its own URL
+  ([URL canonicalization][url-canonicalization]) and MUST verify the BLS
+  signature against the `validator_pubkey` path parameter. If either check
+  fails, the builder MUST return a 400 response. The builder MUST reject
+  preferences whose `auth.message.slot` has already passed, so that a replayed
+  request cannot roll preferences back to a stale value.
 
 The builder SHOULD store the preferences for each proposer and apply the
 `max_execution_payment` constraint when constructing bids. If no preferences
@@ -144,10 +145,12 @@ The proposer's `max_execution_payment` is communicated exclusively via the
 treat `max_execution_payment` as `0` or can choose to not serve the bid.
 
 If the request body is present, builders MAY verify the `SignedRequestAuthV1`
-signature against the `proposer_pubkey` path parameter, and check that
-`data` matches their own URL and that `auth.message.slot` matches the proposal `slot`
-path parameter (see [Constructing the `RequestAuthV1`][signed-request-auth]).
-If verification fails, the builder MAY return a 401 response.
+signature against the `proposer_pubkey` path parameter, and check that `data`
+matches the canonical form of their own URL
+([URL canonicalization][url-canonicalization]) and that `auth.message.slot`
+matches the proposal `slot` path parameter (see
+[Constructing the `RequestAuthV1`][signed-request-auth]). If verification fails,
+the builder MAY return a 401 response.
 
 ```python
 def verify_request_auth_signature(
@@ -218,3 +221,4 @@ documented in the [Gloas consensus specs][gloas-builder-specs].
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
 [signed-request-auth]: ./validator.md#signedrequestauthv1
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml
+[url-canonicalization]: ./validator.md#url-canonicalization
