@@ -203,16 +203,17 @@ API message, specific to this API and analogous to the now-deprecated
 `DOMAIN_BEACON_BUILDER`, which is used for in-protocol builder messages defined
 by the consensus specs.
 
-The validator signs a `RequestAuthV1` and the builder verifies the resulting
-`SignedRequestAuthV1` under `DOMAIN_REQUEST_AUTH`:
+Signing and verifying `canonicalize` `message.data`, so the signature is always
+over the canonical builder URL ([URL canonicalization][url-canonicalization]).
 
 ```python
 def get_request_auth_signature(
     request_auth: RequestAuthV1,
     privkey: int,
 ) -> BLSSignature:
+    signed = RequestAuthV1(data=canonicalize(request_auth.data), slot=request_auth.slot)
     domain = compute_domain(DOMAIN_REQUEST_AUTH)
-    signing_root = compute_signing_root(request_auth, domain)
+    signing_root = compute_signing_root(signed, domain)
     return bls.Sign(privkey, signing_root)
 
 
@@ -220,8 +221,10 @@ def verify_request_auth_signature(
     signed_request_auth: SignedRequestAuthV1,
     pubkey: BLSPubkey,
 ) -> bool:
+    message = signed_request_auth.message
+    signed = RequestAuthV1(data=canonicalize(message.data), slot=message.slot)
     domain = compute_domain(DOMAIN_REQUEST_AUTH)
-    signing_root = compute_signing_root(signed_request_auth.message, domain)
+    signing_root = compute_signing_root(signed, domain)
     return bls.Verify(pubkey, signing_root, signed_request_auth.signature)
 ```
 

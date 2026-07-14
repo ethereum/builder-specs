@@ -140,8 +140,10 @@ builder MAY still serve a bid.
 If the validator chooses to authenticate its request, it constructs a
 `RequestAuthV1` with the following fields:
 
-- `data`: MUST be set to the canonical form of the URL of the builder the
-  request is intended for (see [URL canonicalization](#url-canonicalization)).
+- `data`: the canonical form of the URL of the builder the request is for (see
+  [URL canonicalization](#url-canonicalization)). Because it identifies the
+  builder and not an endpoint, one `SignedRequestAuthV1` can authenticate the
+  proposer for both `getExecutionPayloadBid` and `submitBuilderPreferences`.
 - `slot`: The proposal slot this request is authorized for, not the slot at
   which the request is signed or sent.
 
@@ -155,19 +157,16 @@ from competing builders).
 
 #### URL canonicalization
 
-`data` is compared byte-for-byte, so both sides must derive the same bytes from
-the same URL. `data` identifies the builder, not an API resource or a transport
-detail, so its canonical form is just the scheme and host:
+`data` is the builder's URL reduced to its canonical form: the scheme and host
+only. The validator canonicalizes before signing, and the builder canonicalizes
+its own URL to compare it against `data`.
 
 - the scheme and host lowercased
 - no port
 - no path (including a bare trailing `/`), query, or fragment
 - no userinfo
 
-`data` is the ASCII encoding of the canonical URL (internationalized hostnames
-in their punycode form). The validator MUST apply these rules before signing,
-and the builder MUST apply them to its own URL before comparing it against
-`data`. For example:
+Internationalized hosts use their punycode form. For example:
 
 | URL                                    | Canonical form                  |
 | -------------------------------------- | ------------------------------- |
@@ -175,6 +174,21 @@ and the builder MUST apply them to its own URL before comparing it against
 | `https://builder.example.com:8080`     | `https://builder.example.com`   |
 | `https://builder.example.com/bids?x=1` | `https://builder.example.com`   |
 | `https://bücher.example`               | `https://xn--bcher-kva.example` |
+
+```python
+def canonicalize(url: str) -> str:
+    # Reduce a builder URL to its canonical identity: scheme and host only.
+    scheme, _, rest = url.partition("://")
+    # The authority ends at the first '/', '?', or '#'.
+    authority = rest
+    for separator in ("/", "?", "#"):
+        authority = authority.split(separator, 1)[0]
+    # Drop userinfo (up to and including the last '@') and any port.
+    host = authority.rsplit("@", 1)[-1].rsplit(":", 1)[0]
+    # Lowercase; internationalized hosts use their punycode (RFC 3492) form.
+    host = host.lower().encode("idna").decode("ascii")
+    return f"{scheme.lower()}://{host}"
+```
 
 ## Proposer Preferences
 
