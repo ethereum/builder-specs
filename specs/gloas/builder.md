@@ -11,6 +11,7 @@
   - [Per-request Validator Inputs](#per-request-validator-inputs)
   - [Proposer Preferences (Deprecation of Validator Registrations)](#proposer-preferences-deprecation-of-validator-registrations)
   - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
+    - [Signing](#signing)
   - [Constructing a `SignedExecutionPayloadEnvelope`](#constructing-a-signedexecutionpayloadenvelope)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -149,18 +150,9 @@ signature against the `proposer_pubkey` path parameter, and check that `data`
 matches the canonical form of their own URL
 ([URL canonicalization][url-canonicalization]) and that `auth.message.slot`
 matches the proposal `slot` path parameter (see
-[Constructing the `RequestAuthV1`][signed-request-auth]). If verification fails,
-the builder MAY return a 401 response.
-
-```python
-def verify_request_auth_signature(
-    signed_request_auth: SignedRequestAuthV1,
-    pubkey: BLSPubkey,
-) -> bool:
-    domain = compute_domain(DOMAIN_REQUEST_AUTH)
-    signing_root = compute_signing_root(signed_request_auth.message, domain)
-    return bls.Verify(pubkey, signing_root, signed_request_auth.signature)
-```
+[Constructing the `RequestAuthV1`][signed-request-auth]). The signature is
+verified with [`verify_request_auth_signature`](#signing). If verification
+fails, the builder MAY return a 401 response.
 
 If the request body is absent, the builder MAY still serve a bid.
 
@@ -199,6 +191,40 @@ committing to pay the proposer the sum of the two. `bid.value` is deducted from
 the builder's staked collateral on-chain even when `bid.execution_payment` is
 also set.
 
+### Signing
+
+All signature operations follow the [standard BLS operations][bls] interface
+defined in `consensus-specs`.
+
+The [`SignedRequestAuthV1`][signed-request-auth] is an out-of-protocol Builder
+API message, specific to this API and analogous to the now-deprecated
+`ValidatorRegistrationV1`. It is signed and verified under
+`DOMAIN_REQUEST_AUTH`. This domain MUST NOT be confused with
+`DOMAIN_BEACON_BUILDER`, which is used for in-protocol builder messages defined
+by the consensus specs.
+
+The validator signs a `RequestAuthV1` and the builder verifies the resulting
+`SignedRequestAuthV1` under `DOMAIN_REQUEST_AUTH`:
+
+```python
+def get_request_auth_signature(
+    request_auth: RequestAuthV1,
+    privkey: int,
+) -> BLSSignature:
+    domain = compute_domain(DOMAIN_REQUEST_AUTH)
+    signing_root = compute_signing_root(request_auth, domain)
+    return bls.Sign(privkey, signing_root)
+
+
+def verify_request_auth_signature(
+    signed_request_auth: SignedRequestAuthV1,
+    pubkey: BLSPubkey,
+) -> bool:
+    domain = compute_domain(DOMAIN_REQUEST_AUTH)
+    signing_root = compute_signing_root(signed_request_auth.message, domain)
+    return bls.Verify(pubkey, signing_root, signed_request_auth.signature)
+```
+
 ## Constructing a `SignedExecutionPayloadEnvelope`
 
 If the builder's [`SignedExecutionPayloadBid`][signed-execution-payload-bid] has
@@ -212,6 +238,7 @@ The specification for a block builder to construct a
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] is
 documented in the [Gloas consensus specs][gloas-builder-specs].
 
+[bls]: https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#bls-signatures
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
 [gloas-builder-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
