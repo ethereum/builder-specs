@@ -14,7 +14,6 @@
     - [`max_execution_payment`](#max_execution_payment)
   - [Bid Request](#bid-request)
     - [Constructing the `RequestAuthV1`](#constructing-the-requestauthv1)
-      - [URL canonicalization](#url-canonicalization)
   - [Proposer Preferences](#proposer-preferences)
   - [Validating a `SignedExecutionPayloadBid`](#validating-a-signedexecutionpayloadbid)
   - [Block proposal](#block-proposal)
@@ -100,12 +99,14 @@ The validator then constructs a `BuilderPreferencesRequestV1` with the
 `BuilderPreferencesV1` as `preferences` and a `SignedRequestAuthV1` as `auth`.
 The `SignedRequestAuthV1` is constructed as described in
 [Constructing the `RequestAuthV1`](#constructing-the-requestauthv1); its
-`auth.message.data` identifies the intended builder and its `auth.message.slot`
-is the proposal slot the preferences apply to. The builder MUST verify the
-`auth` signature against the `validator_pubkey` path parameter and MUST reject
-the request with a 400 response if `auth.message.data` does not match the
-canonical form of its own URL (see
-[URL canonicalization](#url-canonicalization)).
+`auth.message.data` is the authentication data the builder expects and its
+`auth.message.slot` is the proposal slot the preferences apply to. The builder
+MUST verify the `auth` signature against the `validator_pubkey` path parameter,
+returning a 401 response if it fails to verify, and MUST reject the request with
+a 400 response if `auth.message.data` does not match the value it agreed with
+the proposer. The builder MUST also reject, with a 400 response, a request whose
+`auth.message.slot` has already passed, so that a replay cannot roll preferences
+back to a stale value.
 
 If no preferences have been submitted, the builder MUST treat the proposer's
 `max_execution_payment` as `0`.
@@ -140,10 +141,10 @@ builder MAY still serve a bid.
 If the validator chooses to authenticate its request, it constructs a
 `RequestAuthV1` with the following fields:
 
-- `data`: the canonical form of the URL of the builder the request is for (see
-  [URL canonicalization](#url-canonicalization)). Because it identifies the
-  builder and not an endpoint, one `SignedRequestAuthV1` can authenticate the
-  proposer for both `getExecutionPayloadBid` and `submitBuilderPreferences`.
+- `data`: opaque authentication data agreed with the builder out of band whose
+  meaning is left to the two parties. It is not tied to an endpoint, so one
+  `SignedRequestAuthV1` can authenticate the proposer for both
+  `getExecutionPayloadBid` and `submitBuilderPreferences`.
 - `slot`: The proposal slot this request is authorized for, not the slot at
   which the request is signed or sent.
 
@@ -154,41 +155,6 @@ The validator then constructs the `SignedRequestAuthV1` by signing the
 `RequestAuthV1`. The signature lets builders authenticate the requesting
 validator and discard requests from other parties (e.g. DDOS or replay attempts
 from competing builders).
-
-#### URL canonicalization
-
-`data` is the builder's URL reduced to its canonical form: the scheme and host
-only. The validator canonicalizes before signing, and the builder canonicalizes
-its own URL to compare it against `data`.
-
-- the scheme and host lowercased
-- no port
-- no path (including a bare trailing `/`), query, or fragment
-- no userinfo
-
-Internationalized hosts use their punycode form. For example:
-
-| URL                                    | Canonical form                  |
-| -------------------------------------- | ------------------------------- |
-| `HTTPS://Builder.Example.com/`         | `https://builder.example.com`   |
-| `https://builder.example.com:8080`     | `https://builder.example.com`   |
-| `https://builder.example.com/bids?x=1` | `https://builder.example.com`   |
-| `https://bücher.example`               | `https://xn--bcher-kva.example` |
-
-```python
-def canonicalize(url: str) -> str:
-    # Reduce a builder URL to its canonical identity: scheme and host only.
-    scheme, _, rest = url.partition("://")
-    # The authority ends at the first '/', '?', or '#'.
-    authority = rest
-    for separator in ("/", "?", "#"):
-        authority = authority.split(separator, 1)[0]
-    # Drop userinfo (up to and including the last '@') and any port.
-    host = authority.rsplit("@", 1)[-1].rsplit(":", 1)[0]
-    # Lowercase; internationalized hosts use their punycode (RFC 3492) form.
-    host = host.lower().encode("idna").decode("ascii")
-    return f"{scheme.lower()}://{host}"
-```
 
 ## Proposer Preferences
 

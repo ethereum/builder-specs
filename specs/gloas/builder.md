@@ -9,6 +9,7 @@
   - [Builder Preferences](#builder-preferences)
     - [`max_execution_payment`](#max_execution_payment)
   - [Per-request Validator Inputs](#per-request-validator-inputs)
+    - [Routing through a proxy](#routing-through-a-proxy)
   - [Proposer Preferences (Deprecation of Validator Registrations)](#proposer-preferences-deprecation-of-validator-registrations)
   - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
     - [Signing](#signing)
@@ -105,12 +106,15 @@ object containing:
     will accept from this builder (in Gwei).
 - `auth`: A `SignedRequestAuthV1` authenticating the request.
   `auth.message.slot` is the proposal slot the preferences apply to. The builder
-  MUST check that `auth.message.data` matches the canonical form of its own URL
-  ([URL canonicalization][url-canonicalization]) and MUST verify the BLS
-  signature against the `validator_pubkey` path parameter. If either check
-  fails, the builder MUST return a 400 response. The builder MUST reject
-  preferences whose `auth.message.slot` has already passed, so that a replayed
-  request cannot roll preferences back to a stale value.
+  MUST verify the BLS signature against the `validator_pubkey` path parameter
+  and MUST check that `auth.message.data` matches the value it agreed with the
+  proposer, so that an unauthenticated or replayed request cannot skew a
+  proposer's preferences away from the value the proposer chose. If the
+  signature fails to verify, the builder MUST return a 401 response; if the
+  `auth.message.data` check fails, the builder MUST return a 400 response. The
+  builder MUST also reject, with a 400 response, preferences whose
+  `auth.message.slot` has already passed, so that a replayed request cannot roll
+  preferences back to a stale value.
 
 The builder SHOULD store the preferences for each proposer and apply the
 `max_execution_payment` constraint when constructing bids. If no preferences
@@ -147,14 +151,24 @@ treat `max_execution_payment` as `0` or can choose to not serve the bid.
 
 If the request body is present, builders MAY verify the `SignedRequestAuthV1`
 signature against the `proposer_pubkey` path parameter, and check that `data`
-matches the canonical form of their own URL
-([URL canonicalization][url-canonicalization]) and that `auth.message.slot`
+matches the value they agreed with the proposer and that `auth.message.slot`
 matches the proposal `slot` path parameter (see
 [Constructing the `RequestAuthV1`][signed-request-auth]). The signature is
-verified with [`verify_request_auth_signature`](#signing). If verification
-fails, the builder MAY return a 401 response.
+verified with [`verify_request_auth_signature`](#signing). If the signature
+fails to verify, the builder MAY return a 401 response; if the `data` or
+`auth.message.slot` check fails, the builder MAY return a 400 response.
 
 If the request body is absent, the builder MAY still serve a bid.
+
+### Routing through a proxy
+
+A proposer MAY reach a builder through a proxy (e.g. a sidecar) by supplying an
+`Eth-Builder-Url` header set to the builder's URL. The header instructs the
+proxy where to forward the request. End builders that receive the header SHOULD
+ignore it. A proxy that cannot resolve `Eth-Builder-Url` to a configured builder
+MUST return a 400 response. The header does not need to be signed, because
+tampering with it only misroutes the request: an authenticated request delivered
+to the wrong builder fails its authentication check.
 
 ## Proposer Preferences (Deprecation of Validator Registrations)
 
@@ -203,17 +217,18 @@ API message, specific to this API and analogous to the now-deprecated
 `DOMAIN_BEACON_BUILDER`, which is used for in-protocol builder messages defined
 by the consensus specs.
 
-Signing and verifying `canonicalize` `message.data`, so the signature is always
-over the canonical builder URL ([URL canonicalization][url-canonicalization]).
+Signing and verification use the `RequestAuthV1` message exactly as serialized,
+computing the signing root over its SSZ bytes. A beacon node or proxy that
+forwards a `SignedRequestAuthV1` MUST pass its `message` and `signature` through
+unchanged, so a builder verifies the same bytes the validator signed.
 
 ```python
 def get_request_auth_signature(
     request_auth: RequestAuthV1,
     privkey: int,
 ) -> BLSSignature:
-    signed = RequestAuthV1(data=canonicalize(request_auth.data), slot=request_auth.slot)
     domain = compute_domain(DOMAIN_REQUEST_AUTH)
-    signing_root = compute_signing_root(signed, domain)
+    signing_root = compute_signing_root(request_auth, domain)
     return bls.Sign(privkey, signing_root)
 
 
@@ -221,10 +236,8 @@ def verify_request_auth_signature(
     signed_request_auth: SignedRequestAuthV1,
     pubkey: BLSPubkey,
 ) -> bool:
-    message = signed_request_auth.message
-    signed = RequestAuthV1(data=canonicalize(message.data), slot=message.slot)
     domain = compute_domain(DOMAIN_REQUEST_AUTH)
-    signing_root = compute_signing_root(signed, domain)
+    signing_root = compute_signing_root(signed_request_auth.message, domain)
     return bls.Verify(pubkey, signing_root, signed_request_auth.signature)
 ```
 
@@ -251,4 +264,3 @@ documented in the [Gloas consensus specs][gloas-builder-specs].
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
 [signed-request-auth]: ./validator.md#signedrequestauthv1
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml
-[url-canonicalization]: ./validator.md#url-canonicalization

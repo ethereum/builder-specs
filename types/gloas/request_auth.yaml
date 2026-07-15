@@ -7,11 +7,10 @@ Gloas:
         type: string
         format: hex
         description: >-
-          Opaque authentication data, up to `MAX_DATA_SIZE` bytes. MUST be
-          set to the ASCII encoding of the canonical form of the URL of the
-          builder the request is intended for (the lowercased scheme and host
-          only; no port, path, query, fragment, or userinfo).
-        example: "0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d"
+          Opaque authentication data unique to the builder, agreed upon out of
+          band. The meaning of the up to `MAX_DATA_SIZE` bytes is left to the
+          two parties.
+        example: "0x1234567890abcdef"
         pattern: "^0x[a-fA-F0-9]{0,8192}$"
       slot:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"

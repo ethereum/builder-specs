@@ -19,8 +19,9 @@ post:
     and MUST NOT include an execution layer payment in the bid.
 
     The `SignedRequestAuthV1` body is optional. If it is present but malformed
-    or fails signature verification, the builder MAY return a 401 response.
-    If it is absent, the builder MAY still serve a bid, but builders MAY
+    or its `data` or `slot` does not match, the builder MAY return a 400
+    response; if its signature fails to verify, the builder MAY return a 401
+    response. If it is absent, the builder MAY still serve a bid, but builders MAY
     use the presence and validity of the `SignedRequestAuthV1` to apply
     per-validator policy (e.g. rate-limiting, prioritization, or refusing
     unauthenticated requests).
@@ -88,17 +89,25 @@ post:
         request body belongs. Required if the request body is SSZ encoded.
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
+    - name: Eth-Builder-Url
+      in: header
+      required: false
+      description: |
+        The URL of the intended builder. When the request is sent through a
+        proxy, the proxy uses it to route the request. Only used in proxied
+        setups; end builders ignore it.
+      schema:
+        type: string
+        format: uri
+        example: "https://builder.example.com"
   requestBody:
     description: |
       Optional `SignedRequestAuthV1` authenticating the request. If provided,
       the builder MAY verify the BLS signature against the validator pubkey
-      resolved from the `proposer_pubkey` path parameter, and check that
-      `data` matches the canonical form of its own URL (the lowercased
-      scheme and host only; no port, path, query, fragment, or userinfo)
-      and that
-      `auth.message.slot` matches the
-      `slot` path parameter (the proposal slot). If absent, the builder MAY
-      still serve a bid subject to its own policy.
+      resolved from the `proposer_pubkey` path parameter, and check that `data`
+      matches the value it agreed with the proposer and that `auth.message.slot`
+      matches the `slot` path parameter (the proposal slot). If absent, the
+      builder MAY still serve a bid subject to its own policy.
     required: false
     content:
       application/json:
@@ -150,7 +159,11 @@ post:
             WrongBuilder:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuthV1: auth.message.data does not match this builder's URL"
+                message: "Invalid SignedRequestAuthV1: auth.message.data does not match the value agreed with this builder"
+            UnknownBuilder:
+              value:
+                code: 400
+                message: "Eth-Builder-Url does not resolve to a configured builder"
     "401":
       description: Authentication required.
       content:
