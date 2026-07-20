@@ -6,7 +6,7 @@ Gloas:
     properties:
       max_execution_payment:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
-        description: "Indicates the maximum amount that a proposer is willing to accept as an execution payment from the builder."
+        description: "The maximum amount, in Gwei, that a proposer is willing to accept as an execution payment from the builder."
   BuilderPreferencesRequestV1:
     type: object
     description: "A builder preferences submission containing the proposer's preferences and a signed request authentication."
