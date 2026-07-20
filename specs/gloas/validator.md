@@ -132,9 +132,9 @@ When calling [`getExecutionPayloadBid`][get-execution-payload-bid-api], the
 validator MAY send a [`SignedRequestAuthV1`](#signedrequestauthv1) as the
 request body to authenticate the request. The body MAY be encoded as JSON
 (`Content-Type: application/json`) or SSZ
-(`Content-Type: application/octet-stream`); when SSZ is used, the validator MUST
-also send the `Eth-Consensus-Version` header. If the body is omitted, the
-builder MAY still serve a bid.
+(`Content-Type: application/octet-stream`); `RequestAuthV1` is not
+fork-versioned, so no `Eth-Consensus-Version` header is required. If the body is
+omitted, the builder MAY still serve a bid.
 
 ### Constructing the `RequestAuthV1`
 

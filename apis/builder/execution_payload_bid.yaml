@@ -81,14 +81,6 @@ post:
         type: integer
         format: int64
         example: 10000
-    - name: Eth-Consensus-Version
-      in: header
-      required: true
-      description: |
-        The active consensus version to which the `SignedRequestAuthV1` in the
-        request body belongs. Required if the request body is SSZ encoded.
-      schema:
-        $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
     - name: Eth-Builder-Url
       in: header
       required: false

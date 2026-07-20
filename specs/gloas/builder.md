@@ -141,8 +141,8 @@ Validators communicate per-request inputs to a builder on each
 - Optionally, a [`SignedRequestAuthV1`][signed-request-auth] in the request body
   used to authenticate the requesting validator. The body MAY be encoded as JSON
   (`Content-Type: application/json`) or SSZ
-  (`Content-Type: application/octet-stream`); when SSZ is used, the
-  `Eth-Consensus-Version` header MUST also be set.
+  (`Content-Type: application/octet-stream`); `RequestAuthV1` is not
+  fork-versioned, so no `Eth-Consensus-Version` header is required.
 
 The proposer's `max_execution_payment` is communicated exclusively via the
 [`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
