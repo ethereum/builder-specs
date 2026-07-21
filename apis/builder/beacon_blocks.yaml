@@ -32,6 +32,7 @@ post:
       schema:
         type: string
         format: uri
+        example: "https://builder.example.com"
   requestBody:
     description: A `SignedBeaconBlock`.
     required: true
