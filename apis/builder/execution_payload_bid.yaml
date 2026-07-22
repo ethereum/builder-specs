@@ -10,28 +10,28 @@ post:
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
     - The public key of the proposer.
-    - Optionally, a `SignedRequestAuthV1` in the request body that
-      authenticates the request. The body MAY be encoded as JSON or SSZ.
+    - A `SignedRequestAuthV1` in the request body that authenticates the
+      request. The body MAY be encoded as JSON or SSZ.
 
     The proposer's `max_execution_payment` is communicated exclusively via the
-    `submitBuilderPreferences` endpoint. If no `BuilderPreferencesV1` have been
-    submitted for the proposer, the builder MUST treat `max_execution_payment` as `0`
-    and MUST NOT include an execution layer payment in the bid.
+    `submitBuilderPreferences` endpoint. Any bid the builder serves MUST honor
+    the `max_execution_payment` cap from stored preferences. Without stored
+    preferences the builder MAY serve a bid with any `execution_payment`; the
+    proposer's locally configured per-builder limits are the backstop: the
+    proposer discards any bid that exceeds them.
 
-    The `SignedRequestAuthV1` body is optional. If it is present but malformed
-    or its `data` or `slot` does not match, the builder MAY return a 400
-    response; if its signature fails to verify, the builder MAY return a 401
-    response. If it is absent, the builder MAY still serve a bid, but builders MAY
-    use the presence and validity of the `SignedRequestAuthV1` to apply
-    per-validator policy (e.g. rate-limiting, prioritization, or refusing
-    unauthenticated requests).
+    The `SignedRequestAuthV1` body is required. If the body is missing or
+    malformed, the request is invalid and the builder MUST return a 400
+    response. If its `auth.message.data` or `auth.message.slot` does not match,
+    the builder MUST return a 400 response; if its signature fails to verify,
+    the builder MUST return a 401 response. Builders MAY use the authenticated
+    identity to apply per-validator policy (e.g. rate-limiting).
 
     The builder responds with a 200 response containing an execution payload bid if it can provide one.
 
-    If the builder is unable to produce a valid execution payload bid, then
-    the builder MUST return a 204 response. If the request is invalid, then the
-    builder MUST return an error response (400) with a description of the
-    validation failure.
+    A builder that does not serve a bid MUST return a 204 response. If the
+    request is invalid, then the builder MUST return an error response (400)
+    with a description of the validation failure.
 
     This API is applicable from Gloas fork onwards.
   tags:
@@ -81,26 +81,15 @@ post:
         type: integer
         format: int64
         example: 10000
-    - name: Eth-Builder-Url
-      in: header
-      required: false
-      description: |
-        The URL of the intended builder. When the request is sent through a
-        proxy, the proxy uses it to route the request. Only used in proxied
-        setups; end builders ignore it.
-      schema:
-        type: string
-        format: uri
-        example: "https://builder.example.com"
   requestBody:
     description: |
-      Optional `SignedRequestAuthV1` authenticating the request. If provided,
-      the builder MAY verify the BLS signature against the validator pubkey
-      resolved from the `proposer_pubkey` path parameter, and check that `data`
-      matches the value it agreed with the proposer and that `auth.message.slot`
-      matches the `slot` path parameter (the proposal slot). If absent, the
-      builder MAY still serve a bid subject to its own policy.
-    required: false
+      A `SignedRequestAuthV1` authenticating the request. The builder MUST
+      verify the BLS signature against the validator pubkey resolved from the
+      `proposer_pubkey` path parameter, and MUST check that `auth.message.data`
+      matches the value it agreed with the proposer and that
+      `auth.message.slot` matches the `slot` path parameter (the proposal
+      slot).
+    required: true
     content:
       application/json:
         schema:
@@ -148,25 +137,21 @@ post:
               value:
                 code: 400
                 message: "Invalid SignedRequestAuthV1: auth.message.slot does not match the proposal slot in the request path"
-            WrongBuilder:
+            DataMismatch:
               value:
                 code: 400
                 message: "Invalid SignedRequestAuthV1: auth.message.data does not match the value agreed with this builder"
-            UnknownBuilder:
+            MissingBody:
               value:
                 code: 400
-                message: "Eth-Builder-Url does not resolve to a configured builder"
+                message: "Invalid request: SignedRequestAuthV1 body is required"
     "401":
-      description: Authentication required.
+      description: Authentication failed.
       content:
         application/json:
           schema:
             $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
           examples:
-            MissingAuth:
-              value:
-                code: 401
-                message: "Missing SignedRequestAuthV1: this builder requires authenticated requests"
             InvalidAuth:
               value:
                 code: 401

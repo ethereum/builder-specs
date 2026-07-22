@@ -10,8 +10,12 @@ post:
     which they will be proposing, as determined from `state.proposer_lookahead`, so that
     builders have the preferences before the bid request arrives.
 
+    The body MAY be encoded as JSON (`Content-Type: application/json`) or SSZ
+    (`Content-Type: application/octet-stream`); `BuilderPreferencesRequestV1`
+    is not fork-versioned, so no `Eth-Consensus-Version` header is required.
+
     The builder MUST verify the BLS signature in `auth` against
-    `validator_pubkey`, and check that `auth.message.data` matches the value it
+    `proposer_pubkey`, and check that `auth.message.data` matches the value it
     agreed with the proposer. `auth.message.slot` is the proposal slot the
     preferences apply to; the builder MUST reject preferences whose slot has
     already passed. If the signature check fails, the builder MUST return a 401
@@ -26,23 +30,12 @@ post:
   tags:
     - Builder
   parameters:
-    - name: validator_pubkey
+    - name: proposer_pubkey
       in: path
       required: true
-      description: "The BLS public key of the validator expressing these preferences."
+      description: "The BLS public key of the proposer expressing these preferences."
       schema:
         $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
-    - name: Eth-Builder-Url
-      in: header
-      required: false
-      description: |
-        The URL of the intended builder. When the request is sent through a
-        proxy, the proxy uses it to route the request. Only used in proxied
-        setups; end builders ignore it.
-      schema:
-        type: string
-        format: uri
-        example: "https://builder.example.com"
   requestBody:
     description: A `BuilderPreferencesRequestV1` containing the proposer's preferences and a `SignedRequestAuthV1` for authentication.
     required: true
@@ -70,26 +63,22 @@ post:
               value:
                 code: 400
                 message: "Invalid SignedRequestAuthV1: auth.message.slot has already passed"
-            WrongBuilder:
+            DataMismatch:
               value:
                 code: 400
-                message: "auth.message.data does not match the value agreed with this builder"
-            UnknownBuilder:
-              value:
-                code: 400
-                message: "Eth-Builder-Url does not resolve to a configured builder"
+                message: "Invalid SignedRequestAuthV1: auth.message.data does not match the value agreed with this builder"
             InvalidPreferences:
               value:
                 code: 400
                 message: "Invalid builder preferences: max_execution_payment malformed"
     "401":
-      description: Authentication required.
+      description: Authentication failed.
       content:
         application/json:
           schema:
             $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
           examples:
-            SignatureVerificationFailed:
+            InvalidAuth:
               value:
                 code: 401
                 message: "Invalid SignedRequestAuthV1: signature verification failed"

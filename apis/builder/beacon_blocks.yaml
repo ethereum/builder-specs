@@ -22,17 +22,6 @@ post:
       required: true
       name: Eth-Consensus-Version
       description: "The active consensus version to which the block being submitted belongs."
-    - name: Eth-Builder-Url
-      in: header
-      required: false
-      description: |
-        The URL of the intended builder. When the request is sent through a
-        proxy, the proxy uses it to route the request. Only used in proxied
-        setups; end builders ignore it.
-      schema:
-        type: string
-        format: uri
-        example: "https://builder.example.com"
   requestBody:
     description: A `SignedBeaconBlock`.
     required: true

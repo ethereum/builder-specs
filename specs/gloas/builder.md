@@ -9,7 +9,6 @@
   - [Builder Preferences](#builder-preferences)
     - [`max_execution_payment`](#max_execution_payment)
   - [Per-request Validator Inputs](#per-request-validator-inputs)
-    - [Routing through a proxy](#routing-through-a-proxy)
   - [Proposer Preferences (Deprecation of Validator Registrations)](#proposer-preferences-deprecation-of-validator-registrations)
   - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
     - [Signing](#signing)
@@ -99,15 +98,15 @@ prior to the epoch in which they will be proposing, as determined from
 `state.proposer_lookahead`. The builder receives a `BuilderPreferencesRequestV1`
 object containing:
 
-- `validator_pubkey`: The BLS public key of the validator submitting these
+- `proposer_pubkey`: The BLS public key of the proposer submitting these
   preferences, passed as a path parameter.
 - `preferences`: A `BuilderPreferencesV1` with:
   - `max_execution_payment`: The maximum execution layer payment the proposer
     will accept from this builder (in Gwei).
 - `auth`: A `SignedRequestAuthV1` authenticating the request.
   `auth.message.slot` is the proposal slot the preferences apply to. The builder
-  MUST verify the BLS signature against the `validator_pubkey` path parameter
-  and MUST check that `auth.message.data` matches the value it agreed with the
+  MUST verify the BLS signature against the `proposer_pubkey` path parameter and
+  MUST check that `auth.message.data` matches the value it agreed with the
   proposer, so that an unauthenticated or replayed request cannot skew a
   proposer's preferences away from the value the proposer chose. If the
   signature fails to verify, the builder MUST return a 401 response; if the
@@ -116,11 +115,11 @@ object containing:
   `auth.message.slot` has already passed, so that a replayed request cannot roll
   preferences back to a stale value.
 
-The builder SHOULD store the preferences for each proposer and apply the
-`max_execution_payment` constraint when constructing bids. If no preferences
-have been submitted for a proposer, the builder MUST treat the proposer's
-`max_execution_payment` as `0`. The builder can also choose to not serve the
-bid.
+The builder SHOULD store the preferences for each proposer and MUST honor the
+`max_execution_payment` cap in any bid it serves. Without stored preferences it
+MAY serve a bid with any `execution_payment`. The proposer's locally configured
+per-builder limits are the backstop: the proposer discards any bid that exceeds
+them.
 
 ### `max_execution_payment`
 
@@ -138,37 +137,27 @@ reputation.
 Validators communicate per-request inputs to a builder on each
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] call:
 
-- Optionally, a [`SignedRequestAuthV1`][signed-request-auth] in the request body
-  used to authenticate the requesting validator. The body MAY be encoded as JSON
-  (`Content-Type: application/json`) or SSZ
+- A [`SignedRequestAuthV1`][signed-request-auth] in the request body
+  authenticating the requesting validator. The body is required and MAY be
+  encoded as JSON (`Content-Type: application/json`) or SSZ
   (`Content-Type: application/octet-stream`); `RequestAuthV1` is not
   fork-versioned, so no `Eth-Consensus-Version` header is required.
 
 The proposer's `max_execution_payment` is communicated exclusively via the
-[`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
-`BuilderPreferencesV1` have been submitted for the proposer, the builder MUST
-treat `max_execution_payment` as `0` or can choose to not serve the bid.
+[`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. A bid
+MUST honor the `max_execution_payment` cap from stored preferences; without them
+the builder MAY serve a bid with any `execution_payment`.
 
-If the request body is present, builders MAY verify the `SignedRequestAuthV1`
-signature against the `proposer_pubkey` path parameter, and check that `data`
+Builders MUST verify the `SignedRequestAuthV1` signature against the
+`proposer_pubkey` path parameter, and MUST check that `auth.message.data`
 matches the value they agreed with the proposer and that `auth.message.slot`
 matches the proposal `slot` path parameter (see
 [Constructing the `RequestAuthV1`][signed-request-auth]). The signature is
 verified with [`verify_request_auth_signature`](#signing). If the signature
-fails to verify, the builder MAY return a 401 response; if the `data` or
-`auth.message.slot` check fails, the builder MAY return a 400 response.
-
-If the request body is absent, the builder MAY still serve a bid.
-
-### Routing through a proxy
-
-A proposer MAY reach a builder through a proxy (e.g. a sidecar) by supplying an
-`Eth-Builder-Url` header set to the builder's URL. The header instructs the
-proxy where to forward the request. End builders that receive the header SHOULD
-ignore it. A proxy that cannot resolve `Eth-Builder-Url` to a configured builder
-MUST return a 400 response. The header does not need to be signed, because
-tampering with it only misroutes the request: an authenticated request delivered
-to the wrong builder fails its authentication check.
+fails to verify, the builder MUST return a 401 response; if the
+`auth.message.data` or `auth.message.slot` check fails, the builder MUST return
+a 400 response. A missing or malformed body is an invalid request and the
+builder MUST return a 400 response.
 
 ## Proposer Preferences (Deprecation of Validator Registrations)
 
@@ -195,9 +184,9 @@ MUST set `bid.value` to the amount they are committing to pay.
 
 If the builder intends to pay the proposer via an execution layer payment, they
 MUST set `bid.execution_payment`. This value MUST NOT exceed the
-`max_execution_payment` from the proposer's stored `BuilderPreferencesV1`. If no
-`BuilderPreferencesV1` have been submitted, the builder MUST NOT include an
-execution layer payment (i.e. MUST set `bid.execution_payment` to `0`).
+`max_execution_payment` from the proposer's stored `BuilderPreferencesV1`.
+Without stored preferences the builder MAY set any `bid.execution_payment`; the
+proposer discards any bid that exceeds its locally configured limits.
 
 *Note*: `bid.value` and `bid.execution_payment` are not mutually exclusive. A
 builder MAY set both fields on a single bid; in that case the builder is
@@ -218,9 +207,9 @@ API message, specific to this API and analogous to the now-deprecated
 by the consensus specs.
 
 Signing and verification use the `RequestAuthV1` message exactly as serialized,
-computing the signing root over its SSZ bytes. A beacon node or proxy that
-forwards a `SignedRequestAuthV1` MUST pass its `message` and `signature` through
-unchanged, so a builder verifies the same bytes the validator signed.
+computing the signing root over its SSZ bytes. A beacon node that forwards a
+`SignedRequestAuthV1` MUST pass its `message` and `signature` through unchanged,
+so a builder verifies the same bytes the validator signed.
 
 ```python
 def get_request_auth_signature(

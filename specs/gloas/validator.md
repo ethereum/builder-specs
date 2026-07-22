@@ -91,9 +91,8 @@ The validator constructs a `BuilderPreferencesV1` with:
   accept from this builder. See
   [`max_execution_payment`](#max_execution_payment).
 
-The validator's BLS public key is passed as the `validator_pubkey` path
-parameter in the [`submitBuilderPreferences`][submit-builder-preferences-api]
-API call.
+The proposer's BLS public key is passed as the `proposer_pubkey` path parameter
+in the [`submitBuilderPreferences`][submit-builder-preferences-api] API call.
 
 The validator then constructs a `BuilderPreferencesRequestV1` with the
 `BuilderPreferencesV1` as `preferences` and a `SignedRequestAuthV1` as `auth`.
@@ -101,15 +100,17 @@ The `SignedRequestAuthV1` is constructed as described in
 [Constructing the `RequestAuthV1`](#constructing-the-requestauthv1); its
 `auth.message.data` is the authentication data the builder expects and its
 `auth.message.slot` is the proposal slot the preferences apply to. The builder
-MUST verify the `auth` signature against the `validator_pubkey` path parameter,
+MUST verify the `auth` signature against the `proposer_pubkey` path parameter,
 returning a 401 response if it fails to verify, and MUST reject the request with
 a 400 response if `auth.message.data` does not match the value it agreed with
 the proposer. The builder MUST also reject, with a 400 response, a request whose
 `auth.message.slot` has already passed, so that a replay cannot roll preferences
 back to a stale value.
 
-If no preferences have been submitted, the builder MUST treat the proposer's
-`max_execution_payment` as `0`.
+A builder MUST honor the `max_execution_payment` cap in any bid it serves;
+without stored preferences it MAY serve a bid with any `execution_payment`. The
+proposer's locally configured per-builder limits are the backstop: the proposer
+discards any bid that exceeds them.
 
 ### `max_execution_payment`
 
@@ -122,29 +123,29 @@ payment amount from the builder. Proposers may adjust this parameter based on
 their level of trust in the builder's reliability and reputation.
 
 `max_execution_payment` is communicated exclusively via the
-[`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. If no
-`BuilderPreferencesV1` have been submitted to a builder, that builder MUST NOT
-include an execution layer payment in its bid.
+[`submitBuilderPreferences`][submit-builder-preferences-api] endpoint.
 
 ## Bid Request
 
 When calling [`getExecutionPayloadBid`][get-execution-payload-bid-api], the
-validator MAY send a [`SignedRequestAuthV1`](#signedrequestauthv1) as the
+validator MUST send a [`SignedRequestAuthV1`](#signedrequestauthv1) as the
 request body to authenticate the request. The body MAY be encoded as JSON
 (`Content-Type: application/json`) or SSZ
 (`Content-Type: application/octet-stream`); `RequestAuthV1` is not
-fork-versioned, so no `Eth-Consensus-Version` header is required. If the body is
-omitted, the builder MAY still serve a bid.
+fork-versioned, so no `Eth-Consensus-Version` header is required. Proposer
+duties are known an epoch in advance, so the validator can sign the
+`SignedRequestAuthV1` ahead of time, off the proposal hot path.
 
 ### Constructing the `RequestAuthV1`
 
-If the validator chooses to authenticate its request, it constructs a
-`RequestAuthV1` with the following fields:
+The validator constructs a `RequestAuthV1` with the following fields:
 
 - `data`: opaque authentication data agreed with the builder out of band whose
   meaning is left to the two parties. It is not tied to an endpoint, so one
   `SignedRequestAuthV1` can authenticate the proposer for both
-  `getExecutionPayloadBid` and `submitBuilderPreferences`.
+  `getExecutionPayloadBid` and `submitBuilderPreferences`. When no value has
+  been agreed out of band, the validator SHOULD use the UTF-8 bytes of the
+  builder's own advertised URL, exactly as advertised.
 - `slot`: The proposal slot this request is authorized for, not the slot at
   which the request is signed or sent.
 
@@ -215,11 +216,11 @@ def validate_bid(
     return verify_execution_payload_bid_signature(state, signed_bid)
 ```
 
-`max_execution_payment` is the value from the `BuilderPreferencesV1` the
-validator submitted to this builder via
-[`submitBuilderPreferences`][submit-builder-preferences-api]. Validators MUST
-validate each bid against the `max_execution_payment` they submitted for that
-builder.
+`max_execution_payment` is the limit the validator has locally configured for
+this builder, the same value it submits via
+[`submitBuilderPreferences`][submit-builder-preferences-api] when it submits
+preferences. Validators MUST validate each bid against that limit, whether or
+not preferences were submitted.
 
 Note that the fee recipient specified in `bid.fee_recipient` does not
 necessarily correspond to the fee recipient of the execution payload. Even if a
@@ -239,8 +240,8 @@ block on top of a beacon `state` must take the following actions:
 1. Call upstream builder software to get a
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] using the
    [`getExecutionPayloadBid`][get-execution-payload-bid-api] API call. The
-   validator MAY send a `SignedRequestAuthV1` in the request body to
-   authenticate the request.
+   validator sends a `SignedRequestAuthV1` in the request body to authenticate
+   the request.
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
    [Gloas validator specs][gloas-validator-specs] but with the best
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior
