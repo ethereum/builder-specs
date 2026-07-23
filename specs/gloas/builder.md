@@ -142,6 +142,12 @@ Validators communicate per-request inputs to a builder on each
   encoded as JSON (`Content-Type: application/json`) or SSZ
   (`Content-Type: application/octet-stream`); `RequestAuthV1` is not
   fork-versioned, so no `Eth-Consensus-Version` header is required.
+- A required `Date-Milliseconds` header with the Unix timestamp in milliseconds
+  at which the request was sent, and a required `X-Timeout-Ms` header with the
+  proposer's timeout for the request, measured from `Date-Milliseconds`. The
+  timestamp lets the builder estimate the transit delay from proposer to
+  builder; the builder MUST respond by `Date-Milliseconds` plus `X-Timeout-Ms`,
+  and the proposer discards later responses.
 
 The proposer's `max_execution_payment` is communicated exclusively via the
 [`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. A bid
