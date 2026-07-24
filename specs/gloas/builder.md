@@ -212,10 +212,10 @@ API message, specific to this API and analogous to the now-deprecated
 `DOMAIN_BEACON_BUILDER`, which is used for in-protocol builder messages defined
 by the consensus specs.
 
-Signing and verification use the `RequestAuthV1` message exactly as serialized,
-computing the signing root over its SSZ bytes. A beacon node that forwards a
+Signing and verification compute the signing root with `compute_signing_root`
+over the `RequestAuthV1` message, as shown below. A beacon node that forwards a
 `SignedRequestAuthV1` MUST pass its `message` and `signature` through unchanged,
-so a builder verifies the same bytes the validator signed.
+so a builder verifies exactly what the validator signed.
 
 ```python
 def get_request_auth_signature(
