@@ -240,15 +240,16 @@ block on top of a beacon `state` must take the following actions:
 1. Call upstream builder software to get a
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] using the
    [`getExecutionPayloadBid`][get-execution-payload-bid-api] API call. The
-   validator sends a `SignedRequestAuthV1` in the request body to authenticate
-   the request.
+   validator signs a `SignedRequestAuthV1` and the beacon node sends it
+   unchanged in the request body to authenticate the request.
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
    [Gloas validator specs][gloas-validator-specs] but with the best
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior
    step.
-3. The proposer returns the `SignedBeaconBlock` back to the upstream block
-   building software via [`submitSignedBeaconBlock`][submit-signed-beacon-block]
-   API call.
+3. The validator publishes the `SignedBeaconBlock` to its beacon node, which
+   returns it to the upstream block building software via
+   [`submitSignedBeaconBlock`][submit-signed-beacon-block] API call. The
+   validator does not call builders directly.
 4. The upstream block building software constructs the corresponding
    [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and
    broadcasts it to the PTC committee.

@@ -5,7 +5,7 @@ post:
     Requests a builder node to produce a valid execution payload bid, which
     can be integrated into a beacon block and signed.
 
-    The proposer sends a POST request to the builder with the following information:
+    The proposer's beacon node sends a POST request to the builder with the following information:
     - The slot for which the block should be proposed.
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
