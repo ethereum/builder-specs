@@ -20,9 +20,9 @@ post:
     - in: header
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
-      required: true
+      required: false
       name: Eth-Consensus-Version
-      description: "The active consensus version to which the block being submitted belongs."
+      description: "The active consensus version to which the block being submitted belongs. Required if request is SSZ encoded."
   requestBody:
     description: A `SignedBeaconBlock`.
     required: true
