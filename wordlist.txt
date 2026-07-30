@@ -35,6 +35,7 @@ Gloas
 gloas
 Gwei
 PTC
+UTF
 BuilderPreferencesV
 RequestAuthV
 SignedRequestAuthV
