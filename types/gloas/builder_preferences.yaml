@@ -1,5 +1,5 @@
 Gloas:
-  BuilderPreferencesV1:
+  BuilderPreferences:
     type: object
     description: "Per-builder preferences that a proposer can express."
     required: [max_execution_payment]
@@ -7,12 +7,12 @@ Gloas:
       max_execution_payment:
         $ref: "../../beacon-apis/types/primitive.yaml#/Uint64"
         description: "The maximum amount, in Gwei, that a proposer is willing to accept as an execution payment from the builder."
-  BuilderPreferencesRequestV1:
+  BuilderPreferencesRequest:
     type: object
     description: "A builder preferences submission containing the proposer's preferences and a signed request authentication."
-    required: [preferences, auth]
+    required: [auth, preferences]
     properties:
-      preferences:
-        $ref: "#/Gloas/BuilderPreferencesV1"
       auth:
-        $ref: "./request_auth.yaml#/Gloas/SignedRequestAuthV1"
+        $ref: "./request_auth.yaml#/Gloas/SignedRequestAuth"
+      preferences:
+        $ref: "#/Gloas/BuilderPreferences"
