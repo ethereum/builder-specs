@@ -105,10 +105,10 @@ the proposer. The builder MUST also reject, with a 400 response, a request whose
 `auth.message.slot` has already passed, so that a replay cannot roll preferences
 back to a stale value.
 
-A builder MUST honor the `max_execution_payment` cap in any bid it serves;
-without stored preferences it MAY serve a bid with any `execution_payment`. The
-proposer's locally configured per-builder limits are the backstop: the proposer
-discards any bid that exceeds them.
+A builder MUST honor the `max_execution_payment` cap in any bid it serves for a
+slot it has stored preferences for; without them it MAY serve a bid with any
+`execution_payment`. The proposer's locally configured per-builder limits are
+the backstop: the proposer discards any bid that exceeds them.
 
 ### `max_execution_payment`
 

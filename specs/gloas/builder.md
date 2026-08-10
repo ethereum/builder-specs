@@ -113,11 +113,11 @@ containing:
   400 response, preferences whose `auth.message.slot` has already passed, so
   that a replayed request cannot roll preferences back to a stale value.
 
-The builder SHOULD store the preferences for each proposer and MUST honor the
-`max_execution_payment` cap in any bid it serves. Without stored preferences it
-MAY serve a bid with any `execution_payment`. The proposer's locally configured
-per-builder limits are the backstop: the proposer discards any bid that exceeds
-them.
+The builder SHOULD store the preferences per proposer per `auth.message.slot`
+and MUST honor the `max_execution_payment` cap in any bid it serves for that
+slot. Without preferences stored for the requested slot it MAY serve a bid with
+any `execution_payment`. The proposer's locally configured per-builder limits are
+the backstop: the proposer discards any bid that exceeds them.
 
 ### `max_execution_payment`
 
