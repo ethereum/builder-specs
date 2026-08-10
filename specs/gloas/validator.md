@@ -143,7 +143,8 @@ The validator constructs a `RequestAuth` with the following fields:
   `SignedRequestAuth` can authenticate the proposer for both
   `getExecutionPayloadBid` and `submitBuilderPreferences`. When no value has
   been agreed out of band, the validator SHOULD use the UTF-8 bytes of the
-  builder's own advertised URL, exactly as advertised.
+  builder's own advertised URL, exactly as advertised. A zero-length `data` is
+  invalid.
 - `slot`: The proposal slot this request is authorized for, not the slot at
   which the request is signed or sent.
 
