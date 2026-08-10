@@ -88,5 +88,7 @@ post:
               value:
                 code: 401
                 message: "Invalid SignedRequestAuth: signature verification failed"
+    "415":
+      $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
     "500":
       $ref: "../../builder-oapi.yaml#/components/responses/InternalError"

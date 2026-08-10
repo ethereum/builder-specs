@@ -147,6 +147,10 @@ Validators communicate per-request inputs to a builder on each
   builder; the builder MUST respond by `Date-Milliseconds` plus `X-Timeout-Ms`,
   and the proposer discards later responses.
 
+The `Eth-Consensus-Version` header is required on every request that carries a
+body, naming the fork of the body's type. The builder MUST return a 400 response
+when the header is absent or names a fork it does not recognize.
+
 The proposer's `max_execution_payment` is communicated exclusively via the
 [`submitBuilderPreferences`][submit-builder-preferences-api] endpoint. A bid
 MUST honor the `max_execution_payment` cap from stored preferences; without them
