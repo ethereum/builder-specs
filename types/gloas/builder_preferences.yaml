@@ -10,9 +10,9 @@ Gloas:
   BuilderPreferencesRequest:
     type: object
     description: "A builder preferences submission containing the proposer's preferences and a signed request authentication."
-    required: [auth, preferences]
+    required: [preferences, auth]
     properties:
-      auth:
-        $ref: "./request_auth.yaml#/Gloas/SignedRequestAuth"
       preferences:
         $ref: "#/Gloas/BuilderPreferences"
+      auth:
+        $ref: "./request_auth.yaml#/Gloas/SignedRequestAuth"

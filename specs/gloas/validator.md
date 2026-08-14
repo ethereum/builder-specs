@@ -72,8 +72,8 @@ class BuilderPreferences(Container):
 
 ```python
 class BuilderPreferencesRequest(Container):
-    auth: SignedRequestAuth
     preferences: BuilderPreferences
+    auth: SignedRequestAuth
 ```
 
 ## Submitting Builder Preferences
