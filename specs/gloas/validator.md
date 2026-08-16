@@ -173,7 +173,8 @@ conditions are not satisfied.
 *Note*: `hash_tree_root`, `get_randao_mix`, and `get_current_epoch` are defined
 in the [Gloas consensus specs][gloas-consensus-specs]. The predicates
 [`is_active_builder`][is-active-builder],
-[`can_builder_cover_bid`][can-builder-cover-bid], and
+[`can_builder_cover_bid`][can-builder-cover-bid],
+[`is_gas_limit_target_compatible`][is-gas-limit-target-compatible], and
 [`verify_execution_payload_bid_signature`][verify-execution-payload-bid-signature]
 are also defined in the consensus specs.
 
@@ -182,6 +183,7 @@ def validate_bid(
     state: BeaconState,
     proposer_preferences: ProposerPreferences,
     max_execution_payment: uint64,
+    parent_gas_limit: uint64,
     signed_bid: SignedExecutionPayloadBid,
     fee_recipient: ExecutionAddress,
 ) -> bool:
@@ -197,7 +199,9 @@ def validate_bid(
     )
     assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
-    assert bid.gas_limit <= proposer_preferences.gas_limit
+    assert is_gas_limit_target_compatible(
+        parent_gas_limit, bid.gas_limit, proposer_preferences.target_gas_limit
+    )
 
     assert bid.execution_payment <= max_execution_payment
 
@@ -206,6 +210,9 @@ def validate_bid(
 
     return verify_execution_payload_bid_signature(state, signed_bid)
 ```
+
+`parent_gas_limit` is the gas limit of the parent execution payload identified
+by `bid.parent_block_hash`.
 
 `max_execution_payment` is the value from the `BuilderPreferencesV1` the
 validator submitted to this builder via
@@ -249,6 +256,7 @@ block on top of a beacon `state` must take the following actions:
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
 [gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal
 [is-active-builder]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#is_active_builder
+[is-gas-limit-target-compatible]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-is_gas_limit_target_compatible
 [proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md
 [proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
