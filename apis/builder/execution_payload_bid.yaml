@@ -11,7 +11,7 @@ post:
     - The root of the beacon block the proposer will build on.
     - The public key of the proposer.
     - A `SignedRequestAuth` in the request body that authenticates the
-      request. The body MAY be encoded as JSON or SSZ.
+      request.
     - A `Date-Milliseconds` header with the send time and an `X-Timeout-Ms`
       header with the proposer's timeout for the request.
 
