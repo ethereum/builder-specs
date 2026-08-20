@@ -10,10 +10,6 @@ post:
     which they will be proposing, as determined from `state.proposer_lookahead`, so that
     builders have the preferences before the bid request arrives.
 
-    The body MAY be encoded as JSON (`Content-Type: application/json`) or SSZ
-    (`Content-Type: application/octet-stream`); `BuilderPreferencesRequest`
-    is fork-versioned, so the `Eth-Consensus-Version` header is required.
-
     The builder MUST verify the BLS signature in `auth` against the
     `proposer_pubkey` path parameter, and check that `auth.message.data` matches
     the value it agreed with the proposer. `auth.message.slot` is the proposal slot the
