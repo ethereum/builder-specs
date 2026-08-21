@@ -2,16 +2,17 @@ post:
   operationId: "submitSignedBeaconBlock"
   summary: Submit a signed beacon block with the execution payload bid.
   description: |
-    Submits a `SignedBeaconBlock` to the builder, binding the proposer to the block. 
+    Submits the proposer's `SignedBeaconBlock` to the builder whose bid it
+    commits to.
+
+    This is how the builder learns that its bid won without waiting for the
+    block on gossip. The builder SHOULD help disseminate the block. The proposer
+    gossips the block itself either way, regardless of the reponse.
 
     A success response (202) indicates that the signed beacon block was
     valid. If the signed beacon block was invalid, then the builder
     must return an error response (400) with a description of the validation
     failure.
-
-    After the builder returns 202, the proposer takes no further action on the
-    block; the builder is responsible for publishing the execution payload
-    envelope.
 
     This API is applicable from Gloas fork onwards.
   tags:
