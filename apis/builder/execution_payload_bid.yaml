@@ -20,7 +20,9 @@ post:
     the `max_execution_payment` cap from stored preferences. Without stored
     preferences the builder MAY serve a bid with any `execution_payment`; the
     proposer's locally configured per-builder limits are the backstop: the
-    proposer discards any bid that exceeds them.
+    proposer values a bid at its `value` plus `min(execution_payment,
+    max_execution_payment)`, so payment above the cap adds nothing to the
+    bid's chances.
 
     The `SignedRequestAuth` body is required. If the body is missing or
     malformed, the request is invalid and the builder MUST return a 400
