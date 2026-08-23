@@ -15,4 +15,4 @@ Gloas:
       preferences:
         $ref: "#/Gloas/BuilderPreferences"
       auth:
-        $ref: "./request_auth.yaml#/Gloas/SignedRequestAuth"
+        $ref: "./request_auth.yaml#/Gloas/SignedBuilderRequestAuth"

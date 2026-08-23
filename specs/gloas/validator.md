@@ -6,14 +6,14 @@
   - [Introduction](#introduction)
   - [Containers](#containers)
     - [New Containers](#new-containers)
-      - [`RequestAuth`](#requestauth)
-      - [`SignedRequestAuth`](#signedrequestauth)
+      - [`BuilderRequestAuth`](#builderrequestauth)
+      - [`SignedBuilderRequestAuth`](#signedbuilderrequestauth)
       - [`BuilderPreferences`](#builderpreferences)
       - [`BuilderPreferencesRequest`](#builderpreferencesrequest)
   - [Submitting Builder Preferences](#submitting-builder-preferences)
     - [`max_execution_payment`](#max_execution_payment)
   - [Bid Request](#bid-request)
-    - [Constructing the `RequestAuth`](#constructing-the-requestauth)
+    - [Constructing the `BuilderRequestAuth`](#constructing-the-builderrequestauth)
   - [Proposer Preferences](#proposer-preferences)
   - [Validating a `SignedExecutionPayloadBid`](#validating-a-signedexecutionpayloadbid)
   - [Block proposal](#block-proposal)
@@ -39,22 +39,22 @@ corresponding to the included bid to the PTC committee.
 
 ### New Containers
 
-#### `RequestAuth`
+#### `BuilderRequestAuth`
 
-`RequestAuth` is used to authenticate requests to a builder. This is useful so
-that other builders do not DDOS or run replay attacks on the builder.
+`BuilderRequestAuth` is used to authenticate requests to a builder. This is
+useful so that other builders do not DDOS or run replay attacks on the builder.
 
 ```python
-class RequestAuth(Container):
-    data: ByteList[MAX_DATA_SIZE]
+class BuilderRequestAuth(Container):
+    data: ByteList[MAX_BUILDER_AUTH_DATA_SIZE]
     slot: Slot
 ```
 
-#### `SignedRequestAuth`
+#### `SignedBuilderRequestAuth`
 
 ```python
-class SignedRequestAuth(Container):
-    message: RequestAuth
+class SignedBuilderRequestAuth(Container):
+    message: BuilderRequestAuth
     signature: BLSSignature
 ```
 
@@ -73,7 +73,7 @@ class BuilderPreferences(Container):
 ```python
 class BuilderPreferencesRequest(Container):
     preferences: BuilderPreferences
-    auth: SignedRequestAuth
+    auth: SignedBuilderRequestAuth
 ```
 
 ## Submitting Builder Preferences
@@ -92,10 +92,11 @@ The validator constructs a `BuilderPreferences` with:
   [`max_execution_payment`](#max_execution_payment).
 
 The validator then constructs a `BuilderPreferencesRequest` with the
-`BuilderPreferences` as `preferences` and a `SignedRequestAuth` as `auth`, and
-submits it to the [`submitBuilderPreferences`][submit-builder-preferences-api]
-endpoint for its `proposer_pubkey`. The `SignedRequestAuth` is constructed as
-described in [Constructing the `RequestAuth`](#constructing-the-requestauth);
+`BuilderPreferences` as `preferences` and a `SignedBuilderRequestAuth` as
+`auth`, and submits it to the
+[`submitBuilderPreferences`][submit-builder-preferences-api] endpoint for its
+`proposer_pubkey`. The `SignedBuilderRequestAuth` is constructed as described in
+[Constructing the `BuilderRequestAuth`](#constructing-the-builderrequestauth);
 its `auth.message.data` is the authentication data the builder expects and its
 `auth.message.slot` is the proposal slot the preferences apply to. The builder
 MUST verify the `auth` signature against the `proposer_pubkey` path parameter,
@@ -108,7 +109,9 @@ back to a stale value.
 A builder MUST honor the `max_execution_payment` cap in any bid it serves for a
 slot it has stored preferences for; without them it MAY serve a bid with any
 `execution_payment`. The proposer's locally configured per-builder limits are
-the backstop: the proposer discards any bid that exceeds them.
+the backstop: the proposer values a bid at its `value` plus
+`min(execution_payment, max_execution_payment)`, so payment above the cap adds
+nothing to the bid's chances.
 
 ### `max_execution_payment`
 
@@ -126,21 +129,21 @@ their level of trust in the builder's reliability and reputation.
 ## Bid Request
 
 When calling [`getExecutionPayloadBid`][get-execution-payload-bid-api], the
-validator MUST send a [`SignedRequestAuth`](#signedrequestauth) as the request
-body to authenticate the request. The body MAY be encoded as JSON
+validator MUST send a [`SignedBuilderRequestAuth`](#signedbuilderrequestauth) as
+the request body to authenticate the request. The body MAY be encoded as JSON
 (`Content-Type: application/json`) or SSZ
-(`Content-Type: application/octet-stream`); `RequestAuth` is fork-versioned, so
-the `Eth-Consensus-Version` header is required. Proposer duties are known an
-epoch in advance, so the validator can sign the `SignedRequestAuth` ahead of
-time, off the proposal hot path.
+(`Content-Type: application/octet-stream`); `BuilderRequestAuth` is
+fork-versioned, so the `Eth-Consensus-Version` header is required. Proposer
+duties are known an epoch in advance, so the validator can sign the
+`SignedBuilderRequestAuth` ahead of time, off the proposal hot path.
 
-### Constructing the `RequestAuth`
+### Constructing the `BuilderRequestAuth`
 
-The validator constructs a `RequestAuth` with the following fields:
+The validator constructs a `BuilderRequestAuth` with the following fields:
 
 - `data`: opaque authentication data agreed with the builder out of band whose
   meaning is left to the two parties. It is not tied to an endpoint, so one
-  `SignedRequestAuth` can authenticate the proposer for both
+  `SignedBuilderRequestAuth` can authenticate the proposer for both
   `getExecutionPayloadBid` and `submitBuilderPreferences`. When no value has
   been agreed out of band, the validator SHOULD use the UTF-8 bytes of the
   builder's own advertised URL, exactly as advertised. A zero-length `data` is
@@ -149,12 +152,12 @@ The validator constructs a `RequestAuth` with the following fields:
   which the request is signed or sent.
 
 The proposer's public key is already carried as a path parameter in the relevant
-API request, so it does not need to be carried inside `RequestAuth`.
+API request, so it does not need to be carried inside `BuilderRequestAuth`.
 
-The validator then constructs the `SignedRequestAuth` by signing the
-`RequestAuth`. The signature lets builders authenticate the requesting validator
-and discard requests from other parties (e.g. DDOS or replay attempts from
-competing builders).
+The validator then constructs the `SignedBuilderRequestAuth` by signing the
+`BuilderRequestAuth`. The signature lets builders authenticate the requesting
+validator and discard requests from other parties (e.g. DDOS or replay attempts
+from competing builders).
 
 ## Proposer Preferences
 
@@ -189,7 +192,6 @@ are also defined in the consensus specs.
 def validate_bid(
     state: BeaconState,
     proposer_preferences: ProposerPreferences,
-    max_execution_payment: uint64,
     signed_bid: SignedExecutionPayloadBid,
     fee_recipient: ExecutionAddress,
 ) -> bool:
@@ -207,19 +209,17 @@ def validate_bid(
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
     assert bid.gas_limit <= proposer_preferences.gas_limit
 
-    assert bid.execution_payment <= max_execution_payment
-
     if bid.value > 0:
         assert can_builder_cover_bid(state, bid.builder_index, bid.value)
 
     return verify_execution_payload_bid_signature(state, signed_bid)
 ```
 
-`max_execution_payment` is the limit the validator has locally configured for
-this builder, the same value it submits via
-[`submitBuilderPreferences`][submit-builder-preferences-api] when it submits
-preferences. Validators MUST validate each bid against that limit, whether or
-not preferences were submitted.
+The validator's locally configured `max_execution_payment`, the same value it
+submits via [`submitBuilderPreferences`][submit-builder-preferences-api] when it
+submits preferences, is not a validity condition: it caps how much of
+`bid.execution_payment` counts when the bid is valued, whether or not
+preferences were submitted.
 
 Note that the fee recipient specified in `bid.fee_recipient` does not
 necessarily correspond to the fee recipient of the execution payload. Even if a
@@ -239,8 +239,8 @@ block on top of a beacon `state` must take the following actions:
 1. Call upstream builder software to get a
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] using the
    [`getExecutionPayloadBid`][get-execution-payload-bid-api] API call. The
-   validator signs a `SignedRequestAuth` and the beacon node sends it unchanged
-   in the request body to authenticate the request.
+   validator signs a `SignedBuilderRequestAuth` and the beacon node sends it
+   unchanged in the request body to authenticate the request.
 2. Assemble a `SignedBeaconBlock` according to the process outlined in the
    [Gloas validator specs][gloas-validator-specs] but with the best
    [`SignedExecutionPayloadBid`][signed-execution-payload-bid] from the prior

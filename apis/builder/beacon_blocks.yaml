@@ -7,7 +7,7 @@ post:
 
     This is how the builder learns that its bid won without waiting for the
     block on gossip. The builder SHOULD help disseminate the block. The proposer
-    gossips the block itself either way, regardless of the reponse.
+    gossips the block itself either way, regardless of the response.
 
     A success response (202) indicates that the signed beacon block was
     valid. If the signed beacon block was invalid, then the builder

@@ -108,10 +108,10 @@ components:
       $ref: "./types/fulu/blobs_bundle.yaml#/Fulu/BlobsBundle"
     Fulu.ExecutionPayloadAndBlobsBundle:
       $ref: "./types/fulu/execution_payload_and_blobs_bundle.yaml#/Fulu/ExecutionPayloadAndBlobsBundle"
-    Gloas.RequestAuth:
-      $ref: "./types/gloas/request_auth.yaml#/Gloas/RequestAuth"
-    Gloas.SignedRequestAuth:
-      $ref: "./types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
+    Gloas.BuilderRequestAuth:
+      $ref: "./types/gloas/request_auth.yaml#/Gloas/BuilderRequestAuth"
+    Gloas.SignedBuilderRequestAuth:
+      $ref: "./types/gloas/request_auth.yaml#/Gloas/SignedBuilderRequestAuth"
     Gloas.BuilderPreferences:
       $ref: "./types/gloas/builder_preferences.yaml#/Gloas/BuilderPreferences"
     Gloas.BuilderPreferencesRequest:
@@ -165,8 +165,8 @@ components:
       $ref: "./examples/fulu/signed_blinded_beacon_block.json"
     Fulu.SignedBuilderBid:
       $ref: "./examples/fulu/signed_builder_bid.json"
-    Gloas.SignedRequestAuth:
-      $ref: "./examples/gloas/signed_request_auth.json"
+    Gloas.SignedBuilderRequestAuth:
+      $ref: "./examples/gloas/signed_builder_request_auth.json"
     Gloas.BuilderPreferences:
       $ref: "./examples/gloas/builder_preferences.json"
     Gloas.BuilderPreferencesRequest:

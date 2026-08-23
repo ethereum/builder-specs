@@ -27,11 +27,11 @@ describes how builders consume per-request inputs from validators and construct
 
 ## Constants
 
-| Name                    | Value                      |
-| ----------------------- | -------------------------- |
-| `MAX_EXECUTION_PAYMENT` | `2**64 - 1`                |
-| `MAX_DATA_SIZE`         | `4096`                     |
-| `DOMAIN_REQUEST_AUTH`   | `DomainType('0x0B000001')` |
+| Name                          | Value                      |
+| ----------------------------- | -------------------------- |
+| `MAX_EXECUTION_PAYMENT`       | `2**64 - 1`                |
+| `MAX_BUILDER_AUTH_DATA_SIZE`  | `4096`                     |
+| `DOMAIN_BUILDER_REQUEST_AUTH` | `DomainType('0x0B000001')` |
 
 ## Bidding
 
@@ -102,22 +102,25 @@ containing:
 - `preferences`: A `BuilderPreferences` with:
   - `max_execution_payment`: The maximum execution layer payment the proposer
     will accept from this builder (in Gwei).
-- `auth`: A `SignedRequestAuth` authenticating the request. `auth.message.slot`
-  is the proposal slot the preferences apply to. The builder MUST verify the BLS
-  signature against the `proposer_pubkey` path parameter and MUST check that
-  `auth.message.data` matches the value it agreed with the proposer, so that an
-  unauthenticated or replayed request cannot skew a proposer's preferences away
-  from the value the proposer chose. If the signature fails to verify, the
-  builder MUST return a 401 response; if the `auth.message.data` check fails,
-  the builder MUST return a 400 response. The builder MUST also reject, with a
-  400 response, preferences whose `auth.message.slot` has already passed, so
-  that a replayed request cannot roll preferences back to a stale value.
+- `auth`: A `SignedBuilderRequestAuth` authenticating the request.
+  `auth.message.slot` is the proposal slot the preferences apply to. The builder
+  MUST verify the BLS signature against the `proposer_pubkey` path parameter and
+  MUST check that `auth.message.data` matches the value it agreed with the
+  proposer, so that an unauthenticated or replayed request cannot skew a
+  proposer's preferences away from the value the proposer chose. If the
+  signature fails to verify, the builder MUST return a 401 response; if the
+  `auth.message.data` check fails, the builder MUST return a 400 response. The
+  builder MUST also reject, with a 400 response, preferences whose
+  `auth.message.slot` has already passed, so that a replayed request cannot roll
+  preferences back to a stale value.
 
 The builder SHOULD store the preferences per proposer per `auth.message.slot`
 and MUST honor the `max_execution_payment` cap in any bid it serves for that
 slot. Without preferences stored for the requested slot it MAY serve a bid with
-any `execution_payment`. The proposer's locally configured per-builder limits are
-the backstop: the proposer discards any bid that exceeds them.
+any `execution_payment`. The proposer's locally configured per-builder limits
+are the backstop: the proposer values a bid at its `value` plus
+`min(execution_payment, max_execution_payment)`, so payment above the cap adds
+nothing to the bid's chances.
 
 ### `max_execution_payment`
 
@@ -135,11 +138,11 @@ reputation.
 Validators communicate per-request inputs to a builder on each
 [`getExecutionPayloadBid`][get-execution-payload-bid-api] call:
 
-- A [`SignedRequestAuth`][signed-request-auth] in the request body
+- A [`SignedBuilderRequestAuth`][signed-request-auth] in the request body
   authenticating the requesting validator. The body is required and MAY be
   encoded as JSON (`Content-Type: application/json`) or SSZ
-  (`Content-Type: application/octet-stream`); `RequestAuth` is fork-versioned,
-  so the `Eth-Consensus-Version` header is required.
+  (`Content-Type: application/octet-stream`); `BuilderRequestAuth` is
+  fork-versioned, so the `Eth-Consensus-Version` header is required.
 - A required `Date-Milliseconds` header with the Unix timestamp in milliseconds
   at which the request was sent, and a required `X-Timeout-Ms` header with the
   proposer's timeout for the request, measured from `Date-Milliseconds`. The
@@ -156,13 +159,13 @@ The proposer's `max_execution_payment` is communicated exclusively via the
 MUST honor the `max_execution_payment` cap from stored preferences; without them
 the builder MAY serve a bid with any `execution_payment`.
 
-Builders MUST verify the `SignedRequestAuth` signature against the
+Builders MUST verify the `SignedBuilderRequestAuth` signature against the
 `proposer_pubkey` path parameter, and MUST check that `auth.message.data`
 matches the value they agreed with the proposer and that `auth.message.slot`
 matches the proposal `slot` path parameter (see
-[Constructing the `RequestAuth`][signed-request-auth]). The signature is
-verified with [`verify_request_auth_signature`](#signing). If the signature
-fails to verify, the builder MUST return a 401 response; if the
+[Constructing the `BuilderRequestAuth`][constructing-builder-request-auth]). The
+signature is verified with [`verify_builder_request_auth_signature`](#signing).
+If the signature fails to verify, the builder MUST return a 401 response; if the
 `auth.message.data` or `auth.message.slot` check fails, the builder MUST return
 a 400 response. A missing or malformed body is an invalid request and the
 builder MUST return a 400 response.
@@ -193,8 +196,9 @@ MUST set `bid.value` to the amount they are committing to pay.
 If the builder intends to pay the proposer via an execution layer payment, they
 MUST set `bid.execution_payment`. This value MUST NOT exceed the
 `max_execution_payment` from the proposer's stored `BuilderPreferences`. Without
-stored preferences the builder MAY set any `bid.execution_payment`; the proposer
-discards any bid that exceeds its locally configured limits.
+stored preferences the builder MAY set any `bid.execution_payment`; when valuing
+the bid, the proposer counts the payment at no more than its locally configured
+cap.
 
 *Note*: `bid.value` and `bid.execution_payment` are not mutually exclusive. A
 builder MAY set both fields on a single bid; in that case the builder is
@@ -207,35 +211,35 @@ also set.
 All signature operations follow the [standard BLS operations][bls] interface
 defined in `consensus-specs`.
 
-The [`SignedRequestAuth`][signed-request-auth] is an out-of-protocol Builder API
-message, specific to this API and analogous to the now-deprecated
+The [`SignedBuilderRequestAuth`][signed-request-auth] is an out-of-protocol
+Builder API message, specific to this API and analogous to the now-deprecated
 `ValidatorRegistrationV1`. It is signed and verified under
-`DOMAIN_REQUEST_AUTH`. This domain MUST NOT be confused with
+`DOMAIN_BUILDER_REQUEST_AUTH`. This domain MUST NOT be confused with
 `DOMAIN_BEACON_BUILDER`, which is used for in-protocol builder messages defined
 by the consensus specs.
 
 Signing and verification compute the signing root with `compute_signing_root`
-over the `RequestAuth` message, as shown below. A beacon node that forwards a
-`SignedRequestAuth` MUST pass its `message` and `signature` through unchanged,
-so a builder verifies exactly what the validator signed.
+over the `BuilderRequestAuth` message, as shown below. A beacon node that
+forwards a `SignedBuilderRequestAuth` MUST pass its `message` and `signature`
+through unchanged, so a builder verifies exactly what the validator signed.
 
 ```python
-def get_request_auth_signature(
-    request_auth: RequestAuth,
+def get_builder_request_auth_signature(
+    request_auth: BuilderRequestAuth,
     privkey: int,
 ) -> BLSSignature:
-    domain = compute_domain(DOMAIN_REQUEST_AUTH)
+    domain = compute_domain(DOMAIN_BUILDER_REQUEST_AUTH)
     signing_root = compute_signing_root(request_auth, domain)
     return bls.Sign(privkey, signing_root)
 
 
-def verify_request_auth_signature(
-    signed_request_auth: SignedRequestAuth,
+def verify_builder_request_auth_signature(
+    signed_builder_request_auth: SignedBuilderRequestAuth,
     pubkey: BLSPubkey,
 ) -> bool:
-    domain = compute_domain(DOMAIN_REQUEST_AUTH)
-    signing_root = compute_signing_root(signed_request_auth.message, domain)
-    return bls.Verify(pubkey, signing_root, signed_request_auth.signature)
+    domain = compute_domain(DOMAIN_BUILDER_REQUEST_AUTH)
+    signing_root = compute_signing_root(signed_builder_request_auth.message, domain)
+    return bls.Verify(pubkey, signing_root, signed_builder_request_auth.signature)
 ```
 
 ## Constructing a `SignedExecutionPayloadEnvelope`
@@ -252,6 +256,7 @@ The specification for a block builder to construct a
 documented in the [Gloas consensus specs][gloas-builder-specs].
 
 [bls]: https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#bls-signatures
+[constructing-builder-request-auth]: ./validator.md#constructing-the-builderrequestauth
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
 [gloas-builder-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
@@ -259,5 +264,5 @@ documented in the [Gloas consensus specs][gloas-builder-specs].
 [proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposer_preferences
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
-[signed-request-auth]: ./validator.md#signedrequestauth
+[signed-request-auth]: ./validator.md#signedbuilderrequestauth
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml

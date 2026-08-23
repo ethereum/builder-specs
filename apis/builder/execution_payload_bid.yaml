@@ -10,7 +10,7 @@ post:
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
     - The public key of the proposer.
-    - A `SignedRequestAuth` in the request body that authenticates the
+    - A `SignedBuilderRequestAuth` in the request body that authenticates the
       request.
     - A `Date-Milliseconds` header with the send time and an `X-Timeout-Ms`
       header with the proposer's timeout for the request.
@@ -24,7 +24,7 @@ post:
     max_execution_payment)`, so payment above the cap adds nothing to the
     bid's chances.
 
-    The `SignedRequestAuth` body is required. If the body is missing or
+    The `SignedBuilderRequestAuth` body is required. If the body is missing or
     malformed, the request is invalid and the builder MUST return a 400
     response. If its `auth.message.data` or `auth.message.slot` does not match,
     the builder MUST return a 400 response; if its signature fails to verify,
@@ -95,7 +95,7 @@ post:
       description: "The active consensus version to which the request body belongs."
   requestBody:
     description: |
-      A `SignedRequestAuth` authenticating the request. The builder MUST
+      A `SignedBuilderRequestAuth` authenticating the request. The builder MUST
       verify the BLS signature against the validator pubkey resolved from the
       `proposer_pubkey` path parameter, and MUST check that `auth.message.data`
       matches the value it agreed with the proposer and that
@@ -105,10 +105,10 @@ post:
     content:
       application/json:
         schema:
-          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuth"
+          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedBuilderRequestAuth"
       application/octet-stream:
         schema:
-          description: "SSZ serialized `SignedRequestAuth` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body."
+          description: "SSZ serialized `SignedBuilderRequestAuth` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body."
   responses:
     "200":
       description: Success response.
@@ -148,15 +148,15 @@ post:
             SlotMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuth: auth.message.slot does not match the proposal slot in the request path"
+                message: "Invalid SignedBuilderRequestAuth: auth.message.slot does not match the proposal slot in the request path"
             DataMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuth: auth.message.data does not match the value agreed with this builder"
+                message: "Invalid SignedBuilderRequestAuth: auth.message.data does not match the value agreed with this builder"
             MissingBody:
               value:
                 code: 400
-                message: "Invalid request: SignedRequestAuth body is required"
+                message: "Invalid request: SignedBuilderRequestAuth body is required"
             MissingHeader:
               value:
                 code: 400
@@ -171,7 +171,7 @@ post:
             InvalidAuth:
               value:
                 code: 401
-                message: "Invalid SignedRequestAuth: signature verification failed"
+                message: "Invalid SignedBuilderRequestAuth: signature verification failed"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "415":

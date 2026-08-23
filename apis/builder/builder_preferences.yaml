@@ -4,7 +4,7 @@ post:
   description: |
     Submits a proposer's `BuilderPreferencesRequest` to the builder, including
     the `max_execution_payment` that the proposer is willing to accept from this
-    builder, authenticated via a `SignedRequestAuth`.
+    builder, authenticated via a `SignedBuilderRequestAuth`.
 
     Validators MAY call this endpoint in the epoch prior to the epoch in
     which they will be proposing, as determined from `state.proposer_lookahead`, so that
@@ -39,7 +39,7 @@ post:
       name: Eth-Consensus-Version
       description: "The active consensus version to which the submitted preferences belong."
   requestBody:
-    description: A `BuilderPreferencesRequest` containing the proposer's preferences and a `SignedRequestAuth` for authentication.
+    description: A `BuilderPreferencesRequest` containing the proposer's preferences and a `SignedBuilderRequestAuth` for authentication.
     required: true
     content:
       application/json:
@@ -64,11 +64,11 @@ post:
             SlotMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuth: auth.message.slot has already passed"
+                message: "Invalid SignedBuilderRequestAuth: auth.message.slot has already passed"
             DataMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuth: auth.message.data does not match the value agreed with this builder"
+                message: "Invalid SignedBuilderRequestAuth: auth.message.data does not match the value agreed with this builder"
             InvalidPreferences:
               value:
                 code: 400
@@ -83,7 +83,7 @@ post:
             InvalidAuth:
               value:
                 code: 401
-                message: "Invalid SignedRequestAuth: signature verification failed"
+                message: "Invalid SignedBuilderRequestAuth: signature verification failed"
     "415":
       $ref: "../../builder-oapi.yaml#/components/responses/UnsupportedMediaType"
     "500":
