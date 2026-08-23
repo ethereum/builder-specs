@@ -36,8 +36,5 @@ gloas
 Gwei
 PTC
 UTF
-BuilderPreferences
-RequestAuth
-SignedRequestAuth
 submitBlindedBlockV
 ValidatorRegistrationsV
