@@ -1190,32 +1190,37 @@ paths:
         Requests a builder node to produce a valid execution payload bid, which
         can be integrated into a beacon block and signed.
 
-        The proposer sends a POST request to the builder with the following information:
+        The proposer's beacon node sends a POST request to the builder with the following information:
         - The slot for which the block should be proposed.
         - The hash of the execution layer block the proposer will build on.
         - The root of the beacon block the proposer will build on.
-        - The index of the proposer.
-        - Optionally, a `SignedRequestAuthV1` in the request body that
-          authenticates the request. The body MAY be encoded as JSON or SSZ.
+        - The public key of the proposer.
+        - A `SignedBuilderRequestAuth` in the request body that authenticates the
+          request.
+        - A `Date-Milliseconds` header with the send time and an `X-Timeout-Ms`
+          header with the proposer's timeout for the request.
 
         The proposer's `max_execution_payment` is communicated exclusively via the
-        `submitBuilderPreferences` endpoint. If no `BuilderPreferencesV1` have been 
-        submitted for the proposer, the builder MUST treat `max_execution_payment` as `0` 
-        and MUST NOT include an execution layer payment in the bid.
+        `submitBuilderPreferences` endpoint. Any bid the builder serves MUST honor
+        the `max_execution_payment` cap from stored preferences. Without stored
+        preferences the builder MAY serve a bid with any `execution_payment`; the
+        proposer's locally configured per-builder limits are the backstop: the
+        proposer values a bid at its `value` plus `min(execution_payment,
+        max_execution_payment)`, so payment above the cap adds nothing to the
+        bid's chances.
 
-        The `SignedRequestAuthV1` body is optional. If it is present but malformed
-        or fails signature verification, the builder MAY return a 401 response.
-        If it is absent, the builder MAY still serve a bid, but builders MAY
-        use the presence and validity of the `SignedRequestAuthV1` to apply
-        per-validator policy (e.g. rate-limiting, prioritization, or refusing
-        unauthenticated requests).
+        The `SignedBuilderRequestAuth` body is required. If the body is missing or
+        malformed, the request is invalid and the builder MUST return a 400
+        response. If its `auth.message.data` or `auth.message.slot` does not match,
+        the builder MUST return a 400 response; if its signature fails to verify,
+        the builder MUST return a 401 response. Builders MAY use the authenticated
+        identity to apply per-validator policy (e.g. rate-limiting).
 
         The builder responds with a 200 response containing an execution payload bid if it can provide one.
 
-        If the builder is unable to produce a valid execution payload bid, then
-        the builder MUST return a 204 response. If the request is invalid, then the
-        builder MUST return an error response (400) with a description of the
-        validation failure.
+        A builder that does not serve a bid MUST return a 204 response. If the
+        request is invalid, then the builder MUST return an error response (400)
+        with a description of the validation failure.
 
         This API is applicable from Gloas fork onwards.
       tags:
@@ -1258,30 +1263,27 @@ paths:
             example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
         - name: Date-Milliseconds
           in: header
-          required: false
+          required: true
           description: |
-            Optional header containing a Unix timestamp in milliseconds representing
-            the point-in-time the request was sent. This header can be used to measure
-            latency.
+            Unix timestamp in milliseconds at which the request was sent. The
+            builder compares it with its own receive time to estimate the transit
+            delay from proposer to builder.
           schema:
             type: integer
             format: int64
             example: 1710338135000
         - name: X-Timeout-Ms
           in: header
-          required: false
+          required: true
           description: |
-            Optional header containing the proposer's timeout for the request in milliseconds.
+            The proposer's timeout for the request in milliseconds, measured from
+            `Date-Milliseconds`: the builder MUST respond by `Date-Milliseconds`
+            plus `X-Timeout-Ms`, and the proposer discards later responses.
           schema:
             type: integer
             format: int64
             example: 10000
-        - name: Eth-Consensus-Version
-          in: header
-          required: true
-          description: |
-            The active consensus version to which the `SignedRequestAuthV1` in the
-            request body belongs. Required if the request body is SSZ encoded.
+        - in: header
           schema:
             enum:
               - bellatrix
@@ -1292,15 +1294,18 @@ paths:
               - gloas
             example: bellatrix
             type: string
+          required: true
+          name: Eth-Consensus-Version
+          description: The active consensus version to which the request body belongs.
       requestBody:
         description: |
-          Optional `SignedRequestAuthV1` authenticating the request. If provided,
-          the builder MAY verify the BLS signature against the validator pubkey
-          resolved from the `proposer_pubkey` path parameter, and check that
-          `data` matches its own URL and that `slot` matches the
-          requested slot. If absent, the builder MAY still serve a bid subject
-          to its own policy.
-        required: false
+          A `SignedBuilderRequestAuth` authenticating the request. The builder MUST
+          verify the BLS signature against the validator pubkey resolved from the
+          `proposer_pubkey` path parameter, and MUST check that `auth.message.data`
+          matches the value it agreed with the proposer and that
+          `auth.message.slot` matches the `slot` path parameter (the proposal
+          slot).
+        required: true
         content:
           application/json:
             schema:
@@ -1318,13 +1323,13 @@ paths:
                     data:
                       type: string
                       format: hex
-                      description: 'Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for.'
-                      example: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
-                      pattern: '^0x[a-fA-F0-9]{0,8192}$'
+                      description: 'Opaque authentication data unique to the builder, agreed upon out of band. The meaning of the up to `MAX_BUILDER_AUTH_DATA_SIZE` (4096) bytes is left to the two parties; the builder checks the exact bytes when it verifies. When no value has been agreed out of band, implementations SHOULD default to the UTF-8 bytes of the builder''s own advertised URL, exactly as advertised, so proposers with no prior relationship can construct an identical `data` deterministically. A zero-length `data` is invalid.'
+                      example: '0x1234567890abcdef'
+                      pattern: '^0x(?:[a-fA-F0-9]{2}){1,4096}$'
                     slot:
                       type: string
                       example: '1'
-                      description: The slot for which the bid is being requested.
+                      description: The proposal slot this request is authorized for.
                 signature:
                   type: string
                   format: hex
@@ -1332,7 +1337,7 @@ paths:
                   example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
           application/octet-stream:
             schema:
-              description: SSZ serialized `SignedRequestAuthV1` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body.
+              description: SSZ serialized `SignedBuilderRequestAuth` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body.
       responses:
         '200':
           description: Success response.
@@ -1482,13 +1487,21 @@ paths:
                 SlotMismatch:
                   value:
                     code: 400
-                    message: 'Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot'
-                WrongBuilder:
+                    message: 'Invalid SignedBuilderRequestAuth: auth.message.slot does not match the proposal slot in the request path'
+                DataMismatch:
                   value:
                     code: 400
-                    message: 'Invalid SignedRequestAuthV1: auth.message.data does not match this builder''s URL'
+                    message: 'Invalid SignedBuilderRequestAuth: auth.message.data does not match the value agreed with this builder'
+                MissingBody:
+                  value:
+                    code: 400
+                    message: 'Invalid request: SignedBuilderRequestAuth body is required'
+                MissingHeader:
+                  value:
+                    code: 400
+                    message: 'Invalid request: Date-Milliseconds and X-Timeout-Ms headers are required'
         '401':
-          description: Authentication required.
+          description: Authentication failed.
           content:
             application/json:
               schema:
@@ -1510,14 +1523,10 @@ paths:
                     items:
                       type: string
               examples:
-                MissingAuth:
-                  value:
-                    code: 401
-                    message: 'Missing SignedRequestAuthV1: this builder requires authenticated requests'
                 InvalidAuth:
                   value:
                     code: 401
-                    message: 'Invalid SignedRequestAuthV1: signature verification failed'
+                    message: 'Invalid SignedBuilderRequestAuth: signature verification failed'
         '406':
           description: Accepted media type is not supported.
           content:
@@ -1598,15 +1607,17 @@ paths:
       operationId: submitSignedBeaconBlock
       summary: Submit a signed beacon block with the execution payload bid.
       description: |
-        Submits a `SignedBeaconBlock` to the builder, binding the proposer to the block. 
+        Submits the proposer's `SignedBeaconBlock` to the builder whose bid it
+        commits to.
+
+        This is how the builder learns that its bid won without waiting for the
+        block on gossip. The builder SHOULD help disseminate the block. The proposer
+        gossips the block itself either way, regardless of the response.
 
         A success response (202) indicates that the signed beacon block was
         valid. If the signed beacon block was invalid, then the builder
         must return an error response (400) with a description of the validation
         failure.
-
-        After receiving 202, the proposer takes no further action on the block; the 
-        builder is responsible for publishing the execution payload envelope.
 
         This API is applicable from Gloas fork onwards.
       tags:
@@ -10732,24 +10743,26 @@ paths:
               example:
                 code: 500
                 message: Internal server error
-  '/eth/v1/builder/builder_preferences/{validator_pubkey}':
+  '/eth/v1/builder/builder_preferences/{proposer_pubkey}':
     post:
       operationId: submitBuilderPreferences
       summary: Submit builder preferences for a proposer.
       description: |
-        Submits a proposer's `BuilderPreferencesRequestV1` to the builder, including
+        Submits a proposer's `BuilderPreferencesRequest` to the builder, including
         the `max_execution_payment` that the proposer is willing to accept from this
-        builder, authenticated via a `SignedRequestAuthV1`.
+        builder, authenticated via a `SignedBuilderRequestAuth`.
 
         Validators MAY call this endpoint in the epoch prior to the epoch in
         which they will be proposing, as determined from `state.proposer_lookahead`, so that
         builders have the preferences before the bid request arrives.
 
-        The builder MUST verify the BLS signature in `auth` against
-        `validator_pubkey`, and check that `auth.message.data`
-        matches its own URL. If the signature check fails, the builder MUST
-        return a 401 response. If the URL or slot check fails, the builder MUST
-        return a 400 response.
+        The builder MUST verify the BLS signature in `auth` against the
+        `proposer_pubkey` path parameter, and check that `auth.message.data` matches
+        the value it agreed with the proposer. `auth.message.slot` is the proposal slot the
+        preferences apply to; the builder MUST reject preferences whose slot has
+        already passed. If the signature check fails, the builder MUST return a 401
+        response. If the data or slot check fails, the builder MUST return a 400
+        response.
 
         A success response (202) indicates that the preferences were accepted. If
         the preferences are invalid, then the builder MUST return an error response
@@ -10759,20 +10772,17 @@ paths:
       tags:
         - Builder
       parameters:
-        - name: validator_pubkey
+        - name: proposer_pubkey
           in: path
           required: true
-          description: The BLS public key of the validator expressing these preferences.
+          description: BLS public key of the proposer.
           schema:
             type: string
             format: hex
             pattern: '^0x[a-fA-F0-9]{96}$'
             description: 'The validator''s BLS public key, uniquely identifying them. _48-bytes, hex encoded with 0x prefix, case insensitive._'
             example: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
-        - name: Eth-Consensus-Version
-          in: header
-          required: true
-          description: The active consensus version to which the request body belongs. Required if the request body is SSZ encoded.
+        - in: header
           schema:
             enum:
               - bellatrix
@@ -10783,8 +10793,11 @@ paths:
               - gloas
             example: bellatrix
             type: string
+          required: true
+          name: Eth-Consensus-Version
+          description: The active consensus version to which the submitted preferences belong.
       requestBody:
-        description: A `BuilderPreferencesRequestV1` containing the proposer's preferences and a `SignedRequestAuthV1` for authentication.
+        description: A `BuilderPreferencesRequest` containing the proposer's preferences and a `SignedBuilderRequestAuth` for authentication.
         required: true
         content:
           application/json:
@@ -10804,7 +10817,7 @@ paths:
                     max_execution_payment:
                       type: string
                       example: '1'
-                      description: Indicates the maximum amount that a proposer is willing to accept as an execution payment from the builder.
+                      description: 'The maximum amount, in Gwei, that a proposer is willing to accept as an execution payment from the builder.'
                 auth:
                   type: object
                   required:
@@ -10820,31 +10833,31 @@ paths:
                         data:
                           type: string
                           format: hex
-                          description: 'Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for.'
-                          example: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
-                          pattern: '^0x[a-fA-F0-9]{0,8192}$'
+                          description: 'Opaque authentication data unique to the builder, agreed upon out of band. The meaning of the up to `MAX_BUILDER_AUTH_DATA_SIZE` (4096) bytes is left to the two parties; the builder checks the exact bytes when it verifies. When no value has been agreed out of band, implementations SHOULD default to the UTF-8 bytes of the builder''s own advertised URL, exactly as advertised, so proposers with no prior relationship can construct an identical `data` deterministically. A zero-length `data` is invalid.'
+                          example: '0x1234567890abcdef'
+                          pattern: '^0x(?:[a-fA-F0-9]{2}){1,4096}$'
                         slot:
                           type: string
                           example: '1'
-                          description: The slot for which the bid is being requested.
+                          description: The proposal slot this request is authorized for.
                     signature:
                       type: string
                       format: hex
                       pattern: '^0x[a-fA-F0-9]{192}$'
                       example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
             examples:
-              BuilderPreferencesRequestV1:
+              BuilderPreferencesRequest:
                 value:
                   preferences:
                     max_execution_payment: '1000000000'
                   auth:
                     message:
-                      data: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+                      data: '0x1234567890abcdef'
                       slot: '1'
                     signature: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
           application/octet-stream:
             schema:
-              description: SSZ serialized `BuilderPreferencesRequestV1` bytes. Use content type header to indicate that SSZ data is contained in the request body.
+              description: SSZ serialized `BuilderPreferencesRequest` bytes. Use content type header to indicate that SSZ data is contained in the request body.
       responses:
         '202':
           description: Success response.
@@ -10874,17 +10887,17 @@ paths:
                 SlotMismatch:
                   value:
                     code: 400
-                    message: 'Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot'
-                WrongBuilder:
+                    message: 'Invalid SignedBuilderRequestAuth: auth.message.slot has already passed'
+                DataMismatch:
                   value:
                     code: 400
-                    message: auth.message.data does not match this builder's URL
+                    message: 'Invalid SignedBuilderRequestAuth: auth.message.data does not match the value agreed with this builder'
                 InvalidPreferences:
                   value:
                     code: 400
                     message: 'Invalid builder preferences: max_execution_payment malformed'
         '401':
-          description: Authentication required.
+          description: Authentication failed.
           content:
             application/json:
               schema:
@@ -10906,10 +10919,35 @@ paths:
                     items:
                       type: string
               examples:
-                SignatureVerificationFailed:
+                InvalidAuth:
                   value:
                     code: 401
-                    message: 'Invalid SignedRequestAuthV1: signature verification failed'
+                    message: 'Invalid SignedBuilderRequestAuth: signature verification failed'
+        '415':
+          description: Supplied content-type is not supported.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    description: 'The media type in "Content-Type" header is unsupported, and the request has been rejected. This occurs when a HTTP request supplies a payload in a content-type that the server is not able to handle.'
+                    type: number
+                    example: 415
+                  message:
+                    description: Message describing error
+                    type: string
+                  stacktraces:
+                    description: 'Optional stacktraces, sent when node is in debug mode'
+                    type: array
+                    items:
+                      type: string
+              example:
+                code: 415
+                message: Cannot read the supplied content type.
         '500':
           description: Builder node internal error.
           content:
@@ -15065,7 +15103,7 @@ components:
                 description: A G1 curve point. Used for verifying that the `KZGCommitment` for a given `Blob` is correct.
               minItems: 0
               maxItems: 33554432
-    Gloas.RequestAuthV1:
+    Gloas.BuilderRequestAuth:
       type: object
       required:
         - data
@@ -15074,14 +15112,14 @@ components:
         data:
           type: string
           format: hex
-          description: 'Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for.'
-          example: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
-          pattern: '^0x[a-fA-F0-9]{0,8192}$'
+          description: 'Opaque authentication data unique to the builder, agreed upon out of band. The meaning of the up to `MAX_BUILDER_AUTH_DATA_SIZE` (4096) bytes is left to the two parties; the builder checks the exact bytes when it verifies. When no value has been agreed out of band, implementations SHOULD default to the UTF-8 bytes of the builder''s own advertised URL, exactly as advertised, so proposers with no prior relationship can construct an identical `data` deterministically. A zero-length `data` is invalid.'
+          example: '0x1234567890abcdef'
+          pattern: '^0x(?:[a-fA-F0-9]{2}){1,4096}$'
         slot:
           type: string
           example: '1'
-          description: The slot for which the bid is being requested.
-    Gloas.SignedRequestAuthV1:
+          description: The proposal slot this request is authorized for.
+    Gloas.SignedBuilderRequestAuth:
       type: object
       required:
         - message
@@ -15096,19 +15134,19 @@ components:
             data:
               type: string
               format: hex
-              description: 'Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for.'
-              example: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
-              pattern: '^0x[a-fA-F0-9]{0,8192}$'
+              description: 'Opaque authentication data unique to the builder, agreed upon out of band. The meaning of the up to `MAX_BUILDER_AUTH_DATA_SIZE` (4096) bytes is left to the two parties; the builder checks the exact bytes when it verifies. When no value has been agreed out of band, implementations SHOULD default to the UTF-8 bytes of the builder''s own advertised URL, exactly as advertised, so proposers with no prior relationship can construct an identical `data` deterministically. A zero-length `data` is invalid.'
+              example: '0x1234567890abcdef'
+              pattern: '^0x(?:[a-fA-F0-9]{2}){1,4096}$'
             slot:
               type: string
               example: '1'
-              description: The slot for which the bid is being requested.
+              description: The proposal slot this request is authorized for.
         signature:
           type: string
           format: hex
           pattern: '^0x[a-fA-F0-9]{192}$'
           example: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
-    Gloas.BuilderPreferencesV1:
+    Gloas.BuilderPreferences:
       type: object
       description: Per-builder preferences that a proposer can express.
       required:
@@ -15117,8 +15155,8 @@ components:
         max_execution_payment:
           type: string
           example: '1'
-          description: Indicates the maximum amount that a proposer is willing to accept as an execution payment from the builder.
-    Gloas.BuilderPreferencesRequestV1:
+          description: 'The maximum amount, in Gwei, that a proposer is willing to accept as an execution payment from the builder.'
+    Gloas.BuilderPreferencesRequest:
       type: object
       description: A builder preferences submission containing the proposer's preferences and a signed request authentication.
       required:
@@ -15134,7 +15172,7 @@ components:
             max_execution_payment:
               type: string
               example: '1'
-              description: Indicates the maximum amount that a proposer is willing to accept as an execution payment from the builder.
+              description: 'The maximum amount, in Gwei, that a proposer is willing to accept as an execution payment from the builder.'
         auth:
           type: object
           required:
@@ -15150,13 +15188,13 @@ components:
                 data:
                   type: string
                   format: hex
-                  description: 'Opaque authentication data, up to `MAX_DATA_SIZE` bytes. Typically set to the URL of the builder the request is intended for.'
-                  example: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
-                  pattern: '^0x[a-fA-F0-9]{0,8192}$'
+                  description: 'Opaque authentication data unique to the builder, agreed upon out of band. The meaning of the up to `MAX_BUILDER_AUTH_DATA_SIZE` (4096) bytes is left to the two parties; the builder checks the exact bytes when it verifies. When no value has been agreed out of band, implementations SHOULD default to the UTF-8 bytes of the builder''s own advertised URL, exactly as advertised, so proposers with no prior relationship can construct an identical `data` deterministically. A zero-length `data` is invalid.'
+                  example: '0x1234567890abcdef'
+                  pattern: '^0x(?:[a-fA-F0-9]{2}){1,4096}$'
                 slot:
                   type: string
                   example: '1'
-                  description: The slot for which the bid is being requested.
+                  description: The proposal slot this request is authorized for.
             signature:
               type: string
               format: hex
@@ -16453,21 +16491,21 @@ components:
             value: '1'
             pubkey: '0x93247f2209abcacf57b75a51dafae777f9dd38bc7053d1af526f220a7489a6d3a2753e5f3e8b1cfe39b56f43611df74a'
           signature: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
-    Gloas.SignedRequestAuthV1:
+    Gloas.SignedBuilderRequestAuth:
       value:
         message:
-          data: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+          data: '0x1234567890abcdef'
           slot: '1'
         signature: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
-    Gloas.BuilderPreferencesV1:
+    Gloas.BuilderPreferences:
       value:
         max_execution_payment: '1000000000'
-    Gloas.BuilderPreferencesRequestV1:
+    Gloas.BuilderPreferencesRequest:
       value:
         preferences:
           max_execution_payment: '1000000000'
         auth:
           message:
-            data: '0x68747470733a2f2f6275696c6465722e6578616d706c652e636f6d'
+            data: '0x1234567890abcdef'
             slot: '1'
           signature: '0x1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505cc411d61252fb6cb3fa0017b679f8bb2305b26a285fa2737f175668d0dff91cc1b66ac1fb663c9bc59509846d6ec05345bd908eda73e670af888da41af171505'
