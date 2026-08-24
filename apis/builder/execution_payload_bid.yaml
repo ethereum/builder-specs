@@ -5,32 +5,37 @@ post:
     Requests a builder node to produce a valid execution payload bid, which
     can be integrated into a beacon block and signed.
 
-    The proposer sends a POST request to the builder with the following information:
+    The proposer's beacon node sends a POST request to the builder with the following information:
     - The slot for which the block should be proposed.
     - The hash of the execution layer block the proposer will build on.
     - The root of the beacon block the proposer will build on.
-    - The index of the proposer.
-    - Optionally, a `SignedRequestAuthV1` in the request body that
-      authenticates the request. The body MAY be encoded as JSON or SSZ.
+    - The public key of the proposer.
+    - A `SignedBuilderRequestAuth` in the request body that authenticates the
+      request.
+    - A `Date-Milliseconds` header with the send time and an `X-Timeout-Ms`
+      header with the proposer's timeout for the request.
 
     The proposer's `max_execution_payment` is communicated exclusively via the
-    `submitBuilderPreferences` endpoint. If no `BuilderPreferencesV1` have been 
-    submitted for the proposer, the builder MUST treat `max_execution_payment` as `0` 
-    and MUST NOT include an execution layer payment in the bid.
+    `submitBuilderPreferences` endpoint. Any bid the builder serves MUST honor
+    the `max_execution_payment` cap from stored preferences. Without stored
+    preferences the builder MAY serve a bid with any `execution_payment`; the
+    proposer's locally configured per-builder limits are the backstop: the
+    proposer values a bid at its `value` plus `min(execution_payment,
+    max_execution_payment)`, so payment above the cap adds nothing to the
+    bid's chances.
 
-    The `SignedRequestAuthV1` body is optional. If it is present but malformed
-    or fails signature verification, the builder MAY return a 401 response.
-    If it is absent, the builder MAY still serve a bid, but builders MAY
-    use the presence and validity of the `SignedRequestAuthV1` to apply
-    per-validator policy (e.g. rate-limiting, prioritization, or refusing
-    unauthenticated requests).
+    The `SignedBuilderRequestAuth` body is required. If the body is missing or
+    malformed, the request is invalid and the builder MUST return a 400
+    response. If its `auth.message.data` or `auth.message.slot` does not match,
+    the builder MUST return a 400 response; if its signature fails to verify,
+    the builder MUST return a 401 response. Builders MAY use the authenticated
+    identity to apply per-validator policy (e.g. rate-limiting).
 
     The builder responds with a 200 response containing an execution payload bid if it can provide one.
 
-    If the builder is unable to produce a valid execution payload bid, then
-    the builder MUST return a 204 response. If the request is invalid, then the
-    builder MUST return an error response (400) with a description of the
-    validation failure.
+    A builder that does not serve a bid MUST return a 204 response. If the
+    request is invalid, then the builder MUST return an error response (400)
+    with a description of the validation failure.
 
     This API is applicable from Gloas fork onwards.
   tags:
@@ -62,48 +67,48 @@ post:
         $ref: "../../beacon-apis/types/primitive.yaml#/Pubkey"
     - name: Date-Milliseconds
       in: header
-      required: false
+      required: true
       description: |
-        Optional header containing a Unix timestamp in milliseconds representing
-        the point-in-time the request was sent. This header can be used to measure
-        latency.
+        Unix timestamp in milliseconds at which the request was sent. The
+        builder compares it with its own receive time to estimate the transit
+        delay from proposer to builder.
       schema:
         type: integer
         format: int64
         example: 1710338135000
     - name: X-Timeout-Ms
       in: header
-      required: false
+      required: true
       description: |
-        Optional header containing the proposer's timeout for the request in milliseconds.
+        The proposer's timeout for the request in milliseconds, measured from
+        `Date-Milliseconds`: the builder MUST respond by `Date-Milliseconds`
+        plus `X-Timeout-Ms`, and the proposer discards later responses.
       schema:
         type: integer
         format: int64
         example: 10000
-    - name: Eth-Consensus-Version
-      in: header
-      required: true
-      description: |
-        The active consensus version to which the `SignedRequestAuthV1` in the
-        request body belongs. Required if the request body is SSZ encoded.
+    - in: header
       schema:
         $ref: "../../builder-oapi.yaml#/components/schemas/ConsensusVersion"
+      required: true
+      name: Eth-Consensus-Version
+      description: "The active consensus version to which the request body belongs."
   requestBody:
     description: |
-      Optional `SignedRequestAuthV1` authenticating the request. If provided,
-      the builder MAY verify the BLS signature against the validator pubkey
-      resolved from the `proposer_pubkey` path parameter, and check that
-      `data` matches its own URL and that `slot` matches the
-      requested slot. If absent, the builder MAY still serve a bid subject
-      to its own policy.
-    required: false
+      A `SignedBuilderRequestAuth` authenticating the request. The builder MUST
+      verify the BLS signature against the validator pubkey resolved from the
+      `proposer_pubkey` path parameter, and MUST check that `auth.message.data`
+      matches the value it agreed with the proposer and that
+      `auth.message.slot` matches the `slot` path parameter (the proposal
+      slot).
+    required: true
     content:
       application/json:
         schema:
-          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedRequestAuthV1"
+          $ref: "../../types/gloas/request_auth.yaml#/Gloas/SignedBuilderRequestAuth"
       application/octet-stream:
         schema:
-          description: "SSZ serialized `SignedRequestAuthV1` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body."
+          description: "SSZ serialized `SignedBuilderRequestAuth` bytes. Use Content-Type header to indicate that SSZ data is contained in the request body."
   responses:
     "200":
       description: Success response.
@@ -143,26 +148,30 @@ post:
             SlotMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuthV1: auth.message.slot does not match the requested slot"
-            WrongBuilder:
+                message: "Invalid SignedBuilderRequestAuth: auth.message.slot does not match the proposal slot in the request path"
+            DataMismatch:
               value:
                 code: 400
-                message: "Invalid SignedRequestAuthV1: auth.message.data does not match this builder's URL"
+                message: "Invalid SignedBuilderRequestAuth: auth.message.data does not match the value agreed with this builder"
+            MissingBody:
+              value:
+                code: 400
+                message: "Invalid request: SignedBuilderRequestAuth body is required"
+            MissingHeader:
+              value:
+                code: 400
+                message: "Invalid request: Date-Milliseconds and X-Timeout-Ms headers are required"
     "401":
-      description: Authentication required.
+      description: Authentication failed.
       content:
         application/json:
           schema:
             $ref: "../../builder-oapi.yaml#/components/schemas/ErrorMessage"
           examples:
-            MissingAuth:
-              value:
-                code: 401
-                message: "Missing SignedRequestAuthV1: this builder requires authenticated requests"
             InvalidAuth:
               value:
                 code: 401
-                message: "Invalid SignedRequestAuthV1: signature verification failed"
+                message: "Invalid SignedBuilderRequestAuth: signature verification failed"
     "406":
       $ref: "../../builder-oapi.yaml#/components/responses/NotAcceptable"
     "415":
