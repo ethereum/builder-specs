@@ -87,8 +87,8 @@ the bid request arrives.
 
 The validator constructs a `BuilderPreferences` with:
 
-- `max_execution_payment`: The maximum execution layer payment the proposer will
-  accept from this builder. See
+- `max_execution_payment`: The maximum execution layer payment counted when
+  this builder's bid is valued. See
   [`max_execution_payment`](#max_execution_payment).
 
 The validator then constructs a `BuilderPreferencesRequest` with the

@@ -100,8 +100,8 @@ path parameter, and the builder receives a `BuilderPreferencesRequest` object
 containing:
 
 - `preferences`: A `BuilderPreferences` with:
-  - `max_execution_payment`: The maximum execution layer payment the proposer
-    will accept from this builder (in Gwei).
+  - `max_execution_payment`: The maximum execution layer payment counted when
+    this builder's bid is valued (in Gwei).
 - `auth`: A `SignedBuilderRequestAuth` authenticating the request.
   `auth.message.slot` is the proposal slot the preferences apply to. The builder
   MUST verify the BLS signature against the `proposer_pubkey` path parameter and
