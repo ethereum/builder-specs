@@ -87,8 +87,8 @@ the bid request arrives.
 
 The validator constructs a `BuilderPreferences` with:
 
-- `max_execution_payment`: The maximum execution layer payment the proposer will
-  accept from this builder. See
+- `max_execution_payment`: The maximum execution layer payment counted when
+  this builder's bid is valued. See
   [`max_execution_payment`](#max_execution_payment).
 
 The validator then constructs a `BuilderPreferencesRequest` with the
@@ -115,13 +115,13 @@ nothing to the bid's chances.
 
 ### `max_execution_payment`
 
-`max_execution_payment` is the maximum value (in Gwei) that the proposer is
-willing to accept as an execution layer payment from this builder. A value of
-`0` means the proposer does not accept any execution payments from this builder,
-requiring all payments to go through the on-chain trustless payments mechanism.
-A value of `MAX_EXECUTION_PAYMENT` means the proposer will accept any execution
-payment amount from the builder. Proposers may adjust this parameter based on
-their level of trust in the builder's reliability and reputation.
+`max_execution_payment` is the maximum execution layer payment (in Gwei) that
+counts when this builder's bid is valued: the bid is valued at its `value` plus
+`min(execution_payment, max_execution_payment)`. A value of `0` counts no
+execution payment, leaving the bid valued at its trustless `value` alone. A
+value of `MAX_EXECUTION_PAYMENT` counts any execution payment amount in full.
+Proposers may adjust this parameter based on their level of trust in the
+builder's reliability and reputation.
 
 `max_execution_payment` is communicated exclusively via the
 [`submitBuilderPreferences`][submit-builder-preferences-api] endpoint.

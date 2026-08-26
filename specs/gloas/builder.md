@@ -100,8 +100,8 @@ path parameter, and the builder receives a `BuilderPreferencesRequest` object
 containing:
 
 - `preferences`: A `BuilderPreferences` with:
-  - `max_execution_payment`: The maximum execution layer payment the proposer
-    will accept from this builder (in Gwei).
+  - `max_execution_payment`: The maximum execution layer payment counted when
+    this builder's bid is valued (in Gwei).
 - `auth`: A `SignedBuilderRequestAuth` authenticating the request.
   `auth.message.slot` is the proposal slot the preferences apply to. The builder
   MUST verify the BLS signature against the `proposer_pubkey` path parameter and
@@ -124,14 +124,13 @@ nothing to the bid's chances.
 
 ### `max_execution_payment`
 
-`max_execution_payment` is the maximum value (in Gwei) that a proposer is
-willing to accept as an execution layer payment from this builder. A value of
-`0` indicates that the proposer does not accept any execution payments from the
-builder, requiring all payments to use the on-chain trustless payments
-mechanism. A value of `MAX_EXECUTION_PAYMENT` indicates that the proposer will
-accept any execution layer payment amount from the builder. Proposers may adjust
-this parameter based on their level of trust in the builder's reliability and
-reputation.
+`max_execution_payment` is the maximum execution layer payment (in Gwei) that
+counts when this builder's bid is valued: the bid is valued at its `value` plus
+`min(execution_payment, max_execution_payment)`. A value of `0` counts no
+execution payment, leaving the bid valued at its trustless `value` alone. A
+value of `MAX_EXECUTION_PAYMENT` counts any execution payment amount in full.
+Proposers may adjust this parameter based on their level of trust in the
+builder's reliability and reputation.
 
 ## Per-request Validator Inputs
 
