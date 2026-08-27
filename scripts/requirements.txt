@@ -1,0 +1,6 @@
+# Requirements for builder-specs example validation
+# Install with: pip install -r scripts/requirements.txt
+
+# SSZ serialization library (implements remerkleable)
+# Used for encoding/decoding Simple Serialize (SSZ) data structures
+remerkleable>=0.1.28
