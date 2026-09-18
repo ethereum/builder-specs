@@ -14,6 +14,7 @@
     - [`max_execution_payment`](#max_execution_payment)
   - [Bid Request](#bid-request)
     - [Constructing the `BuilderRequestAuth`](#constructing-the-builderrequestauth)
+      - [Default auth data](#default-auth-data)
   - [Proposer Preferences](#proposer-preferences)
   - [Validating a `SignedExecutionPayloadBid`](#validating-a-signedexecutionpayloadbid)
   - [Block proposal](#block-proposal)
@@ -145,9 +146,9 @@ The validator constructs a `BuilderRequestAuth` with the following fields:
   meaning is left to the two parties. It is not tied to an endpoint, so one
   `SignedBuilderRequestAuth` can authenticate the proposer for both
   `getExecutionPayloadBid` and `submitBuilderPreferences`. When no value has
-  been agreed out of band, the validator SHOULD use the UTF-8 bytes of the
-  builder's own advertised URL, exactly as advertised. A zero-length `data` is
-  invalid.
+  been agreed out of band, the validator SHOULD use the
+  [default auth data](#default-auth-data) derived from the builder URL. A
+  zero-length `data` is invalid.
 - `slot`: The proposal slot this request is authorized for, not the slot at
   which the request is signed or sent.
 
@@ -158,6 +159,42 @@ The validator then constructs the `SignedBuilderRequestAuth` by signing the
 `BuilderRequestAuth`. The signature lets builders authenticate the requesting
 validator and discard requests from other parties (e.g. DDOS or replay attempts
 from competing builders).
+
+#### Default auth data
+
+The default `data` is the hostname of the builder's URL: lowercased, in its
+ASCII form, with an IPv6 literal written in its compressed form
+([RFC 5952][rfc-5952]) inside brackets, using hexadecimal groups only and never
+the mixed IPv4 notation. Scheme, userinfo, port, path, query and fragment are
+not part of the builder's identity and are dropped, so differences in how the
+URL is written, such as a trailing `/` or an explicit default port, do not
+change the signed bytes. An internationalized hostname MUST be given in its
+punycode form.
+
+```python
+def get_default_auth_data(url: str) -> bytes:
+    host = urlsplit(url).hostname  # lowercased, userinfo and port removed
+    assert host is not None and host.isascii()
+    if ":" in host:  # IPv6 literal
+        host = f"[{compress_ipv6(host)}]"
+    return host.encode("ascii")
+```
+
+`compress_ipv6` returns the address in the text form described above.
+
+| URL                                        | `data`                |
+| ------------------------------------------ | --------------------- |
+| `https://builder.example.com/`             | `builder.example.com` |
+| `HTTPS://Builder.Example.com:443/bids?x=1` | `builder.example.com` |
+| `https://builder.example.com:8080`         | `builder.example.com` |
+| `https://user:pw@builder.example.com/`     | `builder.example.com` |
+| `https://10.0.0.5:18550/eth/v1/builder`    | `10.0.0.5`            |
+| `https://[0:0:0:0:0:0:0:1]:8443/`          | `[::1]`               |
+| `https://[::ffff:192.0.2.1]/`              | `[::ffff:c000:201]`   |
+
+A builder that needs a finer identity than its hostname, for example one host
+serving several builders on different paths or ports, agrees `data` with its
+proposers out of band instead.
 
 ## Proposer Preferences
 
@@ -268,6 +305,7 @@ block on top of a beacon `state` must take the following actions:
 [is-gas-limit-target-compatible]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-is_gas_limit_target_compatible
 [proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposerpreferences
 [proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposer_preferences
+[rfc-5952]: https://www.rfc-editor.org/rfc/rfc5952
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
 [signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml

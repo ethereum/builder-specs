@@ -7,6 +7,7 @@ capella
 cli
 dev
 eth
+hostname
 http
 https
 json
@@ -16,6 +17,7 @@ nodejs
 npm
 oapi
 openapi
+punycode
 ssz
 tbh
 ui
@@ -23,6 +25,7 @@ uint
 unblind
 unblinded
 url
+userinfo
 validators
 validator's
 vc
@@ -34,7 +37,7 @@ fulu
 Gloas
 gloas
 Gwei
+IPv
 PTC
-UTF
 submitBlindedBlockV
 ValidatorRegistrationsV

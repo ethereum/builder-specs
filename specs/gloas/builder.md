@@ -106,7 +106,8 @@ containing:
   `auth.message.slot` is the proposal slot the preferences apply to. The builder
   MUST verify the BLS signature against the `proposer_pubkey` path parameter and
   MUST check that `auth.message.data` matches the value it agreed with the
-  proposer, so that an unauthenticated or replayed request cannot skew a
+  proposer, or the [default auth data][default-auth-data] of its own URL when
+  none was agreed, so that an unauthenticated or replayed request cannot skew a
   proposer's preferences away from the value the proposer chose. If the
   signature fails to verify, the builder MUST return a 401 response; if the
   `auth.message.data` check fails, the builder MUST return a 400 response. The
@@ -160,8 +161,9 @@ the builder MAY serve a bid with any `execution_payment`.
 
 Builders MUST verify the `SignedBuilderRequestAuth` signature against the
 `proposer_pubkey` path parameter, and MUST check that `auth.message.data`
-matches the value they agreed with the proposer and that `auth.message.slot`
-matches the proposal `slot` path parameter (see
+matches the value they agreed with the proposer, or the
+[default auth data][default-auth-data] of their own URL when none was agreed,
+and that `auth.message.slot` matches the proposal `slot` path parameter (see
 [Constructing the `BuilderRequestAuth`][constructing-builder-request-auth]). The
 signature is verified with [`verify_builder_request_auth_signature`](#signing).
 If the signature fails to verify, the builder MUST return a 401 response; if the
@@ -256,6 +258,7 @@ documented in the [Gloas consensus specs][gloas-builder-specs].
 
 [bls]: https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#bls-signatures
 [constructing-builder-request-auth]: ./validator.md#constructing-the-builderrequestauth
+[default-auth-data]: ./validator.md#default-auth-data
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
 [gloas-builder-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md
 [gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
