@@ -1,6 +1,7 @@
 get:
   operationId: "getHeader"
   summary: Get an execution payload header.
+  deprecated: true
   description: |
     Requests a builder node to produce a valid execution payload header, which
     can be integrated into a blinded beacon block and signed.
@@ -11,6 +12,8 @@ get:
     validation failure.
 
     After Deneb, return the KZG commitments for any associated blobs attached to the execution payload.
+
+    From Gloas, this endpoint is replaced by `getExecutionPayloadBid`.
   tags:
     - Builder
   parameters:
