@@ -86,6 +86,11 @@ epoch prior to the epoch in which they will be proposing, as determined from
 `state.proposer_lookahead`. This ensures builders have the preferences before
 the bid request arrives.
 
+Preferences are submitted per proposal slot: `auth.message.slot` is the slot the
+preferences apply to, so a validator with more than one proposal slot in
+`state.proposer_lookahead` makes one submission per slot to each builder, each
+with its own `SignedBuilderRequestAuth`.
+
 The validator constructs a `BuilderPreferences` with:
 
 - `max_execution_payment`: The maximum execution layer payment counted when

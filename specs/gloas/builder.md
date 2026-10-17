@@ -123,6 +123,10 @@ are the backstop: the proposer values a bid at its `value` plus
 `min(execution_payment, max_execution_payment)`, so payment above the cap adds
 nothing to the bid's chances.
 
+A later submission for the same proposer and `auth.message.slot` replaces the
+stored preferences; a submission for a different slot MUST NOT overwrite the
+preferences stored for another slot.
+
 ### `max_execution_payment`
 
 `max_execution_payment` is the maximum execution layer payment (in Gwei) that
