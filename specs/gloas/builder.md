@@ -123,6 +123,17 @@ are the backstop: the proposer values a bid at its `value` plus
 `min(execution_payment, max_execution_payment)`, so payment above the cap adds
 nothing to the bid's chances.
 
+A later submission for the same proposer and `auth.message.slot` replaces the
+stored preferences; a submission for a different slot MUST NOT overwrite the
+preferences stored for another slot. The builder SHOULD also reject, with a 400
+response, preferences whose `auth.message.slot` is a slot at which
+`proposer_pubkey` is not the proposer according to `state.proposer_lookahead`.
+
+*Note*: `is_eligible_for_bid` (see [Bidding](#bidding)) cannot be reused for
+this check: it asserts `slot == state.slot` and resolves the proposer with
+`get_beacon_proposer_index(state)`, so it is defined only for the current slot,
+whereas `auth.message.slot` is a future slot within `state.proposer_lookahead`.
+
 ### `max_execution_payment`
 
 `max_execution_payment` is the maximum execution layer payment (in Gwei) that
