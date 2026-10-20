@@ -50,6 +50,7 @@ paths:
     post:
       operationId: registerValidator
       summary: Register or update a validator's block building preferences.
+      deprecated: true
       description: |
         Registers a validator's preferred fee recipient and gas limit.
 
@@ -59,6 +60,12 @@ paths:
         validator conform to the preferences expressed in the registration. If the
         registration is invalid, then the builder MUST return an error response
         (400) with a description of the validation failure.
+
+        From Gloas, `ValidatorRegistrationV1` is deprecated in favor of
+        `ProposerPreferences` from the consensus specs. Builders SHOULD subscribe to
+        the `proposer_preferences` gossip topic to learn a validator's
+        `fee_recipient` and `target_gas_limit`, and receive per-builder preferences via
+        the `submitBuilderPreferences` endpoint.
       tags:
         - Builder
       requestBody:
@@ -202,6 +209,7 @@ paths:
     get:
       operationId: getHeader
       summary: Get an execution payload header.
+      deprecated: true
       description: |
         Requests a builder node to produce a valid execution payload header, which
         can be integrated into a blinded beacon block and signed.
@@ -212,6 +220,8 @@ paths:
         validation failure.
 
         After Deneb, return the KZG commitments for any associated blobs attached to the execution payload.
+
+        From Gloas, this endpoint is replaced by `getExecutionPayloadBid`.
       tags:
         - Builder
       parameters:
@@ -7167,6 +7177,7 @@ paths:
     post:
       operationId: submitBlindedBlockV2
       summary: 'Submit a signed blinded beacon block, the builder publishes the signed unblinded beacon block and blobs to the network.'
+      deprecated: true
       description: |
         Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
         to the block.
@@ -7176,7 +7187,9 @@ paths:
         must return an error response (400) with a description of the validation
         failure.
 
-        The builder MUST publish the signed unblinded beacon block and blobs to the network. 
+        The builder MUST publish the signed unblinded beacon block and blobs to the network.
+
+        From Gloas, this endpoint is replaced by `submitSignedBeaconBlock`.
 
         Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
         request.
