@@ -1,6 +1,7 @@
 post:
   operationId: "submitBlindedBlockV2"
   summary: Submit a signed blinded beacon block, the builder publishes the signed unblinded beacon block and blobs to the network.
+  deprecated: true
   description: |
     Submits a `SignedBlindedBeaconBlock` to the builder, binding the proposer
     to the block.
@@ -10,7 +11,9 @@ post:
     must return an error response (400) with a description of the validation
     failure.
 
-    The builder MUST publish the signed unblinded beacon block and blobs to the network. 
+    The builder MUST publish the signed unblinded beacon block and blobs to the network.
+
+    From Gloas, this endpoint is replaced by `submitSignedBeaconBlock`.
 
     Note: SSZ support can be determined by requesting an SSZ encoded response in the `getHeader`
     request.
