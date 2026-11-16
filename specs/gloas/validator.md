@@ -250,6 +250,9 @@ def validate_bid(
         and bid.parent_payload_root == state.latest_payload_root
     )
     assert builds_on_full or builds_on_empty
+    # Bid must not commit to the payload it builds on.
+    assert bid.block_hash != bid.parent_block_hash
+    assert bid.payload_root != bid.parent_payload_root
     assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
     assert is_gas_limit_target_compatible(

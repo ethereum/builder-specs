@@ -250,7 +250,7 @@ been accepted by the proposer and it has been included in its
 `SignedBeaconBlock`, then the builder has to construct an
 [`ExecutionPayloadEnvelope`][execution-payload-envelope] corresponding to the
 [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and it has to
-broadcast via the `execution_payload_envelope` gossip topic.
+broadcast via the `execution_payload` gossip topic.
 
 The specification for a block builder to construct an
 [`ExecutionPayloadEnvelope`][execution-payload-envelope] is
