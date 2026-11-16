@@ -33,7 +33,7 @@ external block building market with the Builder-API post ePBS.
 Validators request a [`SignedExecutionPayloadBid`][signed-execution-payload-bid]
 from the external builder network to put it in their `SignedBeaconBlock`. The
 external builder network broadcasts the
-[`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
+[`ExecutionPayloadEnvelope`][execution-payload-envelope]
 corresponding to the included bid to the PTC committee.
 
 ## Containers
@@ -240,10 +240,16 @@ def validate_bid(
     assert bid.slot == state.slot
     assert bid.fee_recipient == fee_recipient
     # Bid can choose to extend on FULL or EMPTY.
-    assert (
-        bid.parent_block_hash == state.latest_execution_payload_bid.block_hash
-        or bid.parent_block_hash == state.latest_block_hash
+    parent_bid = state.latest_execution_payload_bid
+    builds_on_full = (
+        bid.parent_block_hash == parent_bid.block_hash
+        and bid.parent_payload_root == parent_bid.payload_root
     )
+    builds_on_empty = (
+        bid.parent_block_hash == state.latest_block_hash
+        and bid.parent_payload_root == state.latest_payload_root
+    )
+    assert builds_on_full or builds_on_empty
     assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
     assert is_gas_limit_target_compatible(
@@ -257,7 +263,7 @@ def validate_bid(
 ```
 
 `parent_gas_limit` is the gas limit of the parent execution payload identified
-by `bid.parent_block_hash`.
+by `bid.parent_payload_root`.
 
 The validator's locally configured `max_execution_payment`, the same value it
 submits via [`submitBuilderPreferences`][submit-builder-preferences-api] when it
@@ -294,7 +300,7 @@ block on top of a beacon `state` must take the following actions:
    [`submitSignedBeaconBlock`][submit-signed-beacon-block] API call. The
    validator does not call builders directly.
 4. The upstream block building software constructs the corresponding
-   [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and
+   [`ExecutionPayloadEnvelope`][execution-payload-envelope] and
    broadcasts it to the PTC committee.
 
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#new-can_builder_cover_bid
@@ -307,7 +313,7 @@ block on top of a beacon `state` must take the following actions:
 [proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposer_preferences
 [rfc-5952]: https://www.rfc-editor.org/rfc/rfc5952
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
-[signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#executionpayloadenvelope
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml
 [submit-signed-beacon-block]: ./../../apis/builder/beacon_blocks.yaml
 [verify-execution-payload-bid-signature]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#new-verify_execution_payload_bid_signature
