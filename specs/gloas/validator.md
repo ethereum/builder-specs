@@ -240,19 +240,12 @@ def validate_bid(
     assert bid.slot == state.slot
     assert bid.fee_recipient == fee_recipient
     # Bid can choose to extend on FULL or EMPTY.
-    parent_bid = state.latest_execution_payload_bid
-    builds_on_full = (
-        bid.parent_block_hash == parent_bid.block_hash
-        and bid.parent_payload_root == parent_bid.payload_root
+    assert (
+        bid.parent_block_hash == state.latest_execution_payload_bid.block_hash
+        or bid.parent_block_hash == state.latest_block_hash
     )
-    builds_on_empty = (
-        bid.parent_block_hash == state.latest_block_hash
-        and bid.parent_payload_root == state.latest_payload_root
-    )
-    assert builds_on_full or builds_on_empty
     # Bid must not commit to the payload it builds on.
     assert bid.block_hash != bid.parent_block_hash
-    assert bid.payload_root != bid.parent_payload_root
     assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
     assert is_gas_limit_target_compatible(
@@ -266,7 +259,7 @@ def validate_bid(
 ```
 
 `parent_gas_limit` is the gas limit of the parent execution payload identified
-by `bid.parent_payload_root`.
+by `bid.parent_block_hash`.
 
 The validator's locally configured `max_execution_payment`, the same value it
 submits via [`submitBuilderPreferences`][submit-builder-preferences-api] when it
