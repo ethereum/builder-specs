@@ -130,8 +130,13 @@ def verify_bid_value(
     bid_value: uint256,
     balance_difference: uint256,
 ):
+    # Withdrawal amounts are in Gwei, balances are in Wei
     excluded_amount = sum(
-        [w.amount for w in execution_payload.withdrawals if w.address == fee_recipient]
+        [
+            uint256(w.amount) * 10**9
+            for w in execution_payload.withdrawals
+            if w.address == fee_recipient
+        ]
     )
     proposer_payment = balance_difference - excluded_amount
     assert proposer_payment == bid_value
