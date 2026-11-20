@@ -221,8 +221,9 @@ def process_registration(
     registrations: Dict[BLSPubkey, ValidatorRegistrationV1],
     current_timestamp: uint64,
 ):
-    signature = registration.signature
-    registration = registration.message
+    signed_registration = registration
+    registration = signed_registration.message
+    pubkey = registration.pubkey
 
     # Verify BLS public key corresponds to a registered validator
     validator_pubkeys = [v.pubkey for v in state.validators]
@@ -243,7 +244,7 @@ def process_registration(
         assert registration.timestamp >= prev_registration.timestamp
 
     # Verify registration signature
-    assert verify_registration_signature(state, registration)
+    assert verify_registration_signature(state, signed_registration)
 ```
 
 ## Building
