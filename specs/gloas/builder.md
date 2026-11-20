@@ -123,6 +123,9 @@ are the backstop: the proposer values a bid at its `value` plus
 `min(execution_payment, max_execution_payment)`, so payment above the cap adds
 nothing to the bid's chances.
 
+The builder MUST ignore submissions for a proposer and slot it already stores
+preferences for.
+
 ### `max_execution_payment`
 
 `max_execution_payment` is the maximum execution layer payment (in Gwei) that

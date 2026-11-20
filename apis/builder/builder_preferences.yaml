@@ -18,6 +18,9 @@ post:
     response. If the data or slot check fails, the builder MUST return a 400
     response.
 
+    Submissions for a proposer and slot the builder already stores preferences
+    for are ignored and also return 202.
+
     A success response (202) indicates that the preferences were accepted. If
     the preferences are invalid, then the builder MUST return an error response
     (400) with a description of the validation failure.
