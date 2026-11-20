@@ -117,14 +117,13 @@ containing:
 
 The builder SHOULD store the preferences per proposer per `auth.message.slot`
 and MUST honor the `max_execution_payment` cap in any bid it serves for that
-slot. The builder MUST keep the first preferences it accepts for a proposer and
-slot and ignore any later submission for that slot, still returning a 202
-response, since the `auth` signature does not cover the preferences. Without
-preferences stored for the requested slot it MAY serve a bid with any
-`execution_payment`. The proposer's locally configured per-builder limits are
-the backstop: the proposer values a bid at its `value` plus
+slot. Without preferences stored for the requested slot it MAY serve a bid with
+any `execution_payment`. The proposer's locally configured per-builder limits
+are the backstop: the proposer values a bid at its `value` plus
 `min(execution_payment, max_execution_payment)`, so payment above the cap adds
 nothing to the bid's chances.
+
+The builder MUST ignore later submissions for the same proposer and slot.
 
 ### `max_execution_payment`
 
