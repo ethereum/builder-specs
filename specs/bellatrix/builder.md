@@ -217,11 +217,10 @@ raising any assertions:
 ```python
 def process_registration(
     state: BeaconState,
-    registration: SignedValidatorRegistrationV1,
+    signed_registration: SignedValidatorRegistrationV1,
     registrations: Dict[BLSPubkey, ValidatorRegistrationV1],
     current_timestamp: uint64,
 ):
-    signed_registration = registration
     registration = signed_registration.message
     pubkey = registration.pubkey
 
