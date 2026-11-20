@@ -311,9 +311,7 @@ as is possible under the consensus rules.
 #### Constructing the `BuilderBid`
 
 ```python
-def get_bid(
-    execution_payload: ExecutionPayload, value: uint256, pubkey: BLSPubkey
-) -> BuilderBid:
+def get_bid(payload: ExecutionPayload, value: uint256, pubkey: BLSPubkey) -> BuilderBid:
     header = ExecutionPayloadHeader(
         parent_hash=payload.parent_hash,
         fee_recipient=payload.fee_recipient,
