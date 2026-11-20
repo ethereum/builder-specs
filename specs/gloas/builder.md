@@ -12,7 +12,7 @@
   - [Proposer Preferences (Deprecation of Validator Registrations)](#proposer-preferences-deprecation-of-validator-registrations)
   - [Constructing a `SignedExecutionPayloadBid`](#constructing-a-signedexecutionpayloadbid)
     - [Signing](#signing)
-  - [Constructing a `SignedExecutionPayloadEnvelope`](#constructing-a-signedexecutionpayloadenvelope)
+  - [Constructing an `ExecutionPayloadEnvelope`](#constructing-an-executionpayloadenvelope)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -23,7 +23,7 @@
 This document documents the builder behaviour with the Builder-API post ePBS. It
 describes how builders consume per-request inputs from validators and construct
 [`SignedExecutionPayloadBid`][signed-execution-payload-bid] and
-[`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] objects.
+[`ExecutionPayloadEnvelope`][execution-payload-envelope] objects.
 
 ## Constants
 
@@ -243,17 +243,17 @@ def verify_builder_request_auth_signature(
     return bls.Verify(pubkey, signing_root, signed_builder_request_auth.signature)
 ```
 
-## Constructing a `SignedExecutionPayloadEnvelope`
+## Constructing an `ExecutionPayloadEnvelope`
 
 If the builder's [`SignedExecutionPayloadBid`][signed-execution-payload-bid] has
 been accepted by the proposer and it has been included in its
-`SignedBeaconBlock`, then the builder has to construct a
-[`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
-corresponding to the [`SignedExecutionPayloadBid`][signed-execution-payload-bid]
-and it has to broadcast via the `execution_payload_envelope` gossip topic.
+`SignedBeaconBlock`, then the builder has to construct an
+[`ExecutionPayloadEnvelope`][execution-payload-envelope] corresponding to the
+[`SignedExecutionPayloadBid`][signed-execution-payload-bid] and it has to
+broadcast via the `execution_payload` gossip topic.
 
-The specification for a block builder to construct a
-[`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] is
+The specification for a block builder to construct an
+[`ExecutionPayloadEnvelope`][execution-payload-envelope] is
 documented in the [Gloas consensus specs][gloas-builder-specs].
 
 [bls]: https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#bls-signatures
@@ -265,6 +265,6 @@ documented in the [Gloas consensus specs][gloas-builder-specs].
 [proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposerpreferences
 [proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposer_preferences
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
-[signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#executionpayloadenvelope
 [signed-request-auth]: ./validator.md#signedbuilderrequestauth
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml

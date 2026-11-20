@@ -33,7 +33,7 @@ external block building market with the Builder-API post ePBS.
 Validators request a [`SignedExecutionPayloadBid`][signed-execution-payload-bid]
 from the external builder network to put it in their `SignedBeaconBlock`. The
 external builder network broadcasts the
-[`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope]
+[`ExecutionPayloadEnvelope`][execution-payload-envelope]
 corresponding to the included bid to the PTC committee.
 
 ## Containers
@@ -244,6 +244,8 @@ def validate_bid(
         bid.parent_block_hash == state.latest_execution_payload_bid.block_hash
         or bid.parent_block_hash == state.latest_block_hash
     )
+    # Bid must not commit to the payload it builds on.
+    assert bid.block_hash != bid.parent_block_hash
     assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
     assert is_gas_limit_target_compatible(
@@ -294,7 +296,7 @@ block on top of a beacon `state` must take the following actions:
    [`submitSignedBeaconBlock`][submit-signed-beacon-block] API call. The
    validator does not call builders directly.
 4. The upstream block building software constructs the corresponding
-   [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and
+   [`ExecutionPayloadEnvelope`][execution-payload-envelope] and
    broadcasts it to the PTC committee.
 
 [can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#new-can_builder_cover_bid
@@ -307,7 +309,7 @@ block on top of a beacon `state` must take the following actions:
 [proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposer_preferences
 [rfc-5952]: https://www.rfc-editor.org/rfc/rfc5952
 [signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
-[signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#executionpayloadenvelope
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml
 [submit-signed-beacon-block]: ./../../apis/builder/beacon_blocks.yaml
 [verify-execution-payload-bid-signature]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#new-verify_execution_payload_bid_signature
