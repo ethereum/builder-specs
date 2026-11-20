@@ -70,7 +70,7 @@ class BuilderBid(Container):
 #### `ExecutionPayloadHeader`
 
 See
-[`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/dev/specs/deneb/beacon-chain.md#executionpayloadheader)
+[`ExecutionPayloadHeader`](https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/deneb/beacon-chain.md#executionpayloadheader)
 in Deneb consensus specs.
 
 ##### `BlindedBeaconBlockBody`

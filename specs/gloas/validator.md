@@ -297,17 +297,17 @@ block on top of a beacon `state` must take the following actions:
    [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] and
    broadcasts it to the PTC committee.
 
-[can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#new-can_builder_cover_bid
+[can-builder-cover-bid]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/beacon-chain.md#new-can_builder_cover_bid
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
-[gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
-[gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/validator.md#block-proposal
-[is-active-builder]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#new-is_active_builder
-[is-gas-limit-target-compatible]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-is_gas_limit_target_compatible
-[proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposerpreferences
-[proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposer_preferences
+[gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas
+[gloas-validator-specs]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/validator.md#block-and-sidecar-proposal
+[is-active-builder]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/beacon-chain.md#new-is_active_builder
+[is-gas-limit-target-compatible]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/p2p-interface.md#new-is_gas_limit_target_compatible
+[proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/p2p-interface.md#new-proposerpreferences
+[proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/p2p-interface.md#new-proposer_preferences
 [rfc-5952]: https://www.rfc-editor.org/rfc/rfc5952
-[signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
-[signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
+[signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml
 [submit-signed-beacon-block]: ./../../apis/builder/beacon_blocks.yaml
-[verify-execution-payload-bid-signature]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#new-verify_execution_payload_bid_signature
+[verify-execution-payload-bid-signature]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/beacon-chain.md#new-verify_execution_payload_bid_signature

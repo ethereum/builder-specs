@@ -256,15 +256,15 @@ The specification for a block builder to construct a
 [`SignedExecutionPayloadEnvelope`][signed-execution-payload-envelope] is
 documented in the [Gloas consensus specs][gloas-builder-specs].
 
-[bls]: https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#bls-signatures
+[bls]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#bls-signatures
 [constructing-builder-request-auth]: ./validator.md#constructing-the-builderrequestauth
 [default-auth-data]: ./validator.md#default-auth-data
 [get-execution-payload-bid-api]: ./../../apis/builder/execution_payload_bid.yaml
-[gloas-builder-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/builder.md
-[gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas
-[proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposerpreferences
-[proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/p2p-interface.md#new-proposer_preferences
-[signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
-[signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/master/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
+[gloas-builder-specs]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/builder.md
+[gloas-consensus-specs]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas
+[proposer-preferences]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/p2p-interface.md#new-proposerpreferences
+[proposer-preferences-topic]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/p2p-interface.md#new-proposer_preferences
+[signed-execution-payload-bid]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/beacon-chain.md#signedexecutionpayloadbid
+[signed-execution-payload-envelope]: https://github.com/ethereum/consensus-specs/blob/v1.7.0-beta.4/specs/gloas/beacon-chain.md#signedexecutionpayloadenvelope
 [signed-request-auth]: ./validator.md#signedbuilderrequestauth
 [submit-builder-preferences-api]: ./../../apis/builder/builder_preferences.yaml

@@ -28,7 +28,7 @@ upgrade.
 Note: `BuilderBid` and `SignedBuilderBid` types are updated indirectly.
 
 See
-[ExecutionPayloadHeader](https://github.com/ethereum/consensus-specs/blob/dev/specs/capella/beacon-chain.md#executionpayloadheader).
+[ExecutionPayloadHeader](https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/capella/beacon-chain.md#executionpayloadheader).
 
 ##### `BlindedBeaconBlockBody`
 
