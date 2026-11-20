@@ -10859,7 +10859,8 @@ paths:
         preferences apply to; the builder MUST reject preferences whose slot has
         already passed. If the signature check fails, the builder MUST return a 401
         response. If the data or slot check fails, the builder MUST return a 400
-        response.
+        response. The builder SHOULD also reject, with a 400 response, preferences
+        for a slot at which `state.proposer_lookahead` has a different proposer.
 
         Submissions for a proposer and slot the builder already stores preferences
         for are ignored and also return 202.
@@ -10988,6 +10989,10 @@ paths:
                   value:
                     code: 400
                     message: 'Invalid SignedBuilderRequestAuth: auth.message.slot has already passed'
+                NotProposer:
+                  value:
+                    code: 400
+                    message: 'Invalid SignedBuilderRequestAuth: proposer_pubkey is not the proposer of auth.message.slot'
                 DataMismatch:
                   value:
                     code: 400
