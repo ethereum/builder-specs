@@ -166,7 +166,7 @@ def process_bid(
     assert header.fee_recipient == fee_recipient
 
     # Verify bid signature
-    verify_bid_signature(state, bid)
+    assert verify_bid_signature(state, bid)
 ```
 
 #### Relation to local block building
