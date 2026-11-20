@@ -149,7 +149,7 @@ validator's most recently registered fee recipient address:
 def verify_bid_signature(state: BeaconState, signed_bid: SignedBuilderBid) -> bool:
     pubkey = signed_bid.message.pubkey
     domain = compute_domain(DOMAIN_APPLICATION_BUILDER)
-    signing_root = compute_signing_root(signed_registration.message, domain)
+    signing_root = compute_signing_root(signed_bid.message, domain)
     return bls.Verify(pubkey, signing_root, signed_bid.signature)
 ```
 
