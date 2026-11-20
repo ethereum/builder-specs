@@ -113,7 +113,9 @@ containing:
   `auth.message.data` check fails, the builder MUST return a 400 response. The
   builder MUST also reject, with a 400 response, preferences whose
   `auth.message.slot` has already passed, so that a replayed request cannot roll
-  preferences back to a stale value.
+  preferences back to a stale value. The builder SHOULD also reject, with a 400
+  response, preferences for a slot at which `state.proposer_lookahead` has a
+  different proposer.
 
 The builder SHOULD store the preferences per proposer per `auth.message.slot`
 and MUST honor the `max_execution_payment` cap in any bid it serves for that
