@@ -240,8 +240,8 @@ finalized before they can start querying the external builder network. See
 [EIP-3675] for further details about the transition process itself.
 
 [beacon-node-apis]: https://ethereum.github.io/beacon-APIs
-[bellatrix-specs]: https://github.com/ethereum/consensus-specs/blob/dev/specs/bellatrix
-[bellatrix-validator-specs]: https://github.com/ethereum/consensus-specs/blob/dev/specs/bellatrix/validator.md
+[bellatrix-specs]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/bellatrix
+[bellatrix-validator-specs]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/bellatrix/validator.md
 [builder-spec]: ./builder.md
 [builder-spec-apis]: ./builder.md#endpoints
 [eip-3675]: https://eips.ethereum.org/EIPS/eip-3675

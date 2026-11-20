@@ -386,14 +386,14 @@ Builder API endpoints are defined in `builder-oapi.yaml` in the root of the
 repository. A rendered version can be viewed at
 https://ethereum.github.io/builder-specs/.
 
-[bls]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#bls-signatures
-[compute-domain]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_domain
-[compute-epoch-at-slot]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_epoch_at_slot
-[compute-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#compute_signing_root
+[bls]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#bls-signatures
+[compute-domain]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#compute_domain
+[compute-epoch-at-slot]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#compute_epoch_at_slot
+[compute-root]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#compute_signing_root
 [consensus-specs]: https://github.com/ethereum/consensus-specs
-[get-beacon-proposer-index]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_beacon_proposer_index
-[get-current-epoch]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_current_epoch
-[get-domain]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#get_domain
-[hash-tree-root]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#hash_tree_root
-[is-active-validator]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#is_active_validator
-[proposer-slashing]: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#proposerslashing
+[get-beacon-proposer-index]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#get_beacon_proposer_index
+[get-current-epoch]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#get_current_epoch
+[get-domain]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#get_domain
+[hash-tree-root]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#hash_tree_root
+[is-active-validator]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#is_active_validator
+[proposer-slashing]: https://github.com/ethereum/consensus-specs/blob/v1.6.1/specs/phase0/beacon-chain.md#proposerslashing
