@@ -84,7 +84,8 @@ The validator MAY submit its
 the [`submitBuilderPreferences`][submit-builder-preferences-api] API call in the
 epoch prior to the epoch in which they will be proposing, as determined from
 `state.proposer_lookahead`. This ensures builders have the preferences before
-the bid request arrives.
+the bid request arrives. Builders keep the first preferences they accept for a
+slot, so a later submission for the same slot does not change them.
 
 The validator constructs a `BuilderPreferences` with:
 
