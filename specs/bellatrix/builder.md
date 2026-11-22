@@ -231,7 +231,7 @@ def process_registration(
     index = ValidatorIndex(validator_pubkeys.index(pubkey))
     validator = state.validators[index]
 
-    # Verify validator registration elibility
+    # Verify validator registration eligibility
     assert is_eligible_for_registration(state, validator)
 
     # Verify timestamp is not too far in the future
