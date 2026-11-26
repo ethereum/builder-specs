@@ -244,6 +244,7 @@ def validate_bid(
         bid.parent_block_hash == state.latest_execution_payload_bid.block_hash
         or bid.parent_block_hash == state.latest_block_hash
     )
+    assert bid.block_hash != bid.parent_block_hash
     assert bid.parent_block_root == hash_tree_root(state.latest_block_header)
     assert bid.prev_randao == get_randao_mix(state, get_current_epoch(state))
     assert is_gas_limit_target_compatible(
